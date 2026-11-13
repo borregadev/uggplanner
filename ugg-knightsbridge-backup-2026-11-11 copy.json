@@ -1,0 +1,630 @@
+[
+  {
+    "id": "evt_1794399132712",
+    "title": "Collab Aimee Leon Dore",
+    "startDate": "2026-11-12",
+    "endDate": "2026-11-12",
+    "color": "amber"
+  },
+  {
+    "id": "evt_1794399222394_thze",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2026-11-01",
+    "endDate": "2026-11-01",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222394_h7hf",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2026-11-08",
+    "endDate": "2026-11-08",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222394_yxrl",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2026-11-15",
+    "endDate": "2026-11-15",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222394_q1cj",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2026-11-22",
+    "endDate": "2026-11-22",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222394_x2cz",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2026-11-29",
+    "endDate": "2026-11-29",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222394_iibw",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2026-12-06",
+    "endDate": "2026-12-06",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_ermj",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2026-12-13",
+    "endDate": "2026-12-13",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_dg7j",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2026-12-20",
+    "endDate": "2026-12-20",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_ay1f",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2026-12-27",
+    "endDate": "2026-12-27",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_lo7b",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-01-03",
+    "endDate": "2027-01-03",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_8bie",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-01-10",
+    "endDate": "2027-01-10",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_j4np",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-01-17",
+    "endDate": "2027-01-17",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_wr7z",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-01-24",
+    "endDate": "2027-01-24",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_fv66",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-01-31",
+    "endDate": "2027-01-31",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_ml7r",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-02-07",
+    "endDate": "2027-02-07",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_94st",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-02-14",
+    "endDate": "2027-02-14",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_34cl",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-02-21",
+    "endDate": "2027-02-21",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_rnjg",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-02-28",
+    "endDate": "2027-02-28",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_ni89",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-03-07",
+    "endDate": "2027-03-07",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_wzpa",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-03-14",
+    "endDate": "2027-03-14",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_e6i4",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-03-21",
+    "endDate": "2027-03-21",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_4cl1",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-03-28",
+    "endDate": "2027-03-28",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_04v6",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-04-03",
+    "endDate": "2027-04-03",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_df40",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-04-10",
+    "endDate": "2027-04-10",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_f29p",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-04-17",
+    "endDate": "2027-04-17",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_1j9x",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-04-24",
+    "endDate": "2027-04-24",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_h8k2",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-05-01",
+    "endDate": "2027-05-01",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_ktzj",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-05-08",
+    "endDate": "2027-05-08",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_x9pn",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-05-15",
+    "endDate": "2027-05-15",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_klhn",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-05-22",
+    "endDate": "2027-05-22",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_76ky",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-05-29",
+    "endDate": "2027-05-29",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_owym",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-06-05",
+    "endDate": "2027-06-05",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_yz7c",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-06-12",
+    "endDate": "2027-06-12",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_2ij0",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-06-19",
+    "endDate": "2027-06-19",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_05fd",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-06-26",
+    "endDate": "2027-06-26",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_byfl",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-07-03",
+    "endDate": "2027-07-03",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_o9ty",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-07-10",
+    "endDate": "2027-07-10",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_2h9o",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-07-17",
+    "endDate": "2027-07-17",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_w1rt",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-07-24",
+    "endDate": "2027-07-24",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_rbsd",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-07-31",
+    "endDate": "2027-07-31",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_kn34",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-08-07",
+    "endDate": "2027-08-07",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_ddpj",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-08-14",
+    "endDate": "2027-08-14",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_g8xz",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-08-21",
+    "endDate": "2027-08-21",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_25mr",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-08-28",
+    "endDate": "2027-08-28",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_zsuk",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-09-04",
+    "endDate": "2027-09-04",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_5muk",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-09-11",
+    "endDate": "2027-09-11",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_ht7o",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-09-18",
+    "endDate": "2027-09-18",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_zixm",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-09-25",
+    "endDate": "2027-09-25",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_f5o5",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-10-02",
+    "endDate": "2027-10-02",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_e24q",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-10-09",
+    "endDate": "2027-10-09",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_5i5h",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-10-16",
+    "endDate": "2027-10-16",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_v9lo",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-10-23",
+    "endDate": "2027-10-23",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_98bd",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-10-30",
+    "endDate": "2027-10-30",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_rx9z",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-11-07",
+    "endDate": "2027-11-07",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_72oa",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-11-14",
+    "endDate": "2027-11-14",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_8rge",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-11-21",
+    "endDate": "2027-11-21",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_m3od",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-11-28",
+    "endDate": "2027-11-28",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_zx2l",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-12-05",
+    "endDate": "2027-12-05",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_dir4",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-12-12",
+    "endDate": "2027-12-12",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_rucv",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-12-19",
+    "endDate": "2027-12-19",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399222395_rtzt",
+    "groupId": "grp_1794399222394",
+    "title": "RFID",
+    "startDate": "2027-12-26",
+    "endDate": "2027-12-26",
+    "color": "rose",
+    "recurrence": "weekly"
+  },
+  {
+    "id": "evt_1794399330360",
+    "title": "Black Friday VIP",
+    "startDate": "2026-11-19",
+    "endDate": "2026-11-23",
+    "color": "purple",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794399361059",
+    "title": "Covent Garden Opening",
+    "startDate": "2026-11-19",
+    "endDate": "2026-11-19",
+    "color": "emerald",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794399396642",
+    "title": "Black Friday Public",
+    "startDate": "2026-11-24",
+    "endDate": "2026-11-30",
+    "color": "blue",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794399489008",
+    "title": "RFID",
+    "startDate": "2026-11-18",
+    "endDate": "2026-11-18",
+    "color": "rose",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794401145622",
+    "title": "Christmas Day",
+    "startDate": "2026-12-25",
+    "endDate": "2026-12-25",
+    "color": "blue",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794401153471",
+    "title": "Boxing Day",
+    "startDate": "2026-12-26",
+    "endDate": "2026-12-26",
+    "color": "blue",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794401180022",
+    "title": "Christmas Eve",
+    "startDate": "2026-12-24",
+    "endDate": "2026-12-24",
+    "color": "blue",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794401259371",
+    "title": "New Year's Eve",
+    "startDate": "2026-12-31",
+    "endDate": "2026-12-31",
+    "color": "emerald",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794401302904",
+    "title": "New Year's Day",
+    "startDate": "2027-01-01",
+    "endDate": "2027-01-01",
+    "color": "emerald",
+    "recurrence": "none"
+  }
+]

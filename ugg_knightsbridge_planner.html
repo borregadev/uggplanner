@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UGG Knightsbridge Planner</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom print styling for A4 Page Optimization */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 6mm;
+            }
+            html, body {
+                height: 100% !important;
+                max-height: 100vh !important;
+                overflow: hidden !important;
+                background: white !important;
+                color: black !important;
+                font-size: 9pt;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .page-container {
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: none !important;
+                width: 100% !important;
+                height: 100vh !important;
+                box-shadow: none !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            .page-container > div {
+                height: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                border-radius: 0 !important;
+                border: 1px solid #cbd5e1 !important;
+            }
+            .calendar-grid {
+                border-top: 1px solid #cbd5e1 !important;
+                flex: 1 1 auto !important;
+                display: grid !important;
+                grid-template-columns: repeat(7, 1fr) !important;
+                height: 100% !important;
+            }
+            .day-cell {
+                min-height: 0 !important;
+                height: 100% !important;
+                border-color: #e2e8f0 !important;
+                border-width: 1px !important;
+                page-break-inside: avoid;
+                padding: 3px !important;
+                overflow: hidden !important;
+            }
+            /* High-contrast print style for current day badge */
+            .is-today-badge {
+                background-color: transparent !important;
+                color: #1e293b !important;
+                font-weight: bold !important;
+                border: none !important;
+                box-shadow: none !important;
+                -webkit-print-color-adjust: unset !important;
+                print-color-adjust: unset !important;
+            }
+            .event-pill {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                font-size: 7.5pt !important;
+                padding: 1px 3px !important;
+                margin-bottom: 1px !important;
+                line-height: 1.1 !important;
+            }
+        }
+
+        /* Screen-specific utility scrollbars */
+        .month-tabs-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .month-tabs-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .month-tabs-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .month-tabs-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Top Navigation / Action Bar (Hidden when Printing) -->
+    <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Branding / Title -->
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md">
+                        <i class="fa-solid font-bold fa-calendar-days text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg text-slate-900 leading-tight">UGG Knightsbridge Planner</h1>
+                    </div>
+                </div>
+
+                <!-- Main Action Buttons -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <button id="add-event-btn" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow active:scale-95 text-sm">
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>Add Event</span>
+            </button>
+
+            <button onclick="window.print()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-medium px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow active:scale-95 text-sm">
+                <i class="fa-solid fa-file-pdf text-xs"></i>
+                <span class="hidden sm:inline">Save as PDF</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Month Navigation Tabs Horizontal Scroll bar -->
+<div class="bg-slate-50 border-t border-b border-slate-200 py-2.5 px-4 no-print">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-4">
+        <!-- Prev/Today/Next Quick Nav -->
+        <div class="flex items-center gap-1 flex-shrink-0">
+            <button id="prev-month-btn" class="p-1.5 text-slate-600 hover:bg-slate-200 rounded-lg text-sm transition" title="Previous Month">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button id="today-btn" class="px-2.5 py-1 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-semibold transition">
+                Today
+            </button>
+            <button id="next-month-btn" class="p-1.5 text-slate-600 hover:bg-slate-200 rounded-lg text-sm transition" title="Next Month">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Horizontal Month Tabs -->
+        <div id="month-tabs" class="month-tabs-scroll flex items-center gap-1.5 overflow-x-auto py-0.5 justify-center">
+            <!-- Tabs injected dynamically -->
+        </div>
+    </div>
+</div>
+</header>
+
+<!-- Main Printable Calendar Area -->
+<main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 page-container">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[750px]">
+        <!-- Calendar Month Title & Year Header -->
+        <div class="p-4 sm:p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50/50 gap-2">
+            <div>
+                <h2 id="current-month-display" class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                    November 2026
+                </h2>
+                <p class="text-xs text-slate-500 font-medium">UGG Knightsbridge</p>
+            </div>
+        </div>
+
+        <!-- Days of Week Header -->
+        <div class="grid grid-cols-7 border-b border-slate-200 bg-slate-100/70 text-center text-xs font-semibold uppercase tracking-wider text-slate-600 py-2.5">
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+            <div>Sun</div>
+        </div>
+
+        <!-- Calendar Days Grid -->
+        <div id="calendar-days-grid" class="calendar-grid grid grid-cols-7 flex-1">
+            <!-- Day cells injected dynamically -->
+        </div>
+    </div>
+
+    <!-- Backup & Restore Actions Footer (Hidden when printing) -->
+    <div class="no-print mt-6 flex flex-wrap items-center justify-between gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-2 text-slate-600 text-sm font-medium">
+            <i class="fa-solid fa-database text-blue-600"></i>
+            <span>Data & Backup Management</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <!-- Hidden File Input for Restoration -->
+            <input type="file" id="restore-file-input" accept=".json" class="hidden">
+            
+            <button id="save-backup-btn" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm border border-slate-300 transition active:scale-95">
+                <i class="fa-solid fa-download text-xs text-blue-600"></i>
+                <span>Save Backup</span>
+            </button>
+            <button id="restore-backup-btn" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm border border-slate-300 transition active:scale-95">
+                <i class="fa-solid fa-upload text-xs text-blue-600"></i>
+                <span>Restore Backup</span>
+            </button>
+        </div>
+    </div>
+</main>
+
+<!-- Add / Edit Event Modal -->
+<div id="event-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md overflow-hidden transform transition-all">
+        <!-- Modal Header -->
+        <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+            <h3 id="modal-title" class="font-bold text-slate-900 text-lg">Add All-Day Event</h3>
+            <button id="close-modal-btn" class="text-slate-400 hover:text-slate-600 transition p-1">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Event Form -->
+        <form id="event-form" class="p-6 space-y-4">
+            <input type="hidden" id="event-id">
+            <input type="hidden" id="event-color" value="blue">
+
+            <!-- Title -->
+            <div>
+                <label for="event-title" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                    Event Title
+                </label>
+                <input type="text" id="event-title" required placeholder="e.g. Annual Strategy Retreat" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+            </div>
+
+            <!-- Date Range Inputs -->
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label for="event-start-date" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                        Start Date
+                    </label>
+                    <input type="date" id="event-start-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label for="event-end-date" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                        End Date
+                    </label>
+                    <input type="date" id="event-end-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+            </div>
+
+            <!-- Recurrence Options -->
+            <div>
+                <label for="event-recurrence" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                    Repeat Event
+                </label>
+                <select id="event-recurrence" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    <option value="none">Does not repeat</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Every Week</option>
+                    <option value="biweekly">Every 2 Weeks</option>
+                    <option value="monthly">Every Month</option>
+                    <option value="yearly">Every Year</option>
+                </select>
+            </div>
+
+            <!-- Color Palette Options -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                    Color Tag
+                </label>
+                <div id="color-picker-options" class="flex flex-wrap items-center gap-2.5">
+                    <!-- Color swatches injected dynamically -->
+                </div>
+            </div>
+
+            <!-- Modal Actions -->
+        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+            <button type="button" id="delete-event-btn" class="hidden text-red-600 hover:text-red-700 text-xs font-semibold px-2 py-1 rounded hover:bg-red-50 transition">
+                <i class="fa-regular fa-trash-can mr-1"></i> Delete
+            </button>
+            <div class="flex gap-2 ml-auto">
+                <button type="button" id="cancel-modal-btn" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition">
+                    Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition shadow-sm">
+                    Save Event
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+
+<!-- Edit Recurring Prompt Modal -->
+<div id="edit-recurring-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-sm overflow-hidden p-6 text-center">
+        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+            <i class="fa-solid fa-arrows-rotate"></i>
+        </div>
+        <h3 class="font-bold text-slate-900 text-lg mb-2">Save Repeating Event</h3>
+        <p class="text-xs text-slate-500 mb-6">This event is part of a recurring series. How would you like to save your changes?</p>
+        
+        <div class="space-y-2">
+            <button id="edit-single-btn" class="w-full py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-sm font-medium transition text-left flex items-center justify-between">
+                <span>Only this event</span>
+                <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+            </button>
+            <button id="edit-all-btn" class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition text-left flex items-center justify-between shadow-xs">
+                <span>All events in series</span>
+                <i class="fa-solid fa-chevron-right text-xs text-blue-200"></i>
+            </button>
+        </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- REMOVED: Edit Recurring Prompt Modal (Frequency changes apply to all events in series directly) -->
+
+<!-- Recurring Delete Prompt Modal -->
+<div id="delete-recurring-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-sm overflow-hidden p-6 text-center">
+        <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+            <i class="fa-solid fa-trash-can"></i>
+        </div>
+        <h3 class="font-bold text-slate-900 text-lg mb-2">Delete Repeating Event</h3>
+        <p class="text-xs text-slate-500 mb-6">This event is part of a recurring series. Which events would you like to delete?</p>
+        
+        <div class="space-y-2">
+            <button id="delete-single-btn" class="w-full py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-sm font-medium transition text-left flex items-center justify-between">
+                <span>Only this event</span>
+                <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+            </button>
+            <button id="delete-following-btn" class="w-full py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-sm font-medium transition text-left flex items-center justify-between">
+                <span>This and following events</span>
+                <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+            </button>
+            <button id="delete-all-btn" class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition text-left flex items-center justify-between shadow-xs">
+                <span>All events in series</span>
+                <i class="fa-solid fa-chevron-right text-xs text-red-200"></i>
+            </button>
+        </div>
+
+        <button id="cancel-delete-modal-btn" class="mt-4 text-xs font-semibold text-slate-500 hover:text-slate-800 transition">
+            Cancel
+        </button>
+    </div>
+</div>
+
+<!-- Application Script -->
+<script>
+    // Calendar Configuration & State
+        const START_YEAR = 2026;
+        const START_MONTH = 10; // November (0-indexed)
+        const END_YEAR = 2027;
+        const END_MONTH = 11; // December (0-indexed)
+
+        // Color Palette Definitions (12 Hues)
+        const COLOR_PALETTE = [
+            { id: 'blue', bg: 'bg-blue-100', text: 'text-blue-800', border: 'border-blue-400', dot: 'bg-blue-600' },
+            { id: 'emerald', bg: 'bg-emerald-100', text: 'text-emerald-800', border: 'border-emerald-400', dot: 'bg-emerald-600' },
+            { id: 'purple', bg: 'bg-purple-100', text: 'text-purple-800', border: 'border-purple-400', dot: 'bg-purple-600' },
+            { id: 'amber', bg: 'bg-amber-100', text: 'text-amber-800', border: 'border-amber-400', dot: 'bg-amber-600' },
+            { id: 'rose', bg: 'bg-rose-100', text: 'text-rose-800', border: 'border-rose-400', dot: 'bg-rose-600' },
+            { id: 'indigo', bg: 'bg-indigo-100', text: 'text-indigo-800', border: 'border-indigo-400', dot: 'bg-indigo-600' },
+            { id: 'teal', bg: 'bg-teal-100', text: 'text-teal-800', border: 'border-teal-400', dot: 'bg-teal-600' },
+            { id: 'cyan', bg: 'bg-cyan-100', text: 'text-cyan-800', border: 'border-cyan-400', dot: 'bg-cyan-600' },
+            { id: 'violet', bg: 'bg-violet-100', text: 'text-violet-800', border: 'border-violet-400', dot: 'bg-violet-600' },
+            { id: 'pink', bg: 'bg-pink-100', text: 'text-pink-800', border: 'border-pink-400', dot: 'bg-pink-600' },
+            { id: 'orange', bg: 'bg-orange-100', text: 'text-orange-800', border: 'border-orange-400', dot: 'bg-orange-600' },
+            { id: 'slate', bg: 'bg-slate-200', text: 'text-slate-800', border: 'border-slate-400', dot: 'bg-slate-600' }
+        ];
+
+        // Active State
+        let currentViewDate = new Date(2026, 10, 1); // Start at Nov 2026
+        let events = [];
+        let activeEditEvent = null;
+
+        // DOM Element Cache
+        const monthTabsContainer = document.getElementById('month-tabs');
+        const currentMonthDisplay = document.getElementById('current-month-display');
+        const calendarGrid = document.getElementById('calendar-days-grid');
+        const eventModal = document.getElementById('event-modal');
+        const deleteRecurringModal = document.getElementById('delete-recurring-modal');
+        // REMOVED: editRecurringModal reference
+        const eventForm = document.getElementById('event-form');
+        const colorPickerContainer = document.getElementById('color-picker-options');
+        const deleteEventBtn = document.getElementById('delete-event-btn');
+
+        // Initializer
+        window.addEventListener('DOMContentLoaded', () => {
+            loadEventsFromStorage();
+            buildMonthTabs();
+            renderCalendar();
+            setupColorPicker();
+            setupEventListeners();
+        });
+
+        // Load Events from LocalStorage
+        function loadEventsFromStorage() {
+            const stored = localStorage.getItem('calendar_all_day_events');
+            if (stored) {
+                try {
+                    events = JSON.parse(stored);
+                } catch (e) {
+                    console.error("Failed to parse stored events", e);
+                    events = [];
+                }
+            } else {
+                // Initialize with an empty events array
+                events = [];
+                saveEventsToStorage();
+            }
+        }
+
+        // Save Events to LocalStorage
+        function saveEventsToStorage() {
+            try {
+                localStorage.setItem('calendar_all_day_events', JSON.stringify(events));
+            } catch (e) {
+                console.error("Failed to save events to storage", e);
+            }
+        }
+
+        // Dynamically build month tabs from Nov 2026 to Dec 2027
+        function buildMonthTabs() {
+            if (!monthTabsContainer) return;
+            monthTabsContainer.innerHTML = '';
+
+            const activeYear = currentViewDate.getFullYear();
+            const activeMonth = currentViewDate.getMonth();
+
+            let targetYear = START_YEAR;
+            let targetMonth = START_MONTH;
+
+            while (targetYear < END_YEAR || (targetYear === END_YEAR && targetMonth <= END_MONTH)) {
+                const dateObj = new Date(targetYear, targetMonth, 1);
+                const isSelected = targetYear === activeYear && targetMonth === activeMonth;
+
+                const tabBtn = document.createElement('button');
+                tabBtn.className = `px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-all ${
+                    isSelected
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                }`;
+
+                const monthLabel = dateObj.toLocaleDateString('default', { month: 'short', year: '2-digit' });
+                tabBtn.innerText = monthLabel;
+
+                const tabYear = targetYear;
+                const tabMonth = targetMonth;
+
+                tabBtn.addEventListener('click', () => {
+                    currentViewDate = new Date(tabYear, tabMonth, 1);
+                    buildMonthTabs();
+                    renderCalendar();
+                });
+
+                monthTabsContainer.appendChild(tabBtn);
+
+                targetMonth++;
+                if (targetMonth > 11) {
+                    targetMonth = 0;
+                    targetYear++;
+                }
+            }
+        }
+
+        // Main Calendar Render Logic
+        function renderCalendar() {
+            const year = currentViewDate.getFullYear();
+            const month = currentViewDate.getMonth();
+
+            // Update Header Display
+            if (currentMonthDisplay) {
+                currentMonthDisplay.innerText = currentViewDate.toLocaleDateString('default', {
+                    month: 'long',
+                    year: 'numeric'
+                });
+            }
+
+            // Clear Grid
+            if (!calendarGrid) return;
+            calendarGrid.innerHTML = '';
+
+            // Grid calculations adjusted for Monday start (0 = Mon, 6 = Sun)
+            const rawFirstDay = new Date(year, month, 1).getDay(); // 0 = Sun, 1 = Mon ...
+            const firstDayOfMonth = (rawFirstDay + 6) % 7; // Convert to 0 = Mon, 6 = Sun
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+            // Total grid cells to render (usually 35 or 42)
+            const totalCells = Math.ceil((firstDayOfMonth + daysInMonth) / 7) * 7;
+
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'day-cell bg-white min-h-[95px] sm:min-h-[110px] p-1.5 sm:p-2 flex flex-col justify-between transition hover:bg-slate-50/80 group relative border-b border-r border-slate-200';
+
+                let dayNumber, cellDateString, isCurrentMonth = false;
+
+                if (i < firstDayOfMonth) {
+                    // Previous month dates
+                    dayNumber = daysInPrevMonth - firstDayOfMonth + i + 1;
+                    const prevMonth = month === 0 ? 11 : month - 1;
+                    const prevYear = month === 0 ? year - 1 : year;
+                    cellDateString = formatDateKey(prevYear, prevMonth, dayNumber);
+                    cell.classList.add('bg-slate-50/50', 'text-slate-400');
+                } else if (i >= firstDayOfMonth + daysInMonth) {
+                    // Next month dates
+                    dayNumber = i - (firstDayOfMonth + daysInMonth) + 1;
+                    const nextMonth = month === 11 ? 0 : month + 1;
+                    const nextYear = month === 11 ? year + 1 : year;
+                    cellDateString = formatDateKey(nextYear, nextMonth, dayNumber);
+                    cell.classList.add('bg-slate-50/50', 'text-slate-400');
+                } else {
+                    // Current month dates
+                    dayNumber = i - firstDayOfMonth + 1;
+                    cellDateString = formatDateKey(year, month, dayNumber);
+                    isCurrentMonth = true;
+                    cell.classList.add('text-slate-700');
+                }
+
+                // Header inside day cell (Date Number + Quick Add Button)
+                const cellHeader = document.createElement('div');
+                cellHeader.className = 'flex justify-between items-center mb-1';
+
+                const isCurrentDay = isToday(cellDateString);
+                const dateNumSpan = document.createElement('span');
+                dateNumSpan.className = `font-bold text-xs sm:text-sm h-6 w-6 flex items-center justify-center rounded-full ${
+                    isCurrentDay 
+                        ? 'is-today-badge bg-blue-600 text-white shadow-xs' 
+                        : isCurrentMonth ? 'text-slate-800' : 'text-slate-400'
+                }`;
+                dateNumSpan.innerText = dayNumber;
+
+                // Plus button on hover
+                const quickAddBtn = document.createElement('button');
+                quickAddBtn.className = 'no-print opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-600 transition p-0.5 text-xs';
+                quickAddBtn.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
+                quickAddBtn.title = 'Add Event';
+                quickAddBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openAddModal(cellDateString);
+                });
+
+                cellHeader.appendChild(dateNumSpan);
+                cellHeader.appendChild(quickAddBtn);
+                cell.appendChild(cellHeader);
+
+                // Container for Events
+                const eventsContainer = document.createElement('div');
+                eventsContainer.className = 'flex-1 overflow-y-auto space-y-1 max-h-[70px] sm:max-h-[85px]';
+
+                // Find & Filter events that span over this date
+                const dayEvents = events.filter(e => isDateInRange(cellDateString, e.startDate, e.endDate));
+                
+                // Sort events: Multi-day events first (longest duration top), then single-day events
+                dayEvents.sort((a, b) => {
+                    const durationA = getEventDurationDays(a);
+                    const durationB = getEventDurationDays(b);
+                    
+                    if (durationA !== durationB) {
+                        return durationB - durationA; // Longer multi-day events placed at the top
+                    }
+                    return a.title.localeCompare(b.title);
+                });
+
+                dayEvents.forEach(evt => {
+                    const evtPill = createEventPill(evt, cellDateString);
+                    eventsContainer.appendChild(evtPill);
+                });
+
+                cell.appendChild(eventsContainer);
+
+                // Allow clicking blank area on cell to add event
+                cell.addEventListener('click', () => {
+                    openAddModal(cellDateString);
+                });
+
+                calendarGrid.appendChild(cell);
+            }
+        }
+
+        // Helper: Check if date string falls within start and end range
+        function isDateInRange(targetDate, startDate, endDate) {
+            return targetDate >= startDate && targetDate <= endDate;
+        }
+
+        // Helper: Calculate duration in days for sorting
+        function getEventDurationDays(evt) {
+            if (!evt.startDate || !evt.endDate) return 1;
+            const start = new Date(evt.startDate);
+            const end = new Date(evt.endDate);
+            const diffTime = Math.abs(end - start);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        }
+
+        // Create HTML Element for an Event
+        function createEventPill(evt, currentDateStr) {
+            const palette = COLOR_PALETTE.find(c => c.id === evt.color) || COLOR_PALETTE[0];
+            const isMultiDay = evt.startDate !== evt.endDate;
+            const isStartDay = currentDateStr === evt.startDate;
+            const isEndDay = currentDateStr === evt.endDate;
+            
+            const pill = document.createElement('div');
+            pill.className = `event-pill ${palette.bg} ${palette.text} ${palette.border} border border-l-4 rounded px-1.5 py-0.5 text-[11px] font-semibold leading-tight truncate cursor-pointer transition hover:opacity-80 flex items-center justify-between group/pill`;
+            pill.title = `${evt.title} (${evt.startDate} to ${evt.endDate})`;
+            
+            const titleSpan = document.createElement('span');
+            titleSpan.className = 'truncate flex items-center gap-1';
+            
+            let labelText = evt.title;
+            if (isMultiDay) {
+                if (isStartDay) {
+                    labelText = `▶ ${evt.title}`;
+                } else if (isEndDay) {
+                    labelText = `◀ ${evt.title}`;
+                } else {
+                    labelText = `↔ ${evt.title}`;
+                }
+            }
+            titleSpan.innerText = labelText;
+            
+            pill.appendChild(titleSpan);
+
+            // Edit event listener
+            pill.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openEditModal(evt);
+            });
+
+            return pill;
+        }
+
+        // Setup Color Picker UI in Modal
+        function setupColorPicker() {
+            if (!colorPickerContainer) return;
+            colorPickerContainer.innerHTML = '';
+            COLOR_PALETTE.forEach((color, idx) => {
+                const label = document.createElement('label');
+                label.className = 'cursor-pointer flex items-center justify-center p-0.5';
+                
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'color-choice';
+                radio.value = color.id;
+                radio.className = 'sr-only peer';
+                if (idx === 0) radio.checked = true;
+
+                const swatch = document.createElement('div');
+                swatch.className = `w-7 h-7 rounded-full ${color.dot} peer-checked:ring-2 peer-checked:ring-offset-2 peer-checked:ring-blue-600 transition-all transform peer-checked:scale-110 flex items-center justify-center text-white`;
+                swatch.title = color.id.charAt(0).toUpperCase() + color.id.slice(1);
+                swatch.innerHTML = '<i class="fa-solid fa-check text-[10px] opacity-0 peer-checked:opacity-100"></i>';
+
+                radio.addEventListener('change', () => {
+                    document.getElementById('event-color').value = color.id;
+                });
+
+                label.appendChild(radio);
+                label.appendChild(swatch);
+                colorPickerContainer.appendChild(label);
+            });
+        }
+
+        // Modal Controls & Form Handling
+        function openAddModal(dateStr = '') {
+            const defaultDate = dateStr || new Date().toISOString().split('T')[0];
+            activeEditEvent = null;
+            document.getElementById('modal-title').innerText = 'Add All-Day Event';
+            document.getElementById('event-id').value = '';
+            document.getElementById('event-title').value = '';
+            document.getElementById('event-start-date').value = defaultDate;
+            document.getElementById('event-end-date').value = defaultDate;
+            document.getElementById('event-recurrence').value = 'none';
+            deleteEventBtn.classList.add('hidden');
+            
+            // Default color
+            selectColorInModal('blue');
+
+            eventModal.classList.remove('hidden');
+            document.getElementById('event-title').focus();
+        }
+
+        function openEditModal(evt) {
+            activeEditEvent = evt;
+            document.getElementById('modal-title').innerText = 'Edit All-Day Event';
+            document.getElementById('event-id').value = evt.id;
+            document.getElementById('event-title').value = evt.title;
+            document.getElementById('event-start-date').value = evt.startDate || evt.date;
+            document.getElementById('event-end-date').value = evt.endDate || evt.startDate || evt.date;
+            document.getElementById('event-recurrence').value = evt.recurrence || 'none';
+            deleteEventBtn.classList.remove('hidden');
+
+            selectColorInModal(evt.color);
+
+            eventModal.classList.remove('hidden');
+        }
+
+        function selectColorInModal(colorId) {
+            document.getElementById('event-color').value = colorId;
+            const radios = document.getElementsByName('color-choice');
+            radios.forEach(radio => {
+                radio.checked = (radio.value === colorId);
+            });
+        }
+
+        function closeModal() {
+            eventModal.classList.add('hidden');
+        }
+
+        function closeDeleteRecurringModal() {
+            deleteRecurringModal.classList.add('hidden');
+        }
+
+        // Helper function to generate a series of recurring events
+        function generateRecurringEvents({ title, startDate, endDate, color, recurrence, groupId = null }) {
+            const startDt = new Date(startDate + 'T00:00:00');
+            const endDt = new Date(endDate + 'T00:00:00');
+            const durationMs = Math.max(0, endDt.getTime() - startDt.getTime());
+            const maxPlannerDate = new Date(END_YEAR, END_MONTH, 31, 23, 59, 59);
+            const activeGroupId = groupId || ('grp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
+            
+            const newEvents = [];
+
+            if (recurrence === 'none') {
+                newEvents.push({
+                    id: 'evt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                    title,
+                    startDate,
+                    endDate,
+                    color,
+                    recurrence
+                });
+            } else {
+                let currStart = new Date(startDt);
+                let instanceCount = 0;
+
+                while (currStart <= maxPlannerDate && instanceCount < 1000) {
+                    instanceCount++;
+                    const instanceEnd = new Date(currStart.getTime() + durationMs);
+
+                    const formattedStart = formatDateKey(currStart.getFullYear(), currStart.getMonth(), currStart.getDate());
+                    const formattedEnd = formatDateKey(instanceEnd.getFullYear(), instanceEnd.getMonth(), instanceEnd.getDate());
+
+                    newEvents.push({
+                        id: 'evt_' + Date.now() + '_' + instanceCount + '_' + Math.random().toString(36).substr(2, 4),
+                        groupId: activeGroupId,
+                        title,
+                        startDate: formattedStart,
+                        endDate: formattedEnd,
+                        color,
+                        recurrence
+                    });
+
+                    // Increment current start date accurately according to frequency
+                    if (recurrence === 'daily') {
+                        currStart.setDate(currStart.getDate() + 1);
+                    } else if (recurrence === 'weekly') {
+                        currStart.setDate(currStart.getDate() + 7);
+                    } else if (recurrence === 'biweekly') {
+                        currStart.setDate(currStart.getDate() + 14);
+                    } else if (recurrence === 'monthly') {
+                        currStart.setMonth(currStart.getMonth() + 1);
+                    } else if (recurrence === 'yearly') {
+                        currStart.setFullYear(currStart.getFullYear() + 1);
+                    }
+                }
+            }
+            return newEvents;
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Modal Toggles
+            document.getElementById('add-event-btn').addEventListener('click', () => openAddModal());
+            document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+            document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
+
+            // Save Backup Functionality
+            document.getElementById('save-backup-btn').addEventListener('click', () => {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events, null, 2));
+                const downloadAnchor = document.createElement('a');
+                const dateStamp = new Date().toISOString().split('T')[0];
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `ugg-knightsbridge-backup-${dateStamp}.json`);
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+            });
+
+            // Restore Backup Functionality
+            const restoreFileInput = document.getElementById('restore-file-input');
+            document.getElementById('restore-backup-btn').addEventListener('click', () => {
+                restoreFileInput.click();
+            });
+
+            restoreFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const importedEvents = JSON.parse(event.target.result);
+                        if (Array.isArray(importedEvents)) {
+                            events = importedEvents;
+                            saveEventsToStorage();
+                            renderCalendar();
+                            restoreFileInput.value = '';
+                        } else {
+                            console.error("Invalid backup file format");
+                        }
+                    } catch (err) {
+                        console.error("Failed to parse backup file", err);
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            // Automatically adjust end date if start date comes after end date
+            const startDateInput = document.getElementById('event-start-date');
+            const endDateInput = document.getElementById('event-end-date');
+            startDateInput.addEventListener('change', () => {
+                if (endDateInput.value < startDateInput.value) {
+                    endDateInput.value = startDateInput.value;
+                }
+            });
+
+            // Close modal on backdrop click
+            eventModal.addEventListener('click', (e) => {
+                if (e.target === eventModal) closeModal();
+            });
+
+            // Save Form Submission
+            eventForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const id = document.getElementById('event-id').value;
+                const title = document.getElementById('event-title').value.trim();
+                const startDate = startDateInput.value;
+                let endDate = endDateInput.value;
+                const color = document.getElementById('event-color').value;
+                const recurrence = document.getElementById('event-recurrence').value;
+
+                if (!title || !startDate) return;
+                
+                if (!endDate || endDate < startDate) {
+                    endDate = startDate;
+                }
+
+                const formData = { id, title, startDate, endDate, color, recurrence };
+
+                if (id) {
+                    // Editing an existing event: automatically apply changes across all events in the series
+                    const existingEvt = events.find(e => e.id === id);
+                    const targetGroupId = (existingEvt && existingEvt.groupId) 
+                        ? existingEvt.groupId 
+                        : id;
+
+                    // Purge old series/instances
+                    events = events.filter(e => e.groupId !== targetGroupId && e.id !== targetGroupId && e.id !== id);
+
+                    // Re-generate recurring series with the updated frequency and fields
+                    const activeGroupId = targetGroupId || ('grp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
+                    const updatedSeries = generateRecurringEvents({ 
+                        title, 
+                        startDate, 
+                        endDate, 
+                        color, 
+                        recurrence, 
+                        groupId: activeGroupId 
+                    });
+                    events.push(...updatedSeries);
+                } else {
+                    // Creating new event(s)
+                    const createdEvents = generateRecurringEvents(formData);
+                    events.push(...createdEvents);
+                }
+
+                saveEventsToStorage();
+                renderCalendar();
+                closeModal();
+            });
+
+            // Delete Event Action
+            deleteEventBtn.addEventListener('click', () => {
+                const id = document.getElementById('event-id').value;
+                if (!id) return;
+
+                const targetEvt = events.find(e => e.id === id);
+                if (!targetEvt) return;
+
+                // Check if the event belongs to a recurring group or has recurrence rule set
+                if (targetEvt.groupId || (targetEvt.recurrence && targetEvt.recurrence !== 'none')) {
+                    closeModal();
+                    deleteRecurringModal.classList.remove('hidden');
+                } else {
+                    events = events.filter(e => e.id !== id);
+                    saveEventsToStorage();
+                    renderCalendar();
+                    closeModal();
+                }
+            });
+
+            // Delete Options for Recurring Events
+            document.getElementById('delete-single-btn').addEventListener('click', () => {
+                if (activeEditEvent) {
+                    events = events.filter(e => e.id !== activeEditEvent.id);
+                    saveEventsToStorage();
+                    renderCalendar();
+                }
+                closeDeleteRecurringModal();
+            });
+
+            document.getElementById('delete-following-btn').addEventListener('click', () => {
+                if (activeEditEvent) {
+                    if (activeEditEvent.groupId) {
+                        events = events.filter(e => !(e.groupId === activeEditEvent.groupId && e.startDate >= activeEditEvent.startDate));
+                    } else {
+                        events = events.filter(e => e.id !== activeEditEvent.id);
+                    }
+                    saveEventsToStorage();
+                    renderCalendar();
+                }
+                closeDeleteRecurringModal();
+            });
+
+            document.getElementById('delete-all-btn').addEventListener('click', () => {
+                if (activeEditEvent) {
+                    if (activeEditEvent.groupId) {
+                        events = events.filter(e => e.groupId !== activeEditEvent.groupId);
+                    } else {
+                        events = events.filter(e => e.id !== activeEditEvent.id);
+                    }
+                    saveEventsToStorage();
+                    renderCalendar();
+                }
+                closeDeleteRecurringModal();
+            });
+
+            document.getElementById('cancel-delete-modal-btn').addEventListener('click', closeDeleteRecurringModal);
+
+            // Close recurring delete modal on backdrop click
+            deleteRecurringModal.addEventListener('click', (e) => {
+                if (e.target === deleteRecurringModal) closeDeleteRecurringModal();
+            });
+
+            // Previous Month Button
+            document.getElementById('prev-month-btn').addEventListener('click', () => {
+                let y = currentViewDate.getFullYear();
+                let m = currentViewDate.getMonth();
+                if (y === START_YEAR && m === START_MONTH) return; // Limit check
+                
+                currentViewDate.setMonth(currentViewDate.getMonth() - 1);
+                buildMonthTabs();
+                renderCalendar();
+            });
+
+            // Next Month Button
+            document.getElementById('next-month-btn').addEventListener('click', () => {
+                let y = currentViewDate.getFullYear();
+                let m = currentViewDate.getMonth();
+                if (y === END_YEAR && m === END_MONTH) return; // Limit check
+
+                currentViewDate.setMonth(currentViewDate.getMonth() + 1);
+                buildMonthTabs();
+                renderCalendar();
+            });
+
+            // Today Button
+            document.getElementById('today-btn').addEventListener('click', () => {
+                const now = new Date();
+                // Clamp within Nov 2026 - Dec 2027 if today is outside range
+                const startRange = new Date(START_YEAR, START_MONTH, 1);
+                const endRange = new Date(END_YEAR, END_MONTH + 1, 0);
+
+                if (now < startRange) {
+                    currentViewDate = new Date(startRange);
+                } else if (now > endRange) {
+                    currentViewDate = new Date(endRange);
+                } else {
+                    currentViewDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                }
+
+                buildMonthTabs();
+                renderCalendar();
+            });
+        }
+
+        // Helper: Format Date String YYYY-MM-DD
+        function formatDateKey(year, monthIndex, day) {
+            const m = String(monthIndex + 1).padStart(2, '0');
+            const d = String(day).padStart(2, '0');
+            return `${year}-${m}-${d}`;
+        }
+
+        // Helper: Check if date string matches current system date
+        function isToday(dateStr) {
+            const today = new Date();
+            const todayStr = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+            return dateStr === todayStr;
+        }
+    </script>
+</body>
+</html>
