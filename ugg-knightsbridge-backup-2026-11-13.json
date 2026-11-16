@@ -586,5 +586,53 @@
     "endDate": "2026-11-18",
     "color": "rose",
     "recurrence": "none"
+  },
+  {
+    "id": "evt_1794401145622",
+    "title": "Christmas Day",
+    "startDate": "2026-12-25",
+    "endDate": "2026-12-25",
+    "color": "blue",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794401153471",
+    "title": "Boxing Day",
+    "startDate": "2026-12-26",
+    "endDate": "2026-12-26",
+    "color": "blue",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794401180022",
+    "title": "Christmas Eve",
+    "startDate": "2026-12-24",
+    "endDate": "2026-12-24",
+    "color": "blue",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794401259371",
+    "title": "New Year's Eve",
+    "startDate": "2026-12-31",
+    "endDate": "2026-12-31",
+    "color": "emerald",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794401302904",
+    "title": "New Year's Day",
+    "startDate": "2027-01-01",
+    "endDate": "2027-01-01",
+    "color": "emerald",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794562011055_jai5",
+    "title": "Travellers",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "color": "violet",
+    "recurrence": "none"
   }
 ]

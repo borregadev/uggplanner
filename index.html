@@ -119,257 +119,239 @@
         .month-tabs-scroll::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+        /* Smooth mobile horizontal scrolling without clipping */
+        .month-tabs-scroll {
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
     </style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col overflow-x-hidden">
 
     <!-- Top Navigation / Action Bar (Hidden when Printing) -->
     <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
                 <!-- Branding / Title -->
-                <div class="flex items-center gap-3">
-                    <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md">
-                        <i class="fa-solid font-bold fa-calendar-days text-xl"></i>
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <div class="bg-blue-600 text-white p-2 sm:p-2.5 rounded-xl shadow-md flex-shrink-0">
+                        <i class="fa-solid font-bold fa-calendar-days text-base sm:text-xl"></i>
                     </div>
-                    <div>
-                        <h1 class="font-bold text-lg text-slate-900 leading-tight">UGG Knightsbridge Planner</h1>
+                    <div class="truncate">
+                        <h1 class="font-bold text-sm sm:text-lg text-slate-900 leading-tight truncate">UGG Knightsbridge Planner</h1>
                     </div>
                 </div>
 
                 <!-- Main Action Buttons -->
-        <div class="flex items-center gap-2 sm:gap-3">
-            <button id="add-event-btn" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow active:scale-95 text-sm">
-                <i class="fa-solid fa-plus text-xs"></i>
-                <span>Add Event</span>
-            </button>
+                <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+                    <button id="add-event-btn" class="flex items-center gap-1.5 sm:gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg transition-all shadow-sm hover:shadow active:scale-95 text-xs sm:text-sm min-h-[40px]">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>Add<span class="hidden xs:inline"> Event</span></span>
+                    </button>
 
-            <button onclick="window.print()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-medium px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow active:scale-95 text-sm">
-                <i class="fa-solid fa-file-pdf text-xs"></i>
-                <span class="hidden sm:inline">Save as PDF</span>
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Month Navigation Tabs Horizontal Scroll bar -->
-<div class="bg-slate-50 border-t border-b border-slate-200 py-2.5 px-4 no-print">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-4">
-        <!-- Prev/Today/Next Quick Nav -->
-        <div class="flex items-center gap-1 flex-shrink-0">
-            <button id="prev-month-btn" class="p-1.5 text-slate-600 hover:bg-slate-200 rounded-lg text-sm transition" title="Previous Month">
-                <i class="fa-solid fa-chevron-left"></i>
-            </button>
-            <button id="today-btn" class="px-2.5 py-1 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-semibold transition">
-                Today
-            </button>
-            <button id="next-month-btn" class="p-1.5 text-slate-600 hover:bg-slate-200 rounded-lg text-sm transition" title="Next Month">
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
-        </div>
-
-        <!-- Horizontal Month Tabs -->
-        <div id="month-tabs" class="month-tabs-scroll flex items-center gap-1.5 overflow-x-auto py-0.5 justify-center">
-            <!-- Tabs injected dynamically -->
-        </div>
-    </div>
-</div>
-</header>
-
-<!-- Main Printable Calendar Area -->
-<main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 page-container">
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[750px]">
-        <!-- Calendar Month Title & Year Header -->
-        <div class="p-4 sm:p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50/50 gap-2">
-            <div>
-                <h2 id="current-month-display" class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                    November 2026
-                </h2>
-                <p class="text-xs text-slate-500 font-medium">UGG Knightsbridge</p>
+                    <button onclick="window.print()" class="flex items-center gap-1.5 sm:gap-2 bg-slate-800 hover:bg-slate-900 text-white font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg transition-all shadow-sm hover:shadow active:scale-95 text-xs sm:text-sm min-h-[40px]" title="Save as PDF">
+                        <i class="fa-solid fa-file-pdf text-xs"></i>
+                        <span class="hidden sm:inline">Save as PDF</span>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Days of Week Header -->
-        <div class="grid grid-cols-7 border-b border-slate-200 bg-slate-100/70 text-center text-xs font-semibold uppercase tracking-wider text-slate-600 py-2.5">
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
-            <div>Sun</div>
+        <!-- Month Navigation Tabs Horizontal Scroll bar -->
+        <div class="bg-slate-50 border-t border-b border-slate-200 py-2 px-3 sm:px-4 no-print">
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+                <!-- Prev/Today/Next Quick Nav -->
+                <div class="flex items-center justify-center gap-1.5 flex-shrink-0 w-full sm:w-auto">
+                    <button id="prev-month-btn" class="p-2.5 sm:p-1.5 text-slate-600 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-sm transition min-w-[40px] min-h-[40px] sm:min-w-0 sm:min-h-0 flex items-center justify-center" title="Previous Month">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button id="today-btn" class="px-4 py-2 sm:px-2.5 sm:py-1 text-slate-700 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-xs font-semibold transition min-h-[40px] sm:min-h-0">
+                        Today
+                    </button>
+                    <button id="next-month-btn" class="p-2.5 sm:p-1.5 text-slate-600 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-sm transition min-w-[40px] min-h-[40px] sm:min-w-0 sm:min-h-0 flex items-center justify-center" title="Next Month">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <!-- Horizontal Month Tabs -->
+                <div id="month-tabs" class="month-tabs-scroll flex items-center gap-1.5 overflow-x-auto py-1 w-full sm:w-auto justify-start sm:justify-center px-1">
+                    <!-- Tabs injected dynamically -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Printable Calendar Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-2 sm:p-6 lg:p-8 page-container">
+        <div id="calendar-touch-area" class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[540px] sm:min-h-[750px]">
+            <!-- Calendar Month Title & Year Header -->
+            <div class="p-3.5 sm:p-6 border-b border-slate-200 flex flex-row justify-between items-center bg-slate-50/50 gap-2">
+                <div>
+                    <h2 id="current-month-display" class="text-xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                        November 2026
+                    </h2>
+                    <p class="text-xs text-slate-500 font-medium">UGG Knightsbridge</p>
+                </div>
+                <span class="no-print sm:hidden text-[11px] text-slate-400 flex items-center gap-1">
+                    <i class="fa-solid fa-hand-pointer text-[10px]"></i> Swipe months
+                </span>
+            </div>
+
+            <!-- Days of Week Header -->
+            <div class="grid grid-cols-7 border-b border-slate-200 bg-slate-100/70 text-center text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-600 py-2 sm:py-2.5">
+                <div><span class="hidden sm:inline">Mon</span><span class="sm:hidden">M</span></div>
+                <div><span class="hidden sm:inline">Tue</span><span class="sm:hidden">T</span></div>
+                <div><span class="hidden sm:inline">Wed</span><span class="sm:hidden">W</span></div>
+                <div><span class="hidden sm:inline">Thu</span><span class="sm:hidden">T</span></div>
+                <div><span class="hidden sm:inline">Fri</span><span class="sm:hidden">F</span></div>
+                <div><span class="hidden sm:inline">Sat</span><span class="sm:hidden">S</span></div>
+                <div><span class="hidden sm:inline">Sun</span><span class="sm:hidden">S</span></div>
+            </div>
+
+            <!-- Calendar Days Grid -->
+            <div id="calendar-days-grid" class="calendar-grid grid grid-cols-7 flex-1">
+                <!-- Day cells injected dynamically -->
+            </div>
         </div>
 
-        <!-- Calendar Days Grid -->
-        <div id="calendar-days-grid" class="calendar-grid grid grid-cols-7 flex-1">
-            <!-- Day cells injected dynamically -->
+        <!-- Backup & Restore Actions Footer (Hidden when printing) -->
+        <div class="no-print mt-4 sm:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 p-3.5 sm:p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-center sm:justify-start gap-2 text-slate-600 text-xs sm:text-sm font-medium">
+                <i class="fa-solid fa-database text-blue-600"></i>
+                <span>Data & Backup Management</span>
+            </div>
+            <div class="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-3">
+                <!-- Hidden File Input for Restoration -->
+                <input type="file" id="restore-file-input" accept=".json" class="hidden">
+                
+                <button id="save-backup-btn" class="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm border border-slate-300 transition active:scale-95 min-h-[42px]">
+                    <i class="fa-solid fa-download text-xs text-blue-600"></i>
+                    <span>Save Backup</span>
+                </button>
+                <button id="restore-backup-btn" class="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm border border-slate-300 transition active:scale-95 min-h-[42px]">
+                    <i class="fa-solid fa-upload text-xs text-blue-600"></i>
+                    <span>Restore Backup</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add / Edit Event Modal -->
+    <div id="event-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto transform transition-all">
+            <!-- Modal Header -->
+            <div class="px-5 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center sticky top-0 z-10">
+                <h3 id="modal-title" class="font-bold text-slate-900 text-base sm:text-lg">Add All-Day Event</h3>
+                <button id="close-modal-btn" class="text-slate-400 hover:text-slate-600 transition p-2 min-w-[40px] min-h-[40px] flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Event Form -->
+            <form id="event-form" class="p-5 sm:p-6 space-y-4">
+                <input type="hidden" id="event-id">
+                <input type="hidden" id="event-color" value="blue">
+
+                <!-- Title -->
+                <div>
+                    <label for="event-title" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                        Event Title
+                    </label>
+                    <input type="text" id="event-title" required placeholder="e.g. Annual Strategy Retreat" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+
+                <!-- Date Range Inputs -->
+                <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="event-start-date" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                            Start Date
+                        </label>
+                        <input type="date" id="event-start-date" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                    <div>
+                        <label for="event-end-date" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                            End Date
+                        </label>
+                        <input type="date" id="event-end-date" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                </div>
+
+                <!-- Recurrence Options -->
+                <div>
+                    <label for="event-recurrence" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                        Repeat Event
+                    </label>
+                    <select id="event-recurrence" class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white">
+                        <option value="none">Does not repeat</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Every Week</option>
+                        <option value="biweekly">Every 2 Weeks</option>
+                        <option value="monthly">Every Month</option>
+                        <option value="yearly">Every Year</option>
+                    </select>
+                </div>
+
+                <!-- Color Palette Options -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                        Color Tag
+                    </label>
+                    <div id="color-picker-options" class="flex flex-wrap items-center gap-2 sm:gap-2.5">
+                        <!-- Color swatches injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-slate-100">
+                    <button type="button" id="delete-event-btn" class="hidden text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold px-3 py-2.5 rounded-lg hover:bg-red-50 transition min-h-[42px]">
+                        <i class="fa-regular fa-trash-can mr-1"></i> Delete
+                    </button>
+                    <div class="flex gap-2 ml-auto">
+                        <button type="button" id="cancel-modal-btn" class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition min-h-[42px]">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition shadow-sm min-h-[42px]">
+                            Save Event
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Backup & Restore Actions Footer (Hidden when printing) -->
-    <div class="no-print mt-6 flex flex-wrap items-center justify-between gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
-        <div class="flex items-center gap-2 text-slate-600 text-sm font-medium">
-            <i class="fa-solid fa-database text-blue-600"></i>
-            <span>Data & Backup Management</span>
-        </div>
-        <div class="flex items-center gap-3">
-            <!-- Hidden File Input for Restoration -->
-            <input type="file" id="restore-file-input" accept=".json" class="hidden">
+    <!-- Recurring Delete Prompt Modal -->
+    <div id="delete-recurring-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 w-full max-w-sm overflow-hidden p-5 sm:p-6 text-center">
+            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <h3 class="font-bold text-slate-900 text-lg mb-2">Delete Repeating Event</h3>
+            <p class="text-xs text-slate-500 mb-6">This event is part of a recurring series. Which events would you like to delete?</p>
             
-            <button id="save-backup-btn" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm border border-slate-300 transition active:scale-95">
-                <i class="fa-solid fa-download text-xs text-blue-600"></i>
-                <span>Save Backup</span>
-            </button>
-            <button id="restore-backup-btn" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm border border-slate-300 transition active:scale-95">
-                <i class="fa-solid fa-upload text-xs text-blue-600"></i>
-                <span>Restore Backup</span>
-            </button>
-        </div>
-    </div>
-</main>
-
-<!-- Add / Edit Event Modal -->
-<div id="event-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md overflow-hidden transform transition-all">
-        <!-- Modal Header -->
-        <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-            <h3 id="modal-title" class="font-bold text-slate-900 text-lg">Add All-Day Event</h3>
-            <button id="close-modal-btn" class="text-slate-400 hover:text-slate-600 transition p-1">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-        </div>
-
-        <!-- Event Form -->
-        <form id="event-form" class="p-6 space-y-4">
-            <input type="hidden" id="event-id">
-            <input type="hidden" id="event-color" value="blue">
-
-            <!-- Title -->
-            <div>
-                <label for="event-title" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Event Title
-                </label>
-                <input type="text" id="event-title" required placeholder="e.g. Annual Strategy Retreat" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-            </div>
-
-            <!-- Date Range Inputs -->
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label for="event-start-date" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                        Start Date
-                    </label>
-                    <input type="date" id="event-start-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                </div>
-                <div>
-                    <label for="event-end-date" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                        End Date
-                    </label>
-                    <input type="date" id="event-end-date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                </div>
-            </div>
-
-            <!-- Recurrence Options -->
-            <div>
-                <label for="event-recurrence" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Repeat Event
-                </label>
-                <select id="event-recurrence" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                    <option value="none">Does not repeat</option>
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Every Week</option>
-                    <option value="biweekly">Every 2 Weeks</option>
-                    <option value="monthly">Every Month</option>
-                    <option value="yearly">Every Year</option>
-                </select>
-            </div>
-
-            <!-- Color Palette Options -->
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
-                    Color Tag
-                </label>
-                <div id="color-picker-options" class="flex flex-wrap items-center gap-2.5">
-                    <!-- Color swatches injected dynamically -->
-                </div>
-            </div>
-
-            <!-- Modal Actions -->
-        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
-            <button type="button" id="delete-event-btn" class="hidden text-red-600 hover:text-red-700 text-xs font-semibold px-2 py-1 rounded hover:bg-red-50 transition">
-                <i class="fa-regular fa-trash-can mr-1"></i> Delete
-            </button>
-            <div class="flex gap-2 ml-auto">
-                <button type="button" id="cancel-modal-btn" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition">
-                    Cancel
+            <div class="space-y-2.5">
+                <button id="delete-single-btn" class="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 rounded-lg text-sm font-medium transition text-left flex items-center justify-between min-h-[44px]">
+                    <span>Only this event</span>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
                 </button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition shadow-sm">
-                    Save Event
+                <button id="delete-following-btn" class="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 rounded-lg text-sm font-medium transition text-left flex items-center justify-between min-h-[44px]">
+                    <span>This and following events</span>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                </button>
+                <button id="delete-all-btn" class="w-full py-3 px-4 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-lg text-sm font-medium transition text-left flex items-center justify-between shadow-xs min-h-[44px]">
+                    <span>All events in series</span>
+                    <i class="fa-solid fa-chevron-right text-xs text-red-200"></i>
                 </button>
             </div>
-        </div>
-    </form>
-</div>
-</div>
 
-<!-- Edit Recurring Prompt Modal -->
-<div id="edit-recurring-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-sm overflow-hidden p-6 text-center">
-        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
-            <i class="fa-solid fa-arrows-rotate"></i>
-        </div>
-        <h3 class="font-bold text-slate-900 text-lg mb-2">Save Repeating Event</h3>
-        <p class="text-xs text-slate-500 mb-6">This event is part of a recurring series. How would you like to save your changes?</p>
-        
-        <div class="space-y-2">
-            <button id="edit-single-btn" class="w-full py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-sm font-medium transition text-left flex items-center justify-between">
-                <span>Only this event</span>
-                <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
-            </button>
-            <button id="edit-all-btn" class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition text-left flex items-center justify-between shadow-xs">
-                <span>All events in series</span>
-                <i class="fa-solid fa-chevron-right text-xs text-blue-200"></i>
+            <button id="cancel-delete-modal-btn" class="mt-4 py-2 px-4 text-xs font-semibold text-slate-500 hover:text-slate-800 transition min-h-[40px]">
+                Cancel
             </button>
         </div>
-
-        </form>
     </div>
-</div>
 
-<!-- REMOVED: Edit Recurring Prompt Modal (Frequency changes apply to all events in series directly) -->
-
-<!-- Recurring Delete Prompt Modal -->
-<div id="delete-recurring-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-sm overflow-hidden p-6 text-center">
-        <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
-            <i class="fa-solid fa-trash-can"></i>
-        </div>
-        <h3 class="font-bold text-slate-900 text-lg mb-2">Delete Repeating Event</h3>
-        <p class="text-xs text-slate-500 mb-6">This event is part of a recurring series. Which events would you like to delete?</p>
-        
-        <div class="space-y-2">
-            <button id="delete-single-btn" class="w-full py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-sm font-medium transition text-left flex items-center justify-between">
-                <span>Only this event</span>
-                <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
-            </button>
-            <button id="delete-following-btn" class="w-full py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-sm font-medium transition text-left flex items-center justify-between">
-                <span>This and following events</span>
-                <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
-            </button>
-            <button id="delete-all-btn" class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition text-left flex items-center justify-between shadow-xs">
-                <span>All events in series</span>
-                <i class="fa-solid fa-chevron-right text-xs text-red-200"></i>
-            </button>
-        </div>
-
-        <button id="cancel-delete-modal-btn" class="mt-4 text-xs font-semibold text-slate-500 hover:text-slate-800 transition">
-            Cancel
-        </button>
-    </div>
-</div>
-
-<!-- Application Script -->
-<script>
-    // Calendar Configuration & State
+    <!-- Application Script -->
+    <script>
+        // Calendar Configuration & State
         const START_YEAR = 2026;
         const START_MONTH = 10; // November (0-indexed)
         const END_YEAR = 2027;
@@ -452,13 +434,14 @@
 
             let targetYear = START_YEAR;
             let targetMonth = START_MONTH;
+            let activeTabEl = null;
 
             while (targetYear < END_YEAR || (targetYear === END_YEAR && targetMonth <= END_MONTH)) {
                 const dateObj = new Date(targetYear, targetMonth, 1);
                 const isSelected = targetYear === activeYear && targetMonth === activeMonth;
 
                 const tabBtn = document.createElement('button');
-                tabBtn.className = `px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-all ${
+                tabBtn.className = `px-3 py-2 sm:py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 min-h-[36px] sm:min-h-0 ${
                     isSelected
                         ? 'bg-blue-600 text-white shadow-sm'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
@@ -477,12 +460,22 @@
                 });
 
                 monthTabsContainer.appendChild(tabBtn);
+                if (isSelected) {
+                    activeTabEl = tabBtn;
+                }
 
                 targetMonth++;
                 if (targetMonth > 11) {
                     targetMonth = 0;
                     targetYear++;
                 }
+            }
+
+            // Auto-scroll active tab into view smoothly on mobile
+            if (activeTabEl) {
+                requestAnimationFrame(() => {
+                    activeTabEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                });
             }
         }
 
@@ -515,7 +508,7 @@
 
             for (let i = 0; i < totalCells; i++) {
                 const cell = document.createElement('div');
-                cell.className = 'day-cell bg-white min-h-[95px] sm:min-h-[110px] p-1.5 sm:p-2 flex flex-col justify-between transition hover:bg-slate-50/80 group relative border-b border-r border-slate-200';
+                cell.className = 'day-cell bg-white min-h-[76px] sm:min-h-[110px] p-1 sm:p-2 flex flex-col justify-between transition hover:bg-slate-50/80 active:bg-slate-100/80 group relative border-b border-r border-slate-200 min-w-0 overflow-hidden';
 
                 let dayNumber, cellDateString, isCurrentMonth = false;
 
@@ -543,20 +536,20 @@
 
                 // Header inside day cell (Date Number + Quick Add Button)
                 const cellHeader = document.createElement('div');
-                cellHeader.className = 'flex justify-between items-center mb-1';
+                cellHeader.className = 'flex justify-between items-center mb-0.5 sm:mb-1';
 
                 const isCurrentDay = isToday(cellDateString);
                 const dateNumSpan = document.createElement('span');
-                dateNumSpan.className = `font-bold text-xs sm:text-sm h-6 w-6 flex items-center justify-center rounded-full ${
+                dateNumSpan.className = `font-bold text-[11px] sm:text-sm h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center rounded-full ${
                     isCurrentDay 
                         ? 'is-today-badge bg-blue-600 text-white shadow-xs' 
                         : isCurrentMonth ? 'text-slate-800' : 'text-slate-400'
                 }`;
                 dateNumSpan.innerText = dayNumber;
 
-                // Plus button on hover
+                // Plus button on hover (desktop)
                 const quickAddBtn = document.createElement('button');
-                quickAddBtn.className = 'no-print opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-600 transition p-0.5 text-xs';
+                quickAddBtn.className = 'no-print hidden sm:inline-block opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-600 transition p-0.5 text-xs';
                 quickAddBtn.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
                 quickAddBtn.title = 'Add Event';
                 quickAddBtn.addEventListener('click', (e) => {
@@ -570,7 +563,7 @@
 
                 // Container for Events
                 const eventsContainer = document.createElement('div');
-                eventsContainer.className = 'flex-1 overflow-y-auto space-y-1 max-h-[70px] sm:max-h-[85px]';
+                eventsContainer.className = 'flex-1 overflow-y-auto space-y-0.5 sm:space-y-1 max-h-[54px] sm:max-h-[85px]';
 
                 // Find & Filter events that span over this date
                 const dayEvents = events.filter(e => isDateInRange(cellDateString, e.startDate, e.endDate));
@@ -624,11 +617,11 @@
             const isEndDay = currentDateStr === evt.endDate;
             
             const pill = document.createElement('div');
-            pill.className = `event-pill ${palette.bg} ${palette.text} ${palette.border} border border-l-4 rounded px-1.5 py-0.5 text-[11px] font-semibold leading-tight truncate cursor-pointer transition hover:opacity-80 flex items-center justify-between group/pill`;
+            pill.className = `event-pill ${palette.bg} ${palette.text} ${palette.border} border border-l-2 sm:border-l-4 rounded px-1 sm:px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold leading-tight truncate cursor-pointer transition hover:opacity-80 active:opacity-70 flex items-center justify-between group/pill min-h-[18px] sm:min-h-0`;
             pill.title = `${evt.title} (${evt.startDate} to ${evt.endDate})`;
             
             const titleSpan = document.createElement('span');
-            titleSpan.className = 'truncate flex items-center gap-1';
+            titleSpan.className = 'truncate flex items-center gap-0.5 sm:gap-1';
             
             let labelText = evt.title;
             if (isMultiDay) {
@@ -659,7 +652,7 @@
             colorPickerContainer.innerHTML = '';
             COLOR_PALETTE.forEach((color, idx) => {
                 const label = document.createElement('label');
-                label.className = 'cursor-pointer flex items-center justify-center p-0.5';
+                label.className = 'cursor-pointer flex items-center justify-center p-1';
                 
                 const radio = document.createElement('input');
                 radio.type = 'radio';
@@ -669,7 +662,7 @@
                 if (idx === 0) radio.checked = true;
 
                 const swatch = document.createElement('div');
-                swatch.className = `w-7 h-7 rounded-full ${color.dot} peer-checked:ring-2 peer-checked:ring-offset-2 peer-checked:ring-blue-600 transition-all transform peer-checked:scale-110 flex items-center justify-center text-white`;
+                swatch.className = `w-8 h-8 sm:w-7 sm:h-7 rounded-full ${color.dot} peer-checked:ring-2 peer-checked:ring-offset-2 peer-checked:ring-blue-600 transition-all transform peer-checked:scale-110 flex items-center justify-center text-white`;
                 swatch.title = color.id.charAt(0).toUpperCase() + color.id.slice(1);
                 swatch.innerHTML = '<i class="fa-solid fa-check text-[10px] opacity-0 peer-checked:opacity-100"></i>';
 
@@ -966,7 +959,7 @@
             });
 
             // Previous Month Button
-            document.getElementById('prev-month-btn').addEventListener('click', () => {
+            const goPrevMonth = () => {
                 let y = currentViewDate.getFullYear();
                 let m = currentViewDate.getMonth();
                 if (y === START_YEAR && m === START_MONTH) return; // Limit check
@@ -974,10 +967,10 @@
                 currentViewDate.setMonth(currentViewDate.getMonth() - 1);
                 buildMonthTabs();
                 renderCalendar();
-            });
+            };
 
             // Next Month Button
-            document.getElementById('next-month-btn').addEventListener('click', () => {
+            const goNextMonth = () => {
                 let y = currentViewDate.getFullYear();
                 let m = currentViewDate.getMonth();
                 if (y === END_YEAR && m === END_MONTH) return; // Limit check
@@ -985,7 +978,38 @@
                 currentViewDate.setMonth(currentViewDate.getMonth() + 1);
                 buildMonthTabs();
                 renderCalendar();
-            });
+            };
+
+            document.getElementById('prev-month-btn').addEventListener('click', goPrevMonth);
+            document.getElementById('next-month-btn').addEventListener('click', goNextMonth);
+
+            // Touch Swipe Support on Mobile Calendar Area
+            const calendarTouchArea = document.getElementById('calendar-touch-area');
+            if (calendarTouchArea) {
+                let touchStartX = 0;
+                let touchStartY = 0;
+
+                calendarTouchArea.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                    touchStartY = e.changedTouches[0].screenY;
+                }, { passive: true });
+
+                calendarTouchArea.addEventListener('touchend', (e) => {
+                    const touchEndX = e.changedTouches[0].screenX;
+                    const touchEndY = e.changedTouches[0].screenY;
+                    const diffX = touchEndX - touchStartX;
+                    const diffY = touchEndY - touchStartY;
+
+                    // Trigger horizontal month switch only if horizontal swipe is dominant and > 60px
+                    if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+                        if (diffX < 0) {
+                            goNextMonth();
+                        } else {
+                            goPrevMonth();
+                        }
+                    }
+                }, { passive: true });
+            }
 
             // Today Button
             document.getElementById('today-btn').addEventListener('click', () => {
