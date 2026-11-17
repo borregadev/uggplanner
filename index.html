@@ -796,55 +796,75 @@
 
             // Save Backup Functionality
             document.getElementById('save-backup-btn').addEventListener('click', () => {
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events, null, 2));
-                const downloadAnchor = document.createElement('a');
-                const dateStamp = new Date().toISOString().split('T')[0];
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `ugg-knightsbridge-backup-${dateStamp}.json`);
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.click();
-                downloadAnchor.remove();
+                try {
+                    const jsonStr = JSON.stringify(events, null, 2);
+                    const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const downloadAnchor = document.createElement('a');
+                    const dateStamp = new Date().toISOString().split('T')[0];
+                    downloadAnchor.href = url;
+                    downloadAnchor.download = `ugg-knightsbridge-backup-${dateStamp}.json`;
+                    document.body.appendChild(downloadAnchor);
+                    downloadAnchor.click();
+                    downloadAnchor.remove();
+                    setTimeout(() => URL.revokeObjectURL(url), 5000);
+                    showToast(`Saved ${events.length} event${events.length === 1 ? '' : 's'} to backup`, true);
+                } catch (err) {
+                    console.error("Failed to save backup file", err);
+                    showToast('Could not save backup file', false);
+                }
             });
 
-            // Restore Backup Functionality (Direct native <label> + <input type="file"> for reliable iOS/Android mobile support)
+            // Restore Backup Functionality (Resilient mobile parser for BOM, encoding, and iOS/Android file providers)
             const restoreFileInput = document.getElementById('restore-file-input');
 
-            restoreFileInput.addEventListener('change', (e) => {
+            restoreFileInput.addEventListener('change', async (e) => {
                 const file = e.target.files && e.target.files[0];
                 if (!file) return;
 
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    try {
-                        const importedEvents = JSON.parse(event.target.result);
-                        if (Array.isArray(importedEvents)) {
-                            events = importedEvents;
-                            saveEventsToStorage();
-                            renderCalendar();
-                            showToast(`Restored ${importedEvents.length} event${importedEvents.length === 1 ? '' : 's'}`, true);
-                        } else {
-                            showToast('Invalid backup file format', false);
-                        }
-                    } catch (err) {
-                        console.error("Failed to parse backup file", err);
-                        showToast('Could not read backup file', false);
-                    } finally {
-                        restoreFileInput.value = '';
+                try {
+                    let rawText = '';
+                    if (typeof file.text === 'function') {
+                        rawText = await file.text();
+                    } else {
+                        rawText = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => resolve(ev.target.result);
+                            reader.onerror = () => reject(reader.error);
+                            reader.readAsText(file);
+                        });
                     }
-                };
-                reader.onerror = () => {
-                    showToast('Error reading selected file', false);
-                    restoreFileInput.value = '';
-                };
-                reader.readAsText(file);
-            });
 
-            // Automatically adjust end date if start date comes after end date
-            const startDateInput = document.getElementById('event-start-date');
-            const endDateInput = document.getElementById('event-end-date');
-            startDateInput.addEventListener('change', () => {
-                if (endDateInput.value < startDateInput.value) {
-                    endDateInput.value = startDateInput.value;
+                    // Strip UTF-8 BOM and surrounding whitespace
+                    let cleaned = String(rawText || '').replace(/^\uFEFF/, '').trim();
+
+                    // Handle cases where mobile browsers or cloud apps saved URI-encoded JSON
+                    if (cleaned.startsWith('%5B') || cleaned.startsWith('%7B')) {
+                        cleaned = decodeURIComponent(cleaned);
+                    }
+
+                    let parsed = JSON.parse(cleaned);
+                    // Support double-encoded JSON strings or wrapper objects if encountered
+                    if (typeof parsed === 'string') {
+                        parsed = JSON.parse(parsed);
+                    }
+                    const importedEvents = Array.isArray(parsed)
+                        ? parsed
+                        : (parsed && Array.isArray(parsed.events) ? parsed.events : null);
+
+                    if (importedEvents) {
+                        events = importedEvents;
+                        saveEventsToStorage();
+                        renderCalendar();
+                        showToast(`Restored ${importedEvents.length} event${importedEvents.length === 1 ? '' : 's'}`, true);
+                    } else {
+                        showToast('Invalid backup file format', false);
+                    }
+                } catch (err) {
+                    console.error("Failed to parse backup file", err);
+                    showToast('Could not read backup file', false);
+                } finally {
+                    restoreFileInput.value = '';
                 }
             });
 
