@@ -221,20 +221,24 @@
                 <span>Data & Backup Management</span>
             </div>
             <div class="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-3">
-                <!-- Hidden File Input for Restoration -->
-                <input type="file" id="restore-file-input" accept=".json" class="hidden">
-                
                 <button id="save-backup-btn" class="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm border border-slate-300 transition active:scale-95 min-h-[42px]">
                     <i class="fa-solid fa-download text-xs text-blue-600"></i>
                     <span>Save Backup</span>
                 </button>
-                <button id="restore-backup-btn" class="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm border border-slate-300 transition active:scale-95 min-h-[42px]">
+                <label for="restore-file-input" id="restore-backup-btn" class="cursor-pointer flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm border border-slate-300 transition active:scale-95 min-h-[42px] relative overflow-hidden">
                     <i class="fa-solid fa-upload text-xs text-blue-600"></i>
                     <span>Restore Backup</span>
-                </button>
+                    <input type="file" id="restore-file-input" accept=".json,application/json,text/json,text/plain,*/*" class="sr-only">
+                </label>
             </div>
         </div>
     </main>
+
+    <!-- Status Toast Notification -->
+    <div id="status-toast" class="no-print hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 transition-opacity duration-300">
+        <i id="status-toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="status-toast-msg">Backup restored</span>
+    </div>
 
     <!-- Add / Edit Event Modal -->
     <div id="event-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -802,14 +806,11 @@
                 downloadAnchor.remove();
             });
 
-            // Restore Backup Functionality
+            // Restore Backup Functionality (Direct native <label> + <input type="file"> for reliable iOS/Android mobile support)
             const restoreFileInput = document.getElementById('restore-file-input');
-            document.getElementById('restore-backup-btn').addEventListener('click', () => {
-                restoreFileInput.click();
-            });
 
             restoreFileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
+                const file = e.target.files && e.target.files[0];
                 if (!file) return;
 
                 const reader = new FileReader();
@@ -820,13 +821,20 @@
                             events = importedEvents;
                             saveEventsToStorage();
                             renderCalendar();
-                            restoreFileInput.value = '';
+                            showToast(`Restored ${importedEvents.length} event${importedEvents.length === 1 ? '' : 's'}`, true);
                         } else {
-                            console.error("Invalid backup file format");
+                            showToast('Invalid backup file format', false);
                         }
                     } catch (err) {
                         console.error("Failed to parse backup file", err);
+                        showToast('Could not read backup file', false);
+                    } finally {
+                        restoreFileInput.value = '';
                     }
+                };
+                reader.onerror = () => {
+                    showToast('Error reading selected file', false);
+                    restoreFileInput.value = '';
                 };
                 reader.readAsText(file);
             });
@@ -1043,6 +1051,26 @@
             const today = new Date();
             const todayStr = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
             return dateStr === todayStr;
+        }
+
+        // Helper: Show subtle feedback toast
+        let toastTimeout = null;
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('status-toast');
+            const msgEl = document.getElementById('status-toast-msg');
+            const iconEl = document.getElementById('status-toast-icon');
+            if (!toast || !msgEl || !iconEl) return;
+
+            msgEl.innerText = message;
+            iconEl.className = isSuccess
+                ? 'fa-solid fa-circle-check text-emerald-400'
+                : 'fa-solid fa-circle-exclamation text-rose-400';
+
+            toast.classList.remove('hidden');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
         }
     </script>
 </body>
