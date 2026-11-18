@@ -144,11 +144,11 @@
 
                 <!-- Main Action Buttons -->
                 <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
-                    <!-- Subtle Cloud Sync Status Pill -->
-                    <span id="cloud-sync-pill" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                    <!-- Subtle Cloud Sync Status Pill (Tap/Hover for details or manual sync) -->
+                    <button id="cloud-sync-pill" type="button" title="Click to sync now" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition cursor-pointer">
                         <span id="cloud-sync-dot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                        <span id="cloud-sync-text" class="hidden sm:inline">Local</span>
-                    </span>
+                        <span id="cloud-sync-text">Local</span>
+                    </button>
 
                     <button id="add-event-btn" class="flex items-center gap-1.5 sm:gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg transition-all shadow-sm hover:shadow active:scale-95 text-xs sm:text-sm min-h-[40px]">
                         <i class="fa-solid fa-plus text-xs"></i>
@@ -364,7 +364,7 @@
         // =========================================================================
         // JSONBIN.IO CLOUD SYNC CONFIGURATION (PASTE YOUR CREDENTIALS BELOW)
         // =========================================================================
-        const JSONBIN_BIN_ID = "https://api.jsonbin.io/v3/b/6afd5ef7ffd5d16053cab40b";         // e.g. "673a9f2be41b4d34e4567890"
+        const JSONBIN_BIN_ID = "6afd5ef7ffd5d16053cab40b";         // e.g. "673a9f2be41b4d34e4567890"
         const JSONBIN_MASTER_KEY = "$2a$10$NXHdVDMaEkbCrNMVAHPPPOIcfzSikYi7fu.R7x7SRw2wP7GNxQvjy"; // e.g. "$2a$10$..."
         // =========================================================================
 
@@ -405,26 +405,52 @@
         const colorPickerContainer = document.getElementById('color-picker-options');
         const deleteEventBtn = document.getElementById('delete-event-btn');
 
+        function getCleanBinId() {
+            return String(JSONBIN_BIN_ID || "").trim();
+        }
+
+        function getCleanApiKey() {
+            return String(JSONBIN_MASTER_KEY || "").trim();
+        }
+
         function isCloudConfigured() {
+            const binId = getCleanBinId();
+            const apiKey = getCleanApiKey();
             return (
-                JSONBIN_BIN_ID &&
-                JSONBIN_MASTER_KEY &&
-                JSONBIN_BIN_ID !== "YOUR_BIN_ID_HERE" &&
-                JSONBIN_MASTER_KEY !== "YOUR_MASTER_KEY_HERE"
+                binId.length > 0 &&
+                apiKey.length > 0 &&
+                binId !== "YOUR_BIN_ID_HERE" &&
+                apiKey !== "YOUR_MASTER_KEY_HERE"
             );
         }
 
-        function setCloudSyncStatus(state, label) {
+        function setCloudSyncStatus(state, label, detail = "") {
+            const pill = document.getElementById('cloud-sync-pill');
             const dot = document.getElementById('cloud-sync-dot');
             const text = document.getElementById('cloud-sync-text');
             if (!dot || !text) return;
             text.innerText = label;
+            if (pill && detail) {
+                pill.title = detail;
+            }
             dot.className = 'w-1.5 h-1.5 rounded-full ' + (
                 state === 'synced' ? 'bg-emerald-500' :
                 state === 'syncing' ? 'bg-amber-400 animate-pulse' :
                 state === 'error' ? 'bg-rose-500' :
                 'bg-slate-400'
             );
+        }
+
+        function buildJsonBinHeaders(includeContentType = false) {
+            const apiKey = getCleanApiKey();
+            const headers = {
+                'X-Master-Key': apiKey,
+                'X-Access-Key': apiKey
+            };
+            if (includeContentType) {
+                headers['Content-Type'] = 'application/json';
+            }
+            return headers;
         }
 
         // Initializer
@@ -435,6 +461,17 @@
             setupColorPicker();
             setupEventListeners();
             pullEventsFromCloud();
+
+            const syncPill = document.getElementById('cloud-sync-pill');
+            if (syncPill) {
+                syncPill.addEventListener('click', () => {
+                    if (!isCloudConfigured()) {
+                        showToast('Paste your Bin ID & API Key in the HTML file first', false);
+                    } else {
+                        pullEventsFromCloud(true);
+                    }
+                });
+            }
         });
 
         // Load Events from LocalStorage
@@ -456,20 +493,23 @@
         }
 
         // Pull latest events from JSONBin.io
-        async function pullEventsFromCloud() {
+        async function pullEventsFromCloud(manual = false) {
             if (!isCloudConfigured()) {
-                setCloudSyncStatus('local', 'Local');
+                setCloudSyncStatus('local', 'Local', 'Cloud credentials not set yet');
                 return;
             }
             setCloudSyncStatus('syncing', 'Syncing...');
             try {
-                const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                const binId = getCleanBinId();
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${encodeURIComponent(binId)}/latest`, {
                     method: 'GET',
-                    headers: {
-                        'X-Master-Key': JSONBIN_MASTER_KEY
-                    }
+                    cache: 'no-store',
+                    headers: buildJsonBinHeaders(false)
                 });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                if (!response.ok) {
+                    const errBody = await response.text().catch(() => '');
+                    throw new Error(`HTTP ${response.status}: ${errBody || response.statusText}`);
+                }
                 const data = await response.json();
                 const cloudEvents = Array.isArray(data?.record?.events)
                     ? data.record.events
@@ -482,10 +522,13 @@
                     localStorage.setItem('calendar_all_day_events', JSON.stringify(events));
                     renderCalendar();
                 }
-                setCloudSyncStatus('synced', 'Synced');
+                setCloudSyncStatus('synced', 'Synced', 'Connected to JSONBin.io (Click to refresh)');
+                if (manual) showToast('Synced with cloud', true);
             } catch (e) {
                 console.error("JSONBin pull error:", e);
-                setCloudSyncStatus('error', 'Offline');
+                const msg = e && e.message ? e.message : 'Network or CORS error';
+                setCloudSyncStatus('error', 'Offline', `Sync failed: ${msg}`);
+                if (manual) showToast(`Sync error: ${msg}`, false);
             }
         }
 
@@ -494,19 +537,23 @@
             if (!isCloudConfigured()) return;
             setCloudSyncStatus('syncing', 'Saving...');
             try {
-                const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                const binId = getCleanBinId();
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${encodeURIComponent(binId)}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN_MASTER_KEY
-                    },
+                    cache: 'no-store',
+                    headers: buildJsonBinHeaders(true),
                     body: JSON.stringify({ events })
                 });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                setCloudSyncStatus('synced', 'Synced');
+                if (!response.ok) {
+                    const errBody = await response.text().catch(() => '');
+                    throw new Error(`HTTP ${response.status}: ${errBody || response.statusText}`);
+                }
+                setCloudSyncStatus('synced', 'Synced', 'All changes saved to JSONBin.io');
             } catch (e) {
                 console.error("JSONBin push error:", e);
-                setCloudSyncStatus('error', 'Offline');
+                const msg = e && e.message ? e.message : 'Network or CORS error';
+                setCloudSyncStatus('error', 'Offline', `Save failed: ${msg}`);
+                showToast(`Cloud save failed: ${msg}`, false);
             }
         }
 
