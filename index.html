@@ -1,967 +1,1196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>UGG Knightsbridge Planner</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UGG Knightsbridge Planner</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom print styling for A4 Page Optimization */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 6mm;
+            }
+            html, body {
+                height: 100% !important;
+                max-height: 100vh !important;
+                overflow: hidden !important;
+                background: white !important;
+                color: black !important;
+                font-size: 9pt;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .page-container {
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: none !important;
+                width: 100% !important;
+                height: 100vh !important;
+                box-shadow: none !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            .page-container > div {
+                height: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                border-radius: 0 !important;
+                border: 1px solid #cbd5e1 !important;
+            }
+            .calendar-grid {
+                border-top: 1px solid #cbd5e1 !important;
+                flex: 1 1 auto !important;
+                display: grid !important;
+                grid-template-columns: repeat(7, 1fr) !important;
+                height: 100% !important;
+            }
+            .day-cell {
+                min-height: 0 !important;
+                height: 100% !important;
+                border-color: #e2e8f0 !important;
+                border-width: 1px !important;
+                page-break-inside: avoid;
+                padding: 3px !important;
+                overflow: hidden !important;
+            }
+            /* High-contrast print style for current day badge */
+            .is-today-badge {
+                background-color: transparent !important;
+                color: #1e293b !important;
+                font-weight: bold !important;
+                border: none !important;
+                box-shadow: none !important;
+                -webkit-print-color-adjust: unset !important;
+                print-color-adjust: unset !important;
+            }
+            .event-pill {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                font-size: 7.5pt !important;
+                padding: 1px 3px !important;
+                margin-bottom: 1px !important;
+                line-height: 1.1 !important;
+            }
+        }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #f8fafc;
-      color: #0f172a;
-      -webkit-tap-highlight-color: transparent;
-      overflow-x: hidden;
-    }
-
-    /* Custom subtle scrollbar for month strip */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-
-    /* Event Color Swatches (12 Colors) */
-    .evt-blue    { background-color: #dbeafe; color: #1e40af; border-left: 3px solid #2563eb; }
-    .evt-emerald { background-color: #d1fae5; color: #065f46; border-left: 3px solid #059669; }
-    .evt-purple  { background-color: #f3e8ff; color: #6b21a8; border-left: 3px solid #9333ea; }
-    .evt-amber   { background-color: #fef3c7; color: #92400e; border-left: 3px solid #d97706; }
-    .evt-rose    { background-color: #ffe4e6; color: #9f1239; border-left: 3px solid #e11d48; }
-    .evt-indigo  { background-color: #e0e7ff; color: #3730a3; border-left: 3px solid #4f46e5; }
-    .evt-teal    { background-color: #ccfbf1; color: #115e59; border-left: 3px solid #0d9488; }
-    .evt-cyan    { background-color: #cffafe; color: #155e75; border-left: 3px solid #0891b2; }
-    .evt-violet  { background-color: #ede9fe; color: #5b21b6; border-left: 3px solid #7c3aed; }
-    .evt-pink    { background-color: #fce7f3; color: #9d174d; border-left: 3px solid #db2777; }
-    .evt-orange  { background-color: #ffedd5; color: #9a3412; border-left: 3px solid #ea580c; }
-    .evt-slate   { background-color: #f1f5f9; color: #334155; border-left: 3px solid #475569; }
-
-    /* Print / A4 PDF Export Rules */
-    @media print {
-      @page {
-        size: A4 portrait;
-        margin: 10mm;
-      }
-
-      body {
-        background: #ffffff !important;
-        color: #0f172a !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-
-      .no-print {
-        display: none !important;
-      }
-
-      #app-container {
-        max-width: 100% !important;
-        padding: 0 !important;
-        margin: 0 !important;
-      }
-
-      #calendar-card {
-        box-shadow: none !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 0 !important;
-      }
-
-      #weekday-header {
-        border-bottom: 1px solid #cbd5e1 !important;
-        background-color: #f8fafc !important;
-      }
-
-      #weekday-header > div {
-        border-right: 1px solid #e2e8f0 !important;
-        color: #334155 !important;
-      }
-
-      #weekday-header > div:last-child {
-        border-right: none !important;
-      }
-
-      #calendar-grid {
-        border-collapse: collapse !important;
-      }
-
-      .day-cell {
-        min-height: 112px !important;
-        height: auto !important;
-        border-right: 1px solid #e2e8f0 !important;
-        border-bottom: 1px solid #e2e8f0 !important;
-        page-break-inside: avoid;
-      }
-
-      .day-cell:nth-child(7n) {
-        border-right: none !important;
-      }
-
-      .day-cell:nth-last-child(-n+7) {
-        border-bottom: none !important;
-      }
-
-      /* Do NOT highlight current day badge on saved PDF */
-      .is-today-badge {
-        background-color: transparent !important;
-        color: #0f172a !important;
-        font-weight: 600 !important;
-        width: auto !important;
-        height: auto !important;
-        padding: 0 !important;
-        border-radius: 0 !important;
-      }
-
-      .day-number-current {
-        color: #0f172a !important;
-      }
-    }
-  </style>
+        /* Screen-specific utility scrollbars */
+        .month-tabs-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .month-tabs-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .month-tabs-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .month-tabs-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Smooth mobile horizontal scrolling without clipping */
+        .month-tabs-scroll {
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+    </style>
 </head>
-<body class="min-h-screen antialiased selection:bg-blue-100">
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col overflow-x-hidden">
 
-  <div id="app-container" class="max-w-6xl mx-auto px-2 sm:px-6 py-3 sm:py-6">
+    <!-- Top Navigation / Action Bar (Hidden when Printing) -->
+    <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
+                <!-- Branding / Title -->
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <div class="bg-blue-600 text-white p-2 sm:p-2.5 rounded-xl shadow-md flex-shrink-0">
+                        <i class="fa-solid font-bold fa-calendar-days text-base sm:text-xl"></i>
+                    </div>
+                    <div class="truncate">
+                        <h1 class="font-bold text-sm sm:text-lg text-slate-900 leading-tight truncate">UGG Knightsbridge Planner</h1>
+                    </div>
+                </div>
 
-    <!-- Header Section -->
-    <header class="flex flex-col items-center text-center mb-3 sm:mb-5">
-      <div class="flex items-center justify-center gap-2">
-        <h1 id="current-month-title" class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-          November 2026
-        </h1>
-        <!-- Live Cloud Sync Status Badge -->
-        <span id="sync-status-badge" class="no-print inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200 transition-colors">
-          <span id="sync-status-dot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-          <span id="sync-status-text">Local Mode</span>
-        </span>
-      </div>
-      <p class="text-xs sm:text-sm font-medium text-slate-500 tracking-wide uppercase mt-0.5">
-        UGG Knightsbridge
-      </p>
+                <!-- Main Action Buttons -->
+                <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+                    <!-- Subtle Cloud Sync Status Pill -->
+                    <span id="cloud-sync-pill" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                        <span id="cloud-sync-dot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                        <span id="cloud-sync-text" class="hidden sm:inline">Local</span>
+                    </span>
 
-      <!-- Action Toolbar -->
-      <div class="no-print flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-3 w-full">
-        <button id="prev-month-btn" type="button" aria-label="Previous Month"
-          class="min-h-[40px] px-3 py-1.5 text-xs sm:text-sm font-medium bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition">
-          &larr; Prev
-        </button>
+                    <button id="add-event-btn" class="flex items-center gap-1.5 sm:gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg transition-all shadow-sm hover:shadow active:scale-95 text-xs sm:text-sm min-h-[40px]">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>Add<span class="hidden xs:inline"> Event</span></span>
+                    </button>
 
-        <button id="today-btn" type="button"
-          class="min-h-[40px] px-3.5 py-1.5 text-xs sm:text-sm font-semibold bg-slate-900 text-white rounded-lg hover:bg-slate-800 active:bg-slate-700 transition">
-          Today
-        </button>
+                    <button onclick="window.print()" class="flex items-center gap-1.5 sm:gap-2 bg-slate-800 hover:bg-slate-900 text-white font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg transition-all shadow-sm hover:shadow active:scale-95 text-xs sm:text-sm min-h-[40px]" title="Save as PDF">
+                        <i class="fa-solid fa-file-pdf text-xs"></i>
+                        <span class="hidden sm:inline">Save as PDF</span>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-        <button id="next-month-btn" type="button" aria-label="Next Month"
-          class="min-h-[40px] px-3 py-1.5 text-xs sm:text-sm font-medium bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition">
-          Next &rarr;
-        </button>
+        <!-- Month Navigation Tabs Horizontal Scroll bar -->
+        <div class="bg-slate-50 border-t border-b border-slate-200 py-2 px-3 sm:px-4 no-print">
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+                <!-- Prev/Today/Next Quick Nav -->
+                <div class="flex items-center justify-center gap-1.5 flex-shrink-0 w-full sm:w-auto">
+                    <button id="prev-month-btn" class="p-2.5 sm:p-1.5 text-slate-600 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-sm transition min-w-[40px] min-h-[40px] sm:min-w-0 sm:min-h-0 flex items-center justify-center" title="Previous Month">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button id="today-btn" class="px-4 py-2 sm:px-2.5 sm:py-1 text-slate-700 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-xs font-semibold transition min-h-[40px] sm:min-h-0">
+                        Today
+                    </button>
+                    <button id="next-month-btn" class="p-2.5 sm:p-1.5 text-slate-600 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-sm transition min-w-[40px] min-h-[40px] sm:min-w-0 sm:min-h-0 flex items-center justify-center" title="Next Month">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
 
-        <div class="hidden sm:block h-5 w-px bg-slate-200 mx-1"></div>
-
-        <button id="add-event-header-btn" type="button"
-          class="min-h-[40px] px-3.5 py-1.5 text-xs sm:text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition shadow-sm">
-          + Event
-        </button>
-
-        <button id="print-pdf-btn" type="button"
-          class="min-h-[40px] px-3 py-1.5 text-xs sm:text-sm font-medium bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition">
-          Save PDF
-        </button>
-
-        <button id="save-backup-btn" type="button"
-          class="min-h-[40px] px-3 py-1.5 text-xs sm:text-sm font-medium bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition">
-          Save Backup
-        </button>
-
-        <label for="restore-file-input"
-          class="min-h-[40px] inline-flex items-center justify-center px-3 py-1.5 text-xs sm:text-sm font-medium bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition cursor-pointer select-none">
-          Restore Backup
-          <input id="restore-file-input" type="file" accept=".json,application/json,text/plain" class="sr-only" />
-        </label>
-      </div>
-
-      <!-- Centered Month Navigation Strip -->
-      <nav id="month-tabs" aria-label="Month Navigation"
-        class="no-print flex items-center justify-start sm:justify-center gap-1.5 overflow-x-auto no-scrollbar w-full mt-3 pb-1 px-1">
-      </nav>
+                <!-- Horizontal Month Tabs -->
+                <div id="month-tabs" class="month-tabs-scroll flex items-center gap-1.5 overflow-x-auto py-1 w-full sm:w-auto justify-start sm:justify-center px-1">
+                    <!-- Tabs injected dynamically -->
+                </div>
+            </div>
+        </div>
     </header>
 
-    <!-- Calendar Card -->
-    <main id="calendar-card" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-      <!-- Weekday Header -->
-      <div id="weekday-header" class="grid grid-cols-7 bg-slate-50 border-b border-slate-200 text-center text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500">
-        <div class="py-2 sm:py-2.5 border-r border-slate-100"><span class="sm:hidden">M</span><span class="hidden sm:inline">Mon</span></div>
-        <div class="py-2 sm:py-2.5 border-r border-slate-100"><span class="sm:hidden">T</span><span class="hidden sm:inline">Tue</span></div>
-        <div class="py-2 sm:py-2.5 border-r border-slate-100"><span class="sm:hidden">W</span><span class="hidden sm:inline">Wed</span></div>
-        <div class="py-2 sm:py-2.5 border-r border-slate-100"><span class="sm:hidden">T</span><span class="hidden sm:inline">Thu</span></div>
-        <div class="py-2 sm:py-2.5 border-r border-slate-100"><span class="sm:hidden">F</span><span class="hidden sm:inline">Fri</span></div>
-        <div class="py-2 sm:py-2.5 border-r border-slate-100"><span class="sm:hidden">S</span><span class="hidden sm:inline">Sat</span></div>
-        <div class="py-2 sm:py-2.5"><span class="sm:hidden">S</span><span class="hidden sm:inline">Sun</span></div>
-      </div>
+    <!-- Main Printable Calendar Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-2 sm:p-6 lg:p-8 page-container">
+        <div id="calendar-touch-area" class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[540px] sm:min-h-[750px]">
+            <!-- Calendar Month Title & Year Header -->
+            <div class="p-3.5 sm:p-6 border-b border-slate-200 flex flex-row justify-between items-center bg-slate-50/50 gap-2">
+                <div>
+                    <h2 id="current-month-display" class="text-xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                        November 2026
+                    </h2>
+                    <p class="text-xs text-slate-500 font-medium">UGG Knightsbridge</p>
+                </div>
+                <span class="no-print sm:hidden text-[11px] text-slate-400 flex items-center gap-1">
+                    <i class="fa-solid fa-hand-pointer text-[10px]"></i> Swipe months
+                </span>
+            </div>
 
-      <!-- 7-Column Day Grid -->
-      <div id="calendar-grid" class="grid grid-cols-7 divide-x divide-y divide-slate-100"></div>
+            <!-- Days of Week Header -->
+            <div class="grid grid-cols-7 border-b border-slate-200 bg-slate-100/70 text-center text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-600 py-2 sm:py-2.5">
+                <div><span class="hidden sm:inline">Mon</span><span class="sm:hidden">M</span></div>
+                <div><span class="hidden sm:inline">Tue</span><span class="sm:hidden">T</span></div>
+                <div><span class="hidden sm:inline">Wed</span><span class="sm:hidden">W</span></div>
+                <div><span class="hidden sm:inline">Thu</span><span class="sm:hidden">T</span></div>
+                <div><span class="hidden sm:inline">Fri</span><span class="sm:hidden">F</span></div>
+                <div><span class="hidden sm:inline">Sat</span><span class="sm:hidden">S</span></div>
+                <div><span class="hidden sm:inline">Sun</span><span class="sm:hidden">S</span></div>
+            </div>
+
+            <!-- Calendar Days Grid -->
+            <div id="calendar-days-grid" class="calendar-grid grid grid-cols-7 flex-1">
+                <!-- Day cells injected dynamically -->
+            </div>
+        </div>
+
+        <!-- Backup & Restore Actions Footer (Hidden when printing) -->
+        <div class="no-print mt-4 sm:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 p-3.5 sm:p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-center sm:justify-start gap-2 text-slate-600 text-xs sm:text-sm font-medium">
+                <i class="fa-solid fa-database text-blue-600"></i>
+                <span>Data & Backup Management</span>
+            </div>
+            <div class="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-3">
+                <button id="save-backup-btn" class="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm border border-slate-300 transition active:scale-95 min-h-[42px]">
+                    <i class="fa-solid fa-download text-xs text-blue-600"></i>
+                    <span>Save Backup</span>
+                </button>
+                <label for="restore-file-input" id="restore-backup-btn" class="cursor-pointer flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm border border-slate-300 transition active:scale-95 min-h-[42px] relative overflow-hidden">
+                    <i class="fa-solid fa-upload text-xs text-blue-600"></i>
+                    <span>Restore Backup</span>
+                    <input type="file" id="restore-file-input" accept=".json,application/json,text/plain" class="sr-only">
+                </label>
+            </div>
+        </div>
     </main>
 
-  </div>
-
-  <!-- Toast Notification -->
-  <div id="toast-banner" class="no-print fixed bottom-5 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-medium shadow-lg transition-opacity duration-200"></div>
-
-  <!-- Add / Edit Event Modal -->
-  <div id="event-modal" class="no-print fixed inset-0 z-40 hidden bg-slate-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-6 max-h-[92vh] overflow-y-auto">
-      <div class="flex items-center justify-between mb-4">
-        <h2 id="modal-title" class="text-lg font-bold text-slate-900">Add Event</h2>
-        <button id="close-modal-btn" type="button" class="w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 text-xl leading-none">&times;</button>
-      </div>
-
-      <form id="event-form" class="space-y-4">
-        <input type="hidden" id="event-id" />
-        <input type="hidden" id="event-group-id" />
-
-        <div>
-          <label for="event-title" class="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1">Event Title</label>
-          <input id="event-title" type="text" required placeholder="e.g., Store Delivery, Shift, Staff Meeting"
-            class="w-full px-3.5 py-2.5 text-base sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label for="event-start" class="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1">Start Date</label>
-            <input id="event-start" type="date" required
-              class="w-full px-3 py-2.5 text-base sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <div>
-            <label for="event-end" class="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1">End Date</label>
-            <input id="event-end" type="date" required
-              class="w-full px-3 py-2.5 text-base sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label for="event-time" class="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1">Time (Optional)</label>
-            <input id="event-time" type="text" placeholder="e.g., 09:00 - 17:30"
-              class="w-full px-3 py-2.5 text-base sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <div>
-            <label for="event-repeat" class="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1">Repeat</label>
-            <select id="event-repeat"
-              class="w-full px-3 py-2.5 text-base sm:text-sm border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="none">Does not repeat</option>
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="biweekly">Bi-weekly (Every 2 weeks)</option>
-              <option value="monthly">Monthly</option>
-              <option value="yearly">Yearly</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1.5">Tag Color</label>
-          <div id="color-picker" class="flex flex-wrap gap-2"></div>
-        </div>
-
-        <div>
-          <label for="event-notes" class="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1">Notes (Optional)</label>
-          <textarea id="event-notes" rows="2" placeholder="Additional details..."
-            class="w-full px-3.5 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-        </div>
-
-        <div class="flex items-center justify-between pt-2 gap-2">
-          <button id="delete-event-btn" type="button"
-            class="hidden min-h-[44px] px-4 py-2 text-sm font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl transition">
-            Delete
-          </button>
-          <div class="flex items-center gap-2 ml-auto">
-            <button id="cancel-modal-btn" type="button"
-              class="min-h-[44px] px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
-              Cancel
-            </button>
-            <button type="submit"
-              class="min-h-[44px] px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition">
-              Save Event
-            </button>
-          </div>
-        </div>
-      </form>
+    <!-- Status Toast Notification -->
+    <div id="status-toast" class="no-print hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 transition-opacity duration-300">
+        <i id="status-toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="status-toast-msg">Backup restored</span>
     </div>
-  </div>
 
-  <!-- Recurring Event Delete Confirmation Modal -->
-  <div id="delete-recurring-modal" class="no-print fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-6">
-      <h3 class="text-base font-bold text-slate-900">Delete Recurring Event</h3>
-      <p class="text-xs sm:text-sm text-slate-500 mt-1 mb-4">This event repeats. Which occurrences would you like to delete?</p>
-      <div class="flex flex-col gap-2">
-        <button id="del-single-btn" type="button"
-          class="w-full min-h-[44px] px-4 py-2.5 text-sm font-medium text-left text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition">
-          Only this event
-        </button>
-        <button id="del-following-btn" type="button"
-          class="w-full min-h-[44px] px-4 py-2.5 text-sm font-medium text-left text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition">
-          This and following events
-        </button>
-        <button id="del-all-btn" type="button"
-          class="w-full min-h-[44px] px-4 py-2.5 text-sm font-semibold text-left text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition">
-          All events in series
-        </button>
-        <button id="cancel-delete-modal-btn" type="button"
-          class="w-full min-h-[42px] mt-1 px-4 py-2 text-sm font-medium text-center text-slate-500 hover:text-slate-700 rounded-xl transition">
-          Cancel
-        </button>
-      </div>
+    <!-- Add / Edit Event Modal -->
+    <div id="event-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto transform transition-all">
+            <!-- Modal Header -->
+            <div class="px-5 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center sticky top-0 z-10">
+                <h3 id="modal-title" class="font-bold text-slate-900 text-base sm:text-lg">Add All-Day Event</h3>
+                <button id="close-modal-btn" class="text-slate-400 hover:text-slate-600 transition p-2 min-w-[40px] min-h-[40px] flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Event Form -->
+            <form id="event-form" class="p-5 sm:p-6 space-y-4">
+                <input type="hidden" id="event-id">
+                <input type="hidden" id="event-color" value="blue">
+
+                <!-- Title -->
+                <div>
+                    <label for="event-title" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                        Event Title
+                    </label>
+                    <input type="text" id="event-title" required placeholder="e.g. Annual Strategy Retreat" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+
+                <!-- Date Range Inputs -->
+                <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="event-start-date" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                            Start Date
+                        </label>
+                        <input type="date" id="event-start-date" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                    <div>
+                        <label for="event-end-date" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                            End Date
+                        </label>
+                        <input type="date" id="event-end-date" required class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                </div>
+
+                <!-- Recurrence Options -->
+                <div>
+                    <label for="event-recurrence" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                        Repeat Event
+                    </label>
+                    <select id="event-recurrence" class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white">
+                        <option value="none">Does not repeat</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Every Week</option>
+                        <option value="biweekly">Every 2 Weeks</option>
+                        <option value="monthly">Every Month</option>
+                        <option value="yearly">Every Year</option>
+                    </select>
+                </div>
+
+                <!-- Color Palette Options -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                        Color Tag
+                    </label>
+                    <div id="color-picker-options" class="flex flex-wrap items-center gap-2 sm:gap-2.5">
+                        <!-- Color swatches injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-slate-100">
+                    <button type="button" id="delete-event-btn" class="hidden text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold px-3 py-2.5 rounded-lg hover:bg-red-50 transition min-h-[42px]">
+                        <i class="fa-regular fa-trash-can mr-1"></i> Delete
+                    </button>
+                    <div class="flex gap-2 ml-auto">
+                        <button type="button" id="cancel-modal-btn" class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition min-h-[42px]">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition shadow-sm min-h-[42px]">
+                            Save Event
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // =========================================================================
-    // JSONBIN.IO CLOUD SYNC CONFIGURATION (PASTE YOUR CREDENTIALS BELOW)
-    // =========================================================================
-    const JSONBIN_BIN_ID = "https://api.jsonbin.io/v3/b/6afd5ef7ffd5d16053cab40b";         // e.g. "673a9f2be41b4d34e4567890"
-    const JSONBIN_MASTER_KEY = "$2a$10$NXHdVDMaEkbCrNMVAHPPPOIcfzSikYi7fu.R7x7SRw2wP7GNxQvjy"; // e.g. "$2a$10$..."
-    // =========================================================================
+    <!-- Recurring Delete Prompt Modal -->
+    <div id="delete-recurring-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 w-full max-w-sm overflow-hidden p-5 sm:p-6 text-center">
+            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <h3 class="font-bold text-slate-900 text-lg mb-2">Delete Repeating Event</h3>
+            <p class="text-xs text-slate-500 mb-6">This event is part of a recurring series. Which events would you like to delete?</p>
+            
+            <div class="space-y-2.5">
+                <button id="delete-single-btn" class="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 rounded-lg text-sm font-medium transition text-left flex items-center justify-between min-h-[44px]">
+                    <span>Only this event</span>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                </button>
+                <button id="delete-following-btn" class="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 rounded-lg text-sm font-medium transition text-left flex items-center justify-between min-h-[44px]">
+                    <span>This and following events</span>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                </button>
+                <button id="delete-all-btn" class="w-full py-3 px-4 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-lg text-sm font-medium transition text-left flex items-center justify-between shadow-xs min-h-[44px]">
+                    <span>All events in series</span>
+                    <i class="fa-solid fa-chevron-right text-xs text-red-200"></i>
+                </button>
+            </div>
 
-    const STORAGE_KEY = "ugg_knightsbridge_planner_events_v1";
-    const SERIES_END_LIMIT = "2027-12-31";
+            <button id="cancel-delete-modal-btn" class="mt-4 py-2 px-4 text-xs font-semibold text-slate-500 hover:text-slate-800 transition min-h-[40px]">
+                Cancel
+            </button>
+        </div>
+    </div>
 
-    const MONTHS = [
-      { year: 2026, month: 10, label: "Nov 2026", full: "November 2026" },
-      { year: 2026, month: 11, label: "Dec 2026", full: "December 2026" },
-      { year: 2027, month: 0,  label: "Jan 2027", full: "January 2027" },
-      { year: 2027, month: 1,  label: "Feb 2027", full: "February 2027" },
-      { year: 2027, month: 2,  label: "Mar 2027", full: "March 2027" },
-      { year: 2027, month: 3,  label: "Apr 2027", full: "April 2027" },
-      { year: 2027, month: 4,  label: "May 2027", full: "May 2027" },
-      { year: 2027, month: 5,  label: "Jun 2027", full: "June 2027" },
-      { year: 2027, month: 6,  label: "Jul 2027", full: "July 2027" },
-      { year: 2027, month: 7,  label: "Aug 2027", full: "August 2027" },
-      { year: 2027, month: 8,  label: "Sep 2027", full: "September 2027" },
-      { year: 2027, month: 9,  label: "Oct 2027", full: "October 2027" },
-      { year: 2027, month: 10, label: "Nov 2027", full: "November 2027" },
-      { year: 2027, month: 11, label: "Dec 2027", full: "December 2027" }
-    ];
+    <!-- Application Script -->
+    <script>
+        // =========================================================================
+        // JSONBIN.IO CLOUD SYNC CONFIGURATION (PASTE YOUR CREDENTIALS BELOW)
+        // =========================================================================
+        const JSONBIN_BIN_ID = "https://api.jsonbin.io/v3/b/6afd5ef7ffd5d16053cab40b";         // e.g. "673a9f2be41b4d34e4567890"
+        const JSONBIN_MASTER_KEY = "$2a$10$NXHdVDMaEkbCrNMVAHPPPOIcfzSikYi7fu.R7x7SRw2wP7GNxQvjy"; // e.g. "$2a$10$..."
+        // =========================================================================
 
-    const COLORS = [
-      { id: "blue",    name: "Blue",    swatch: "#2563eb" },
-      { id: "emerald", name: "Emerald", swatch: "#059669" },
-      { id: "purple",  name: "Purple",  swatch: "#9333ea" },
-      { id: "amber",   name: "Amber",   swatch: "#d97706" },
-      { id: "rose",    name: "Rose",    swatch: "#e11d48" },
-      { id: "indigo",  name: "Indigo",  swatch: "#4f46e5" },
-      { id: "teal",    name: "Teal",    swatch: "#0d9488" },
-      { id: "cyan",    name: "Cyan",    swatch: "#0891b2" },
-      { id: "violet",  name: "Violet",  swatch: "#7c3aed" },
-      { id: "pink",    name: "Pink",    swatch: "#db2777" },
-      { id: "orange",  name: "Orange",  swatch: "#ea580c" },
-      { id: "slate",   name: "Slate",   swatch: "#475569" }
-    ];
+        // Calendar Configuration & State
+        const START_YEAR = 2026;
+        const START_MONTH = 10; // November (0-indexed)
+        const END_YEAR = 2027;
+        const END_MONTH = 11; // December (0-indexed)
 
-    let activeMonthIndex = 0;
-    let selectedColor = "blue";
-    let events = [];
-    let pendingDeleteEvent = null;
+        // Color Palette Definitions (12 Hues)
+        const COLOR_PALETTE = [
+            { id: 'blue', bg: 'bg-blue-100', text: 'text-blue-800', border: 'border-blue-400', dot: 'bg-blue-600' },
+            { id: 'emerald', bg: 'bg-emerald-100', text: 'text-emerald-800', border: 'border-emerald-400', dot: 'bg-emerald-600' },
+            { id: 'purple', bg: 'bg-purple-100', text: 'text-purple-800', border: 'border-purple-400', dot: 'bg-purple-600' },
+            { id: 'amber', bg: 'bg-amber-100', text: 'text-amber-800', border: 'border-amber-400', dot: 'bg-amber-600' },
+            { id: 'rose', bg: 'bg-rose-100', text: 'text-rose-800', border: 'border-rose-400', dot: 'bg-rose-600' },
+            { id: 'indigo', bg: 'bg-indigo-100', text: 'text-indigo-800', border: 'border-indigo-400', dot: 'bg-indigo-600' },
+            { id: 'teal', bg: 'bg-teal-100', text: 'text-teal-800', border: 'border-teal-400', dot: 'bg-teal-600' },
+            { id: 'cyan', bg: 'bg-cyan-100', text: 'text-cyan-800', border: 'border-cyan-400', dot: 'bg-cyan-600' },
+            { id: 'violet', bg: 'bg-violet-100', text: 'text-violet-800', border: 'border-violet-400', dot: 'bg-violet-600' },
+            { id: 'pink', bg: 'bg-pink-100', text: 'text-pink-800', border: 'border-pink-400', dot: 'bg-pink-600' },
+            { id: 'orange', bg: 'bg-orange-100', text: 'text-orange-800', border: 'border-orange-400', dot: 'bg-orange-600' },
+            { id: 'slate', bg: 'bg-slate-200', text: 'text-slate-800', border: 'border-slate-400', dot: 'bg-slate-600' }
+        ];
 
-    const $ = (id) => document.getElementById(id);
+        // Active State
+        let currentViewDate = new Date(2026, 10, 1); // Start at Nov 2026
+        let events = [];
+        let activeEditEvent = null;
 
-    function isCloudConfigured() {
-      return (
-        JSONBIN_BIN_ID &&
-        JSONBIN_MASTER_KEY &&
-        JSONBIN_BIN_ID !== "YOUR_BIN_ID_HERE" &&
-        JSONBIN_MASTER_KEY !== "YOUR_MASTER_KEY_HERE"
-      );
-    }
+        // DOM Element Cache
+        const monthTabsContainer = document.getElementById('month-tabs');
+        const currentMonthDisplay = document.getElementById('current-month-display');
+        const calendarGrid = document.getElementById('calendar-days-grid');
+        const eventModal = document.getElementById('event-modal');
+        const deleteRecurringModal = document.getElementById('delete-recurring-modal');
+        const eventForm = document.getElementById('event-form');
+        const colorPickerContainer = document.getElementById('color-picker-options');
+        const deleteEventBtn = document.getElementById('delete-event-btn');
 
-    function updateSyncBadge(state, label) {
-      const dot = $("sync-status-dot");
-      const text = $("sync-status-text");
-      if (!dot || !text) return;
-
-      text.textContent = label;
-      dot.className = "w-1.5 h-1.5 rounded-full ";
-      if (state === "synced") {
-        dot.className += "bg-emerald-500";
-      } else if (state === "syncing") {
-        dot.className += "bg-amber-400 animate-pulse";
-      } else if (state === "error") {
-        dot.className += "bg-rose-500";
-      } else {
-        dot.className += "bg-slate-400";
-      }
-    }
-
-    function showToast(message) {
-      const toast = $("toast-banner");
-      if (!toast) return;
-      toast.textContent = message;
-      toast.classList.remove("hidden");
-      clearTimeout(toast._timer);
-      toast._timer = setTimeout(() => {
-        toast.classList.add("hidden");
-      }, 3200);
-    }
-
-    // Load from localStorage first for instant display
-    function loadLocalEvents() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        events = raw ? JSON.parse(raw) : [];
-        if (!Array.isArray(events)) events = [];
-      } catch {
-        events = [];
-      }
-    }
-
-    // Pull latest events from JSONBin.io
-    async function pullFromCloud() {
-      if (!isCloudConfigured()) {
-        updateSyncBadge("local", "Local Storage");
-        return;
-      }
-
-      updateSyncBadge("syncing", "Syncing...");
-      try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-          method: "GET",
-          headers: {
-            "X-Master-Key": JSONBIN_MASTER_KEY
-          }
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        const remoteEvents = Array.isArray(data?.record?.events)
-          ? data.record.events
-          : Array.isArray(data?.record)
-          ? data.record
-          : null;
-
-        if (remoteEvents !== null) {
-          events = remoteEvents;
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-          renderCalendar();
-        }
-        updateSyncBadge("synced", "Cloud Synced");
-      } catch (err) {
-        console.error("JSONBin pull error:", err);
-        updateSyncBadge("error", "Sync Offline");
-      }
-    }
-
-    // Push updated events to JSONBin.io
-    async function pushToCloud() {
-      if (!isCloudConfigured()) return;
-
-      updateSyncBadge("syncing", "Saving...");
-      try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Master-Key": JSONBIN_MASTER_KEY
-          },
-          body: JSON.stringify({
-            updatedAt: new Date().toISOString(),
-            events
-          })
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        updateSyncBadge("synced", "Cloud Synced");
-      } catch (err) {
-        console.error("JSONBin push error:", err);
-        updateSyncBadge("error", "Sync Offline");
-        showToast("Saved locally (Cloud sync offline)");
-      }
-    }
-
-    function saveEvents() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-      pushToCloud();
-    }
-
-    function formatDateKey(dateObj) {
-      const y = dateObj.getFullYear();
-      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
-      const d = String(dateObj.getDate()).padStart(2, "0");
-      return `${y}-${m}-${d}`;
-    }
-
-    function parseDateKey(str) {
-      return new Date(`${str}T00:00:00`);
-    }
-
-    function getEventDurationDays(evt) {
-      const start = parseDateKey(evt.startDate);
-      const end = parseDateKey(evt.endDate || evt.startDate);
-      const diff = Math.round((end - start) / (1000 * 60 * 60 * 24));
-      return Math.max(1, diff + 1);
-    }
-
-    function generateRecurringEvents(baseEvent) {
-      const repeat = baseEvent.repeat || "none";
-      const startObj = parseDateKey(baseEvent.startDate);
-      const endObj = parseDateKey(baseEvent.endDate || baseEvent.startDate);
-      const spanDays = Math.max(0, Math.round((endObj - startObj) / (1000 * 60 * 60 * 24)));
-      const groupId = baseEvent.groupId || `grp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-
-      if (repeat === "none") {
-        return [{
-          ...baseEvent,
-          id: baseEvent.id || `evt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-          groupId: null,
-          repeat: "none"
-        }];
-      }
-
-      const generated = [];
-      const limitObj = parseDateKey(SERIES_END_LIMIT);
-      let index = 0;
-
-      while (true) {
-        const currentStart = new Date(startObj);
-        if (repeat === "daily") {
-          currentStart.setDate(startObj.getDate() + index);
-        } else if (repeat === "weekly") {
-          currentStart.setDate(startObj.getDate() + index * 7);
-        } else if (repeat === "biweekly") {
-          currentStart.setDate(startObj.getDate() + index * 14);
-        } else if (repeat === "monthly") {
-          currentStart.setMonth(startObj.getMonth() + index);
-        } else if (repeat === "yearly") {
-          currentStart.setFullYear(startObj.getFullYear() + index);
+        function isCloudConfigured() {
+            return (
+                JSONBIN_BIN_ID &&
+                JSONBIN_MASTER_KEY &&
+                JSONBIN_BIN_ID !== "YOUR_BIN_ID_HERE" &&
+                JSONBIN_MASTER_KEY !== "YOUR_MASTER_KEY_HERE"
+            );
         }
 
-        if (currentStart > limitObj || index > 800) break;
-
-        const currentEnd = new Date(currentStart);
-        currentEnd.setDate(currentStart.getDate() + spanDays);
-
-        generated.push({
-          ...baseEvent,
-          id: `evt_${Date.now()}_${index}_${Math.random().toString(36).slice(2, 7)}`,
-          groupId,
-          startDate: formatDateKey(currentStart),
-          endDate: formatDateKey(currentEnd),
-          repeat
-        });
-
-        index++;
-      }
-
-      return generated;
-    }
-
-    function buildMonthTabs() {
-      const container = $("month-tabs");
-      if (!container) return;
-      container.innerHTML = "";
-
-      MONTHS.forEach((m, idx) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = m.label;
-        const isActive = idx === activeMonthIndex;
-        btn.className = isActive
-          ? "shrink-0 min-h-[36px] px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-900 text-white shadow-xs transition"
-          : "shrink-0 min-h-[36px] px-3 py-1.5 text-xs font-medium rounded-lg bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition";
-
-        btn.addEventListener("click", () => {
-          activeMonthIndex = idx;
-          renderCalendar();
-        });
-
-        container.appendChild(btn);
-      });
-
-      const activeBtn = container.children[activeMonthIndex];
-      if (activeBtn) {
-        activeBtn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-      }
-    }
-
-    function renderCalendar() {
-      const current = MONTHS[activeMonthIndex];
-      const titleEl = $("current-month-title");
-      if (titleEl) titleEl.textContent = current.full;
-
-      buildMonthTabs();
-
-      const grid = $("calendar-grid");
-      if (!grid) return;
-      grid.innerHTML = "";
-
-      const firstDayOfMonth = new Date(current.year, current.month, 1);
-      const startWeekday = (firstDayOfMonth.getDay() + 6) % 7; // Monday = 0
-      const daysInMonth = new Date(current.year, current.month + 1, 0).getDate();
-      const totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
-
-      const todayStr = formatDateKey(new Date());
-
-      for (let i = 0; i < totalCells; i++) {
-        const dayNum = i - startWeekday + 1;
-        const cellDate = new Date(current.year, current.month, dayNum);
-        const dateKey = formatDateKey(cellDate);
-        const isCurrentMonth = dayNum >= 1 && dayNum <= daysInMonth;
-        const isToday = dateKey === todayStr;
-
-        const cell = document.createElement("div");
-        cell.className = `day-cell min-h-[82px] sm:min-h-[118px] p-1 sm:p-1.5 flex flex-col transition cursor-pointer ${
-          isCurrentMonth ? "bg-white hover:bg-slate-50/70" : "bg-slate-50/60 text-slate-400"
-        }`;
-
-        cell.addEventListener("click", (e) => {
-          if (e.target.closest(".event-pill")) return;
-          openAddModal(dateKey);
-        });
-
-        const topRow = document.createElement("div");
-        topRow.className = "flex items-center justify-between mb-1";
-
-        const badge = document.createElement("span");
-        badge.textContent = cellDate.getDate();
-        if (isToday) {
-          badge.className =
-            "is-today-badge inline-flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full bg-blue-600 text-white";
-        } else {
-          badge.className = `text-xs font-semibold px-1 ${
-            isCurrentMonth ? "day-number-current text-slate-700" : "text-slate-400"
-          }`;
-        }
-        topRow.appendChild(badge);
-        cell.appendChild(topRow);
-
-        const dayEvents = events.filter((evt) => {
-          const s = evt.startDate;
-          const e = evt.endDate || evt.startDate;
-          return dateKey >= s && dateKey <= e;
-        });
-
-        // Sort multi-day events to the top (longest duration first)
-        dayEvents.sort((a, b) => {
-          const durA = getEventDurationDays(a);
-          const durB = getEventDurationDays(b);
-          if (durB !== durA) return durB - durA;
-          return (a.time || "").localeCompare(b.time || "");
-        });
-
-        const list = document.createElement("div");
-        list.className = "flex flex-col gap-1 overflow-hidden";
-
-        dayEvents.forEach((evt) => {
-          const pill = document.createElement("button");
-          pill.type = "button";
-          pill.className = `event-pill evt-${evt.color || "blue"} w-full text-left px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] font-medium truncate leading-tight hover:opacity-90 transition`;
-          pill.textContent = evt.time ? `${evt.time} ${evt.title}` : evt.title;
-          pill.title = evt.title;
-
-          pill.addEventListener("click", (e) => {
-            e.stopPropagation();
-            openEditModal(evt);
-          });
-
-          list.appendChild(pill);
-        });
-
-        cell.appendChild(list);
-        grid.appendChild(cell);
-      }
-    }
-
-    function renderColorPicker() {
-      const container = $("color-picker");
-      if (!container) return;
-      container.innerHTML = "";
-
-      COLORS.forEach((c) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.title = c.name;
-        btn.style.backgroundColor = c.swatch;
-        const isSelected = selectedColor === c.id;
-        btn.className = `w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold transition transform ${
-          isSelected ? "ring-2 ring-offset-2 ring-slate-900 scale-105" : "opacity-85 hover:opacity-100"
-        }`;
-        btn.innerHTML = isSelected ? "&#10003;" : "";
-
-        btn.addEventListener("click", () => {
-          selectedColor = c.id;
-          renderColorPicker();
-        });
-
-        container.appendChild(btn);
-      });
-    }
-
-    function openAddModal(defaultDate) {
-      $("modal-title").textContent = "Add Event";
-      $("event-id").value = "";
-      $("event-group-id").value = "";
-      $("event-title").value = "";
-      $("event-start").value = defaultDate || `${MONTHS[activeMonthIndex].year}-${String(MONTHS[activeMonthIndex].month + 1).padStart(2, "0")}-01`;
-      $("event-end").value = $("event-start").value;
-      $("event-time").value = "";
-      $("event-repeat").value = "none";
-      $("event-notes").value = "";
-      selectedColor = "blue";
-      renderColorPicker();
-      $("delete-event-btn").classList.add("hidden");
-      $("event-modal").classList.remove("hidden");
-    }
-
-    function openEditModal(evt) {
-      $("modal-title").textContent = "Edit Event";
-      $("event-id").value = evt.id;
-      $("event-group-id").value = evt.groupId || "";
-      $("event-title").value = evt.title || "";
-      $("event-start").value = evt.startDate;
-      $("event-end").value = evt.endDate || evt.startDate;
-      $("event-time").value = evt.time || "";
-      $("event-repeat").value = evt.repeat || "none";
-      $("event-notes").value = evt.notes || "";
-      selectedColor = evt.color || "blue";
-      renderColorPicker();
-      $("delete-event-btn").classList.remove("hidden");
-      $("event-modal").classList.remove("hidden");
-    }
-
-    function closeModal() {
-      $("event-modal").classList.add("hidden");
-    }
-
-    function closeDeleteModal() {
-      $("delete-recurring-modal").classList.add("hidden");
-      pendingDeleteEvent = null;
-    }
-
-    function handleSaveEvent(e) {
-      e.preventDefault();
-      const existingId = $("event-id").value;
-      const existingGroupId = $("event-group-id").value;
-      const title = $("event-title").value.trim();
-      const startDate = $("event-start").value;
-      let endDate = $("event-end").value || startDate;
-      if (endDate < startDate) endDate = startDate;
-      const time = $("event-time").value.trim();
-      const repeat = $("event-repeat").value;
-      const notes = $("event-notes").value.trim();
-
-      if (!title || !startDate) return;
-
-      // Remove old instance or entire series so frequency updates apply automatically across all events
-      if (existingGroupId) {
-        events = events.filter((item) => item.groupId !== existingGroupId);
-      } else if (existingId) {
-        events = events.filter((item) => item.id !== existingId);
-      }
-
-      const newItems = generateRecurringEvents({
-        title,
-        startDate,
-        endDate,
-        time,
-        repeat,
-        color: selectedColor,
-        notes,
-        groupId: repeat !== "none" ? (existingGroupId || `grp_${Date.now()}`) : null
-      });
-
-      events.push(...newItems);
-      saveEvents();
-      renderCalendar();
-      closeModal();
-    }
-
-    function handleDeleteClick() {
-      const existingId = $("event-id").value;
-      const evt = events.find((item) => item.id === existingId);
-      if (!evt) return;
-
-      if (evt.groupId) {
-        pendingDeleteEvent = evt;
-        $("delete-recurring-modal").classList.remove("hidden");
-      } else {
-        events = events.filter((item) => item.id !== evt.id);
-        saveEvents();
-        renderCalendar();
-        closeModal();
-      }
-    }
-
-    function jumpToToday() {
-      const now = new Date();
-      const idx = MONTHS.findIndex((m) => m.year === now.getFullYear() && m.month === now.getMonth());
-      activeMonthIndex = idx >= 0 ? idx : 0;
-      renderCalendar();
-    }
-
-    function downloadBackup() {
-      const payload = JSON.stringify({ app: "UGG Knightsbridge Planner", exportedAt: new Date().toISOString(), events }, null, 2);
-      const blob = new Blob([payload], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `ugg-knightsbridge-backup-${formatDateKey(new Date())}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      showToast("Backup downloaded");
-    }
-
-    function extractEventsArray(rawText) {
-      let cleaned = rawText.replace(/^\uFEFF/, "").trim();
-      if (cleaned.startsWith("%7B") || cleaned.startsWith("%5B")) {
-        cleaned = decodeURIComponent(cleaned);
-      }
-      let parsed = JSON.parse(cleaned);
-      if (typeof parsed === "string") {
-        parsed = JSON.parse(parsed);
-      }
-      if (Array.isArray(parsed)) return parsed;
-      if (parsed && Array.isArray(parsed.events)) return parsed.events;
-      if (parsed && parsed.record && Array.isArray(parsed.record.events)) return parsed.record.events;
-      return null;
-    }
-
-    async function handleRestoreFile(e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-
-      try {
-        let text = "";
-        if (typeof file.text === "function") {
-          text = await file.text();
-        } else {
-          text = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(String(reader.result || ""));
-            reader.onerror = () => reject(reader.error);
-            reader.readAsText(file);
-          });
+        function setCloudSyncStatus(state, label) {
+            const dot = document.getElementById('cloud-sync-dot');
+            const text = document.getElementById('cloud-sync-text');
+            if (!dot || !text) return;
+            text.innerText = label;
+            dot.className = 'w-1.5 h-1.5 rounded-full ' + (
+                state === 'synced' ? 'bg-emerald-500' :
+                state === 'syncing' ? 'bg-amber-400 animate-pulse' :
+                state === 'error' ? 'bg-rose-500' :
+                'bg-slate-400'
+            );
         }
 
-        const restored = extractEventsArray(text);
-        if (!restored) throw new Error("Invalid format");
-
-        events = restored;
-        saveEvents();
-        renderCalendar();
-        showToast(`Restored ${events.length} event${events.length === 1 ? "" : "s"}`);
-      } catch {
-        showToast("Could not read backup file");
-      } finally {
-        e.target.value = "";
-      }
-    }
-
-    function setupSwipeGestures() {
-      const card = $("calendar-card");
-      if (!card) return;
-      let startX = 0;
-      let startY = 0;
-
-      card.addEventListener("touchstart", (e) => {
-        if (e.touches.length === 1) {
-          startX = e.touches[0].clientX;
-          startY = e.touches[0].clientY;
-        }
-      }, { passive: true });
-
-      card.addEventListener("touchend", (e) => {
-        if (!startX || !startY) return;
-        const endX = e.changedTouches[0].clientX;
-        const endY = e.changedTouches[0].clientY;
-        const dx = endX - startX;
-        const dy = endY - startY;
-
-        if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-          if (dx < 0 && activeMonthIndex < MONTHS.length - 1) {
-            activeMonthIndex++;
+        // Initializer
+        window.addEventListener('DOMContentLoaded', () => {
+            loadEventsFromStorage();
+            buildMonthTabs();
             renderCalendar();
-          } else if (dx > 0 && activeMonthIndex > 0) {
-            activeMonthIndex--;
-            renderCalendar();
-          }
+            setupColorPicker();
+            setupEventListeners();
+            pullEventsFromCloud();
+        });
+
+        // Load Events from LocalStorage
+        function loadEventsFromStorage() {
+            const stored = localStorage.getItem('calendar_all_day_events');
+            if (stored) {
+                try {
+                    events = JSON.parse(stored);
+                } catch (e) {
+                    console.error("Failed to parse stored events", e);
+                    events = [];
+                }
+            } else {
+                events = [];
+                try {
+                    localStorage.setItem('calendar_all_day_events', JSON.stringify(events));
+                } catch (e) {}
+            }
         }
-        startX = 0;
-        startY = 0;
-      }, { passive: true });
-    }
 
-    // Initialize Application
-    document.addEventListener("DOMContentLoaded", () => {
-      loadLocalEvents();
-      jumpToToday();
-      pullFromCloud();
-      setupSwipeGestures();
+        // Pull latest events from JSONBin.io
+        async function pullEventsFromCloud() {
+            if (!isCloudConfigured()) {
+                setCloudSyncStatus('local', 'Local');
+                return;
+            }
+            setCloudSyncStatus('syncing', 'Syncing...');
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Master-Key': JSONBIN_MASTER_KEY
+                    }
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                const cloudEvents = Array.isArray(data?.record?.events)
+                    ? data.record.events
+                    : Array.isArray(data?.record)
+                    ? data.record
+                    : null;
 
-      $("prev-month-btn")?.addEventListener("click", () => {
-        if (activeMonthIndex > 0) {
-          activeMonthIndex--;
-          renderCalendar();
+                if (cloudEvents !== null) {
+                    events = cloudEvents;
+                    localStorage.setItem('calendar_all_day_events', JSON.stringify(events));
+                    renderCalendar();
+                }
+                setCloudSyncStatus('synced', 'Synced');
+            } catch (e) {
+                console.error("JSONBin pull error:", e);
+                setCloudSyncStatus('error', 'Offline');
+            }
         }
-      });
 
-      $("next-month-btn")?.addEventListener("click", () => {
-        if (activeMonthIndex < MONTHS.length - 1) {
-          activeMonthIndex++;
-          renderCalendar();
+        // Push updated events to JSONBin.io
+        async function pushEventsToCloud() {
+            if (!isCloudConfigured()) return;
+            setCloudSyncStatus('syncing', 'Saving...');
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_MASTER_KEY
+                    },
+                    body: JSON.stringify({ events })
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                setCloudSyncStatus('synced', 'Synced');
+            } catch (e) {
+                console.error("JSONBin push error:", e);
+                setCloudSyncStatus('error', 'Offline');
+            }
         }
-      });
 
-      $("today-btn")?.addEventListener("click", jumpToToday);
-      $("add-event-header-btn")?.addEventListener("click", () => openAddModal());
-      $("print-pdf-btn")?.addEventListener("click", () => window.print());
-      $("save-backup-btn")?.addEventListener("click", downloadBackup);
-      $("restore-file-input")?.addEventListener("change", handleRestoreFile);
-
-      $("close-modal-btn")?.addEventListener("click", closeModal);
-      $("cancel-modal-btn")?.addEventListener("click", closeModal);
-      $("event-form")?.addEventListener("submit", handleSaveEvent);
-      $("delete-event-btn")?.addEventListener("click", handleDeleteClick);
-
-      $("event-start")?.addEventListener("change", (e) => {
-        if ($("event-end").value < e.target.value) {
-          $("event-end").value = e.target.value;
+        // Save Events to LocalStorage + Cloud
+        function saveEventsToStorage() {
+            try {
+                localStorage.setItem('calendar_all_day_events', JSON.stringify(events));
+            } catch (e) {
+                console.error("Failed to save events to storage", e);
+            }
+            pushEventsToCloud();
         }
-      });
 
-      // Recurring Delete Modal Actions
-      $("del-single-btn")?.addEventListener("click", () => {
-        if (!pendingDeleteEvent) return;
-        events = events.filter((item) => item.id !== pendingDeleteEvent.id);
-        saveEvents();
-        renderCalendar();
-        closeDeleteModal();
-        closeModal();
-      });
+        // Dynamically build month tabs from Nov 2026 to Dec 2027
+        function buildMonthTabs() {
+            if (!monthTabsContainer) return;
+            monthTabsContainer.innerHTML = '';
 
-      $("del-following-btn")?.addEventListener("click", () => {
-        if (!pendingDeleteEvent) return;
-        const cutoff = pendingDeleteEvent.startDate;
-        const gid = pendingDeleteEvent.groupId;
-        events = events.filter((item) => !(item.groupId === gid && item.startDate >= cutoff));
-        saveEvents();
-        renderCalendar();
-        closeDeleteModal();
-        closeModal();
-      });
+            const activeYear = currentViewDate.getFullYear();
+            const activeMonth = currentViewDate.getMonth();
 
-      $("del-all-btn")?.addEventListener("click", () => {
-        if (!pendingDeleteEvent) return;
-        const gid = pendingDeleteEvent.groupId;
-        events = events.filter((item) => item.groupId !== gid);
-        saveEvents();
-        renderCalendar();
-        closeDeleteModal();
-        closeModal();
-      });
+            let targetYear = START_YEAR;
+            let targetMonth = START_MONTH;
+            let activeTabEl = null;
 
-      $("cancel-delete-modal-btn")?.addEventListener("click", closeDeleteModal);
-    });
-  </script>
+            while (targetYear < END_YEAR || (targetYear === END_YEAR && targetMonth <= END_MONTH)) {
+                const dateObj = new Date(targetYear, targetMonth, 1);
+                const isSelected = targetYear === activeYear && targetMonth === activeMonth;
+
+                const tabBtn = document.createElement('button');
+                tabBtn.className = `px-3 py-2 sm:py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 min-h-[36px] sm:min-h-0 ${
+                    isSelected
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                }`;
+
+                const monthLabel = dateObj.toLocaleDateString('default', { month: 'short', year: '2-digit' });
+                tabBtn.innerText = monthLabel;
+
+                const tabYear = targetYear;
+                const tabMonth = targetMonth;
+
+                tabBtn.addEventListener('click', () => {
+                    currentViewDate = new Date(tabYear, tabMonth, 1);
+                    buildMonthTabs();
+                    renderCalendar();
+                });
+
+                monthTabsContainer.appendChild(tabBtn);
+                if (isSelected) {
+                    activeTabEl = tabBtn;
+                }
+
+                targetMonth++;
+                if (targetMonth > 11) {
+                    targetMonth = 0;
+                    targetYear++;
+                }
+            }
+
+            // Auto-scroll active tab into view smoothly on mobile
+            if (activeTabEl) {
+                requestAnimationFrame(() => {
+                    activeTabEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                });
+            }
+        }
+
+        // Main Calendar Render Logic
+        function renderCalendar() {
+            const year = currentViewDate.getFullYear();
+            const month = currentViewDate.getMonth();
+
+            // Update Header Display
+            if (currentMonthDisplay) {
+                currentMonthDisplay.innerText = currentViewDate.toLocaleDateString('default', {
+                    month: 'long',
+                    year: 'numeric'
+                });
+            }
+
+            // Clear Grid
+            if (!calendarGrid) return;
+            calendarGrid.innerHTML = '';
+
+            // Grid calculations adjusted for Monday start (0 = Mon, 6 = Sun)
+            const rawFirstDay = new Date(year, month, 1).getDay(); // 0 = Sun, 1 = Mon ...
+            const firstDayOfMonth = (rawFirstDay + 6) % 7; // Convert to 0 = Mon, 6 = Sun
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+            // Total grid cells to render (usually 35 or 42)
+            const totalCells = Math.ceil((firstDayOfMonth + daysInMonth) / 7) * 7;
+
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'day-cell bg-white min-h-[76px] sm:min-h-[110px] p-1 sm:p-2 flex flex-col justify-between transition hover:bg-slate-50/80 active:bg-slate-100/80 group relative border-b border-r border-slate-200 min-w-0 overflow-hidden';
+
+                let dayNumber, cellDateString, isCurrentMonth = false;
+
+                if (i < firstDayOfMonth) {
+                    // Previous month dates
+                    dayNumber = daysInPrevMonth - firstDayOfMonth + i + 1;
+                    const prevMonth = month === 0 ? 11 : month - 1;
+                    const prevYear = month === 0 ? year - 1 : year;
+                    cellDateString = formatDateKey(prevYear, prevMonth, dayNumber);
+                    cell.classList.add('bg-slate-50/50', 'text-slate-400');
+                } else if (i >= firstDayOfMonth + daysInMonth) {
+                    // Next month dates
+                    dayNumber = i - (firstDayOfMonth + daysInMonth) + 1;
+                    const nextMonth = month === 11 ? 0 : month + 1;
+                    const nextYear = month === 11 ? year + 1 : year;
+                    cellDateString = formatDateKey(nextYear, nextMonth, dayNumber);
+                    cell.classList.add('bg-slate-50/50', 'text-slate-400');
+                } else {
+                    // Current month dates
+                    dayNumber = i - firstDayOfMonth + 1;
+                    cellDateString = formatDateKey(year, month, dayNumber);
+                    isCurrentMonth = true;
+                    cell.classList.add('text-slate-700');
+                }
+
+                // Header inside day cell (Date Number + Quick Add Button)
+                const cellHeader = document.createElement('div');
+                cellHeader.className = 'flex justify-between items-center mb-0.5 sm:mb-1';
+
+                const isCurrentDay = isToday(cellDateString);
+                const dateNumSpan = document.createElement('span');
+                dateNumSpan.className = `font-bold text-[11px] sm:text-sm h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center rounded-full ${
+                    isCurrentDay 
+                        ? 'is-today-badge bg-blue-600 text-white shadow-xs' 
+                        : isCurrentMonth ? 'text-slate-800' : 'text-slate-400'
+                }`;
+                dateNumSpan.innerText = dayNumber;
+
+                // Plus button on hover (desktop)
+                const quickAddBtn = document.createElement('button');
+                quickAddBtn.className = 'no-print hidden sm:inline-block opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-600 transition p-0.5 text-xs';
+                quickAddBtn.innerHTML = '<i class="fa-solid fa-circle-plus"></i>';
+                quickAddBtn.title = 'Add Event';
+                quickAddBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openAddModal(cellDateString);
+                });
+
+                cellHeader.appendChild(dateNumSpan);
+                cellHeader.appendChild(quickAddBtn);
+                cell.appendChild(cellHeader);
+
+                // Container for Events
+                const eventsContainer = document.createElement('div');
+                eventsContainer.className = 'flex-1 overflow-y-auto space-y-0.5 sm:space-y-1 max-h-[54px] sm:max-h-[85px]';
+
+                // Find & Filter events that span over this date
+                const dayEvents = events.filter(e => isDateInRange(cellDateString, e.startDate, e.endDate));
+                
+                // Sort events: Multi-day events first (longest duration top), then single-day events
+                dayEvents.sort((a, b) => {
+                    const durationA = getEventDurationDays(a);
+                    const durationB = getEventDurationDays(b);
+                    
+                    if (durationA !== durationB) {
+                        return durationB - durationA; // Longer multi-day events placed at the top
+                    }
+                    return a.title.localeCompare(b.title);
+                });
+
+                dayEvents.forEach(evt => {
+                    const evtPill = createEventPill(evt, cellDateString);
+                    eventsContainer.appendChild(evtPill);
+                });
+
+                cell.appendChild(eventsContainer);
+
+                // Allow clicking blank area on cell to add event
+                cell.addEventListener('click', () => {
+                    openAddModal(cellDateString);
+                });
+
+                calendarGrid.appendChild(cell);
+            }
+        }
+
+        // Helper: Check if date string falls within start and end range
+        function isDateInRange(targetDate, startDate, endDate) {
+            return targetDate >= startDate && targetDate <= endDate;
+        }
+
+        // Helper: Calculate duration in days for sorting
+        function getEventDurationDays(evt) {
+            if (!evt.startDate || !evt.endDate) return 1;
+            const start = new Date(evt.startDate);
+            const end = new Date(evt.endDate);
+            const diffTime = Math.abs(end - start);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        }
+
+        // Create HTML Element for an Event
+        function createEventPill(evt, currentDateStr) {
+            const palette = COLOR_PALETTE.find(c => c.id === evt.color) || COLOR_PALETTE[0];
+            const isMultiDay = evt.startDate !== evt.endDate;
+            const isStartDay = currentDateStr === evt.startDate;
+            const isEndDay = currentDateStr === evt.endDate;
+            
+            const pill = document.createElement('div');
+            pill.className = `event-pill ${palette.bg} ${palette.text} ${palette.border} border border-l-2 sm:border-l-4 rounded px-1 sm:px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold leading-tight truncate cursor-pointer transition hover:opacity-80 active:opacity-70 flex items-center justify-between group/pill min-h-[18px] sm:min-h-0`;
+            pill.title = `${evt.title} (${evt.startDate} to ${evt.endDate})`;
+            
+            const titleSpan = document.createElement('span');
+            titleSpan.className = 'truncate flex items-center gap-0.5 sm:gap-1';
+            
+            let labelText = evt.title;
+            if (isMultiDay) {
+                if (isStartDay) {
+                    labelText = `▶ ${evt.title}`;
+                } else if (isEndDay) {
+                    labelText = `◀ ${evt.title}`;
+                } else {
+                    labelText = `↔ ${evt.title}`;
+                }
+            }
+            titleSpan.innerText = labelText;
+            
+            pill.appendChild(titleSpan);
+
+            // Edit event listener
+            pill.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openEditModal(evt);
+            });
+
+            return pill;
+        }
+
+        // Setup Color Picker UI in Modal
+        function setupColorPicker() {
+            if (!colorPickerContainer) return;
+            colorPickerContainer.innerHTML = '';
+            COLOR_PALETTE.forEach((color, idx) => {
+                const label = document.createElement('label');
+                label.className = 'cursor-pointer flex items-center justify-center p-1';
+                
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'color-choice';
+                radio.value = color.id;
+                radio.className = 'sr-only peer';
+                if (idx === 0) radio.checked = true;
+
+                const swatch = document.createElement('div');
+                swatch.className = `w-8 h-8 sm:w-7 sm:h-7 rounded-full ${color.dot} peer-checked:ring-2 peer-checked:ring-offset-2 peer-checked:ring-blue-600 transition-all transform peer-checked:scale-110 flex items-center justify-center text-white`;
+                swatch.title = color.id.charAt(0).toUpperCase() + color.id.slice(1);
+                swatch.innerHTML = '<i class="fa-solid fa-check text-[10px] opacity-0 peer-checked:opacity-100"></i>';
+
+                radio.addEventListener('change', () => {
+                    document.getElementById('event-color').value = color.id;
+                });
+
+                label.appendChild(radio);
+                label.appendChild(swatch);
+                colorPickerContainer.appendChild(label);
+            });
+        }
+
+        // Modal Controls & Form Handling
+        function openAddModal(dateStr = '') {
+            const defaultDate = dateStr || new Date().toISOString().split('T')[0];
+            activeEditEvent = null;
+            document.getElementById('modal-title').innerText = 'Add All-Day Event';
+            document.getElementById('event-id').value = '';
+            document.getElementById('event-title').value = '';
+            document.getElementById('event-start-date').value = defaultDate;
+            document.getElementById('event-end-date').value = defaultDate;
+            document.getElementById('event-recurrence').value = 'none';
+            deleteEventBtn.classList.add('hidden');
+            
+            // Default color
+            selectColorInModal('blue');
+
+            eventModal.classList.remove('hidden');
+            document.getElementById('event-title').focus();
+        }
+
+        function openEditModal(evt) {
+            activeEditEvent = evt;
+            document.getElementById('modal-title').innerText = 'Edit All-Day Event';
+            document.getElementById('event-id').value = evt.id;
+            document.getElementById('event-title').value = evt.title;
+            document.getElementById('event-start-date').value = evt.startDate || evt.date;
+            document.getElementById('event-end-date').value = evt.endDate || evt.startDate || evt.date;
+            document.getElementById('event-recurrence').value = evt.recurrence || 'none';
+            deleteEventBtn.classList.remove('hidden');
+
+            selectColorInModal(evt.color);
+
+            eventModal.classList.remove('hidden');
+        }
+
+        function selectColorInModal(colorId) {
+            document.getElementById('event-color').value = colorId;
+            const radios = document.getElementsByName('color-choice');
+            radios.forEach(radio => {
+                radio.checked = (radio.value === colorId);
+            });
+        }
+
+        function closeModal() {
+            eventModal.classList.add('hidden');
+        }
+
+        function closeDeleteRecurringModal() {
+            deleteRecurringModal.classList.add('hidden');
+        }
+
+        // Helper function to generate a series of recurring events
+        function generateRecurringEvents({ title, startDate, endDate, color, recurrence, groupId = null }) {
+            const startDt = new Date(startDate + 'T00:00:00');
+            const endDt = new Date(endDate + 'T00:00:00');
+            const durationMs = Math.max(0, endDt.getTime() - startDt.getTime());
+            const maxPlannerDate = new Date(END_YEAR, END_MONTH, 31, 23, 59, 59);
+            const activeGroupId = groupId || ('grp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
+            
+            const newEvents = [];
+
+            if (recurrence === 'none') {
+                newEvents.push({
+                    id: 'evt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                    title,
+                    startDate,
+                    endDate,
+                    color,
+                    recurrence
+                });
+            } else {
+                let currStart = new Date(startDt);
+                let instanceCount = 0;
+
+                while (currStart <= maxPlannerDate && instanceCount < 1000) {
+                    instanceCount++;
+                    const instanceEnd = new Date(currStart.getTime() + durationMs);
+
+                    const formattedStart = formatDateKey(currStart.getFullYear(), currStart.getMonth(), currStart.getDate());
+                    const formattedEnd = formatDateKey(instanceEnd.getFullYear(), instanceEnd.getMonth(), instanceEnd.getDate());
+
+                    newEvents.push({
+                        id: 'evt_' + Date.now() + '_' + instanceCount + '_' + Math.random().toString(36).substr(2, 4),
+                        groupId: activeGroupId,
+                        title,
+                        startDate: formattedStart,
+                        endDate: formattedEnd,
+                        color,
+                        recurrence
+                    });
+
+                    // Increment current start date accurately according to frequency
+                    if (recurrence === 'daily') {
+                        currStart.setDate(currStart.getDate() + 1);
+                    } else if (recurrence === 'weekly') {
+                        currStart.setDate(currStart.getDate() + 7);
+                    } else if (recurrence === 'biweekly') {
+                        currStart.setDate(currStart.getDate() + 14);
+                    } else if (recurrence === 'monthly') {
+                        currStart.setMonth(currStart.getMonth() + 1);
+                    } else if (recurrence === 'yearly') {
+                        currStart.setFullYear(currStart.getFullYear() + 1);
+                    }
+                }
+            }
+            return newEvents;
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            const startDateInput = document.getElementById('event-start-date');
+            const endDateInput = document.getElementById('event-end-date');
+
+            // Modal Toggles
+            document.getElementById('add-event-btn').addEventListener('click', () => openAddModal());
+            document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+            document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
+
+            // Auto-sync end date if start date moves past it
+            startDateInput.addEventListener('change', () => {
+                if (endDateInput.value < startDateInput.value) {
+                    endDateInput.value = startDateInput.value;
+                }
+            });
+
+            // Save Backup Functionality
+            document.getElementById('save-backup-btn').addEventListener('click', () => {
+                try {
+                    const jsonStr = JSON.stringify(events, null, 2);
+                    const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const downloadAnchor = document.createElement('a');
+                    const dateStamp = new Date().toISOString().split('T')[0];
+                    downloadAnchor.href = url;
+                    downloadAnchor.download = `ugg-knightsbridge-backup-${dateStamp}.json`;
+                    document.body.appendChild(downloadAnchor);
+                    downloadAnchor.click();
+                    downloadAnchor.remove();
+                    setTimeout(() => URL.revokeObjectURL(url), 5000);
+                    showToast(`Saved ${events.length} event${events.length === 1 ? '' : 's'} to backup`, true);
+                } catch (err) {
+                    console.error("Failed to save backup file", err);
+                    showToast('Could not save backup file', false);
+                }
+            });
+
+            // Restore Backup Functionality
+            const restoreFileInput = document.getElementById('restore-file-input');
+
+            restoreFileInput.addEventListener('change', async (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                try {
+                    let rawText = '';
+                    if (typeof file.text === 'function') {
+                        rawText = await file.text();
+                    } else {
+                        rawText = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => resolve(ev.target.result);
+                            reader.onerror = () => reject(reader.error);
+                            reader.readAsText(file);
+                        });
+                    }
+
+                    // Strip UTF-8 BOM and surrounding whitespace
+                    let cleaned = String(rawText || '').replace(/^\uFEFF/, '').trim();
+
+                    // Handle cases where mobile browsers or cloud apps saved URI-encoded JSON
+                    if (cleaned.startsWith('%5B') || cleaned.startsWith('%7B')) {
+                        cleaned = decodeURIComponent(cleaned);
+                    }
+
+                    let parsed = JSON.parse(cleaned);
+                    if (typeof parsed === 'string') {
+                        parsed = JSON.parse(parsed);
+                    }
+                    const importedEvents = Array.isArray(parsed)
+                        ? parsed
+                        : (parsed && Array.isArray(parsed.events) ? parsed.events : null);
+
+                    if (importedEvents) {
+                        events = importedEvents;
+                        saveEventsToStorage();
+                        renderCalendar();
+                        showToast(`Restored ${importedEvents.length} event${importedEvents.length === 1 ? '' : 's'}`, true);
+                    } else {
+                        showToast('Invalid backup file format', false);
+                    }
+                } catch (err) {
+                    console.error("Failed to parse backup file", err);
+                    showToast('Could not read backup file', false);
+                } finally {
+                    restoreFileInput.value = '';
+                }
+            });
+
+            // Close modal on backdrop click
+            eventModal.addEventListener('click', (e) => {
+                if (e.target === eventModal) closeModal();
+            });
+
+            // Save Form Submission
+            eventForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const id = document.getElementById('event-id').value;
+                const title = document.getElementById('event-title').value.trim();
+                const startDate = startDateInput.value;
+                let endDate = endDateInput.value;
+                const color = document.getElementById('event-color').value;
+                const recurrence = document.getElementById('event-recurrence').value;
+
+                if (!title || !startDate) return;
+                
+                if (!endDate || endDate < startDate) {
+                    endDate = startDate;
+                }
+
+                const formData = { id, title, startDate, endDate, color, recurrence };
+
+                if (id) {
+                    // Editing an existing event: automatically apply changes across all events in the series
+                    const existingEvt = events.find(e => e.id === id);
+                    const targetGroupId = (existingEvt && existingEvt.groupId) 
+                        ? existingEvt.groupId 
+                        : id;
+
+                    // Purge old series/instances
+                    events = events.filter(e => e.groupId !== targetGroupId && e.id !== targetGroupId && e.id !== id);
+
+                    // Re-generate recurring series with the updated frequency and fields
+                    const activeGroupId = targetGroupId || ('grp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
+                    const updatedSeries = generateRecurringEvents({ 
+                        title, 
+                        startDate, 
+                        endDate, 
+                        color, 
+                        recurrence, 
+                        groupId: activeGroupId 
+                    });
+                    events.push(...updatedSeries);
+                } else {
+                    // Creating new event(s)
+                    const createdEvents = generateRecurringEvents(formData);
+                    events.push(...createdEvents);
+                }
+
+                saveEventsToStorage();
+                renderCalendar();
+                closeModal();
+            });
+
+            // Delete Event Action
+            deleteEventBtn.addEventListener('click', () => {
+                const id = document.getElementById('event-id').value;
+                if (!id) return;
+
+                const targetEvt = events.find(e => e.id === id);
+                if (!targetEvt) return;
+
+                // Check if the event belongs to a recurring group or has recurrence rule set
+                if (targetEvt.groupId || (targetEvt.recurrence && targetEvt.recurrence !== 'none')) {
+                    closeModal();
+                    deleteRecurringModal.classList.remove('hidden');
+                } else {
+                    events = events.filter(e => e.id !== id);
+                    saveEventsToStorage();
+                    renderCalendar();
+                    closeModal();
+                }
+            });
+
+            // Delete Options for Recurring Events
+            document.getElementById('delete-single-btn').addEventListener('click', () => {
+                if (activeEditEvent) {
+                    events = events.filter(e => e.id !== activeEditEvent.id);
+                    saveEventsToStorage();
+                    renderCalendar();
+                }
+                closeDeleteRecurringModal();
+            });
+
+            document.getElementById('delete-following-btn').addEventListener('click', () => {
+                if (activeEditEvent) {
+                    if (activeEditEvent.groupId) {
+                        events = events.filter(e => !(e.groupId === activeEditEvent.groupId && e.startDate >= activeEditEvent.startDate));
+                    } else {
+                        events = events.filter(e => e.id !== activeEditEvent.id);
+                    }
+                    saveEventsToStorage();
+                    renderCalendar();
+                }
+                closeDeleteRecurringModal();
+            });
+
+            document.getElementById('delete-all-btn').addEventListener('click', () => {
+                if (activeEditEvent) {
+                    if (activeEditEvent.groupId) {
+                        events = events.filter(e => e.groupId !== activeEditEvent.groupId);
+                    } else {
+                        events = events.filter(e => e.id !== activeEditEvent.id);
+                    }
+                    saveEventsToStorage();
+                    renderCalendar();
+                }
+                closeDeleteRecurringModal();
+            });
+
+            document.getElementById('cancel-delete-modal-btn').addEventListener('click', closeDeleteRecurringModal);
+
+            // Close recurring delete modal on backdrop click
+            deleteRecurringModal.addEventListener('click', (e) => {
+                if (e.target === deleteRecurringModal) closeDeleteRecurringModal();
+            });
+
+            // Previous Month Button
+            const goPrevMonth = () => {
+                let y = currentViewDate.getFullYear();
+                let m = currentViewDate.getMonth();
+                if (y === START_YEAR && m === START_MONTH) return;
+                
+                currentViewDate.setMonth(currentViewDate.getMonth() - 1);
+                buildMonthTabs();
+                renderCalendar();
+            };
+
+            // Next Month Button
+            const goNextMonth = () => {
+                let y = currentViewDate.getFullYear();
+                let m = currentViewDate.getMonth();
+                if (y === END_YEAR && m === END_MONTH) return;
+
+                currentViewDate.setMonth(currentViewDate.getMonth() + 1);
+                buildMonthTabs();
+                renderCalendar();
+            };
+
+            document.getElementById('prev-month-btn').addEventListener('click', goPrevMonth);
+            document.getElementById('next-month-btn').addEventListener('click', goNextMonth);
+
+            // Touch Swipe Support on Mobile Calendar Area
+            const calendarTouchArea = document.getElementById('calendar-touch-area');
+            if (calendarTouchArea) {
+                let touchStartX = 0;
+                let touchStartY = 0;
+
+                calendarTouchArea.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                    touchStartY = e.changedTouches[0].screenY;
+                }, { passive: true });
+
+                calendarTouchArea.addEventListener('touchend', (e) => {
+                    const touchEndX = e.changedTouches[0].screenX;
+                    const touchEndY = e.changedTouches[0].screenY;
+                    const diffX = touchEndX - touchStartX;
+                    const diffY = touchEndY - touchStartY;
+
+                    if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+                        if (diffX < 0) {
+                            goNextMonth();
+                        } else {
+                            goPrevMonth();
+                        }
+                    }
+                }, { passive: true });
+            }
+
+            // Today Button
+            document.getElementById('today-btn').addEventListener('click', () => {
+                const now = new Date();
+                const startRange = new Date(START_YEAR, START_MONTH, 1);
+                const endRange = new Date(END_YEAR, END_MONTH + 1, 0);
+
+                if (now < startRange) {
+                    currentViewDate = new Date(startRange);
+                } else if (now > endRange) {
+                    currentViewDate = new Date(endRange);
+                } else {
+                    currentViewDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                }
+
+                buildMonthTabs();
+                renderCalendar();
+            });
+        }
+
+        // Helper: Format Date String YYYY-MM-DD
+        function formatDateKey(year, monthIndex, day) {
+            const m = String(monthIndex + 1).padStart(2, '0');
+            const d = String(day).padStart(2, '0');
+            return `${year}-${m}-${d}`;
+        }
+
+        // Helper: Check if date string matches current system date
+        function isToday(dateStr) {
+            const today = new Date();
+            const todayStr = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+            return dateStr === todayStr;
+        }
+
+        // Helper: Show subtle feedback toast
+        let toastTimeout = null;
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('status-toast');
+            const msgEl = document.getElementById('status-toast-msg');
+            const iconEl = document.getElementById('status-toast-icon');
+            if (!toast || !msgEl || !iconEl) return;
+
+            msgEl.innerText = message;
+            iconEl.className = isSuccess
+                ? 'fa-solid fa-circle-check text-emerald-400'
+                : 'fa-solid fa-circle-exclamation text-rose-400';
+
+            toast.classList.remove('hidden');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
