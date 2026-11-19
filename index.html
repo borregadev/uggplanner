@@ -1122,7 +1122,7 @@
                     "cursor-pointer"
                 );
 
-                if (isSelected) {
+                if (isSelected && !isToday) {
                     cell.classList.add("ring-2", "ring-inset", "ring-blue-500", "bg-blue-50/30");
                 }
 
@@ -1144,8 +1144,8 @@
                 const dayBadge = document.createElement("span");
                 dayBadge.textContent = dayNumber;
                 dayBadge.className = isToday
-                    ? "is-today-badge w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-600 text-white text-xs sm:text-sm font-bold flex items-center justify-center shadow-xs"
-                    : "text-xs sm:text-sm font-semibold text-slate-700 px-1";
+                    ? "is-today-badge inline-flex items-center justify-center min-w-[1.5rem] px-1.5 py-0.5 rounded-full bg-blue-600 text-white text-xs sm:text-sm font-bold leading-none"
+                    : "inline-flex items-center justify-center min-w-[1.5rem] px-1.5 py-0.5 text-xs sm:text-sm font-semibold text-slate-700 leading-none";
 
                 headerRow.appendChild(dayBadge);
                 cell.appendChild(headerRow);
