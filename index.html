@@ -173,8 +173,9 @@
             <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
                 <!-- Branding / Title -->
                 <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-                    <div class="bg-blue-600 text-white p-2 sm:p-2.5 rounded-xl shadow-md flex-shrink-0">
-                        <i class="fa-solid font-bold fa-calendar-days text-base sm:text-xl"></i>
+                    <div
+                        class="bg-blue-600 text-white w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl shadow-md flex-shrink-0">
+                        <i class="fa-solid font-bold fa-calendar-days text-base sm:text-xl leading-none"></i>
                     </div>
                     <div class="truncate">
                         <h1 class="font-bold text-sm sm:text-lg text-slate-900 leading-tight truncate">UGG Knightsbridge
@@ -209,28 +210,36 @@
 
         <!-- Month Navigation Tabs Horizontal Scroll bar -->
         <div class="bg-slate-50 border-t border-b border-slate-200 py-2 px-3 sm:px-4 no-print">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-2 md:gap-3">
-                <!-- Prev/Today/Next Quick Nav -->
-                <div class="flex items-center justify-center gap-1 flex-shrink-0 w-full md:w-auto">
-                    <button id="prev-month-btn"
-                        class="p-2.5 sm:p-1.5 text-slate-600 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-sm transition min-w-[40px] min-h-[40px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
-                        title="Previous Month">
-                        <i class="fa-solid fa-chevron-left"></i>
-                    </button>
-                    <button id="today-btn"
-                        class="px-4 py-2 sm:px-2.5 sm:py-1 text-slate-700 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-xs font-semibold transition min-h-[40px] sm:min-h-0">
-                        Today
-                    </button>
-                    <button id="next-month-btn"
-                        class="p-2.5 sm:p-1.5 text-slate-600 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-sm transition min-w-[40px] min-h-[40px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
-                        title="Next Month">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </button>
+            <div class="max-w-7xl mx-auto flex flex-col gap-2">
+                <!-- Year Selector Tabs + Prev/Today/Next Quick Nav -->
+                <div class="flex flex-wrap items-center justify-center gap-2">
+                    <!-- Year Tabs (2026 - 2030) -->
+                    <div id="year-tabs" class="flex items-center gap-1 bg-slate-200/70 p-1 rounded-xl">
+                        <!-- Year buttons injected dynamically -->
+                    </div>
+
+                    <!-- Prev/Today/Next Quick Nav -->
+                    <div class="flex items-center justify-center gap-1 flex-shrink-0">
+                        <button id="prev-month-btn"
+                            class="p-2 sm:p-1.5 text-slate-600 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-sm transition min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+                            title="Previous Month">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button id="today-btn"
+                            class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-slate-700 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-xs font-semibold transition min-h-[38px] sm:min-h-0">
+                            Today
+                        </button>
+                        <button id="next-month-btn"
+                            class="p-2 sm:p-1.5 text-slate-600 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-sm transition min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+                            title="Next Month">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Horizontal Month Tabs -->
+                <!-- Horizontal Month Tabs for Active Year -->
                 <div id="month-tabs"
-                    class="month-tabs-scroll flex items-center gap-1 overflow-x-auto py-1 w-full md:w-auto max-w-full justify-start lg:justify-center px-1">
+                    class="month-tabs-scroll flex items-center gap-1 overflow-x-auto py-0.5 w-full justify-start sm:justify-center px-1">
                     <!-- Tabs injected dynamically -->
                 </div>
             </div>
@@ -481,25 +490,26 @@
         // =========================================================================
 
         const STORAGE_KEY = "ugg_knightsbridge_planner_events_v1";
-        const SERIES_END_LIMIT = "2027-12-31";
+        const SERIES_END_LIMIT = "2030-12-31";
         const FIRESTORE_DOC_PATH = ["ugg_planner", "knightsbridge_main"];
 
-        const MONTHS = [
-            { year: 2026, month: 10, label: "Nov 2026", full: "November 2026" },
-            { year: 2026, month: 11, label: "Dec 2026", full: "December 2026" },
-            { year: 2027, month: 0, label: "Jan 2027", full: "January 2027" },
-            { year: 2027, month: 1, label: "Feb 2027", full: "February 2027" },
-            { year: 2027, month: 2, label: "Mar 2027", full: "March 2027" },
-            { year: 2027, month: 3, label: "Apr 2027", full: "April 2027" },
-            { year: 2027, month: 4, label: "May 2027", full: "May 2027" },
-            { year: 2027, month: 5, label: "Jun 2027", full: "June 2027" },
-            { year: 2027, month: 6, label: "Jul 2027", full: "July 2027" },
-            { year: 2027, month: 7, label: "Aug 2027", full: "August 2027" },
-            { year: 2027, month: 8, label: "Sep 2027", full: "September 2027" },
-            { year: 2027, month: 9, label: "Oct 2027", full: "October 2027" },
-            { year: 2027, month: 10, label: "Nov 2027", full: "November 2027" },
-            { year: 2027, month: 11, label: "Dec 2027", full: "December 2027" }
-        ];
+        const YEARS = [2026, 2027, 2028, 2029, 2030];
+        const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const MONTH_NAMES_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        // Build all 12 months for every year from Jan 2026 through Dec 2030
+        const MONTHS = [];
+        YEARS.forEach((year) => {
+            for (let m = 0; m < 12; m++) {
+                MONTHS.push({
+                    year,
+                    month: m,
+                    label: `${MONTH_NAMES_SHORT[m]} ${year}`,
+                    shortLabel: MONTH_NAMES_SHORT[m],
+                    full: `${MONTH_NAMES_FULL[m]} ${year}`
+                });
+            }
+        });
 
         const COLORS = [
             { id: "blue", bg: "bg-blue-100", text: "text-blue-800", border: "border-blue-300", dot: "bg-blue-600" },
@@ -743,29 +753,67 @@
             return list;
         }
 
+        function renderYearTabs() {
+            const container = $("year-tabs");
+            if (!container) return;
+            container.innerHTML = "";
+
+            const activeYear = MONTHS[activeMonthIndex].year;
+
+            YEARS.forEach((yr) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.textContent = yr;
+                const isSelected = yr === activeYear;
+                btn.className = isSelected
+                    ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white shadow-xs transition min-h-[32px]"
+                    : "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/60 transition min-h-[32px]";
+
+                btn.addEventListener("click", () => {
+                    const currentMonthNum = MONTHS[activeMonthIndex].month;
+                    // Try jumping to the same month in the chosen year, or the first available month of that year
+                    let targetIdx = MONTHS.findIndex((item) => item.year === yr && item.month === currentMonthNum);
+                    if (targetIdx === -1) {
+                        targetIdx = MONTHS.findIndex((item) => item.year === yr);
+                    }
+                    if (targetIdx !== -1) {
+                        activeMonthIndex = targetIdx;
+                        renderCalendar();
+                    }
+                });
+
+                container.appendChild(btn);
+            });
+        }
+
         function renderMonthTabs() {
             const container = $("month-tabs");
             if (!container) return;
             container.innerHTML = "";
 
+            const activeYear = MONTHS[activeMonthIndex].year;
+            let activeBtn = null;
+
             MONTHS.forEach((m, idx) => {
+                if (m.year !== activeYear) return;
+
                 const btn = document.createElement("button");
                 btn.type = "button";
-                btn.textContent = m.label;
+                btn.textContent = m.shortLabel;
                 const active = idx === activeMonthIndex;
                 btn.className = active
-                    ? "flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-xs transition min-h-[34px]"
-                    : "flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/80 transition min-h-[34px]";
+                    ? "flex-shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-xs transition min-h-[34px]"
+                    : "flex-shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/80 transition min-h-[34px]";
 
                 btn.addEventListener("click", () => {
                     activeMonthIndex = idx;
                     renderCalendar();
                 });
 
+                if (active) activeBtn = btn;
                 container.appendChild(btn);
             });
 
-            const activeBtn = container.children[activeMonthIndex];
             if (activeBtn) {
                 activeBtn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
             }
@@ -843,6 +891,7 @@
             const display = $("current-month-display");
             if (display) display.textContent = cur.full;
 
+            renderYearTabs();
             renderMonthTabs();
 
             const grid = $("calendar-days-grid");
