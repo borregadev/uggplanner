@@ -162,6 +162,19 @@
                 max-height: calc(2 * 1.2em + 4px) !important;
             }
         }
+
+        /* Drag-and-drop visual states */
+        .dragging-pill {
+            opacity: 0.45 !important;
+        }
+
+        .drop-target-above {
+            box-shadow: 0 -2px 0 0 #2563eb !important;
+        }
+
+        .drop-target-below {
+            box-shadow: 0 2px 0 0 #2563eb !important;
+        }
     </style>
 </head>
 
@@ -533,163 +546,180 @@
         let db = null;
         let cloudReady = false;
         let lastSyncError = "";
+        let draggedEventId = null;
+        let draggedDateKey = null;
 
         const $ = (id) => document.getElementById(id);
 
-        function isFirebaseConfigured() {
-            return (
-                firebaseConfig &&
-                firebaseConfig.apiKey &&
-                firebaseConfig.projectId &&
-                firebaseConfig.apiKey !== "YOUR_API_KEY_HERE" &&
-                firebaseConfig.projectId !== "YOUR_PROJECT_ID"
-            );
+        function showToast(message, isError = false) {
+            const toast = $("status-toast");
+            const msg = $("status-toast-msg");
+            const icon = $("status-toast-icon");
+            msg.textContent = message;
+            icon.className = isError
+                ? "fa-solid fa-circle-exclamation text-rose-400"
+                : "fa-solid fa-circle-check text-emerald-400";
+            toast.classList.remove("hidden");
+            clearTimeout(window.__toastTimer);
+            window.__toastTimer = setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 3400);
         }
 
-        function updateSyncPill(state, label, detail = "") {
+        function setCloudStatus(state, detail = "") {
             const dot = $("cloud-sync-dot");
             const text = $("cloud-sync-text");
             const pill = $("cloud-sync-pill");
-            if (!dot || !text) return;
+            if (!dot || !text || !pill) return;
 
             lastSyncError = detail;
-            text.textContent = label;
-            if (pill) {
-                pill.title = detail || label;
-            }
 
-            dot.className = "w-1.5 h-1.5 rounded-full ";
             if (state === "synced") {
-                dot.className += "bg-emerald-500";
+                dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+                text.textContent = "Live Sync";
+                pill.title = "Firebase Firestore connected — syncing in real time";
             } else if (state === "syncing") {
-                dot.className += "bg-amber-400 animate-pulse";
+                dot.className = "w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse";
+                text.textContent = "Syncing...";
+                pill.title = "Syncing with Firebase...";
             } else if (state === "error") {
-                dot.className += "bg-rose-500";
+                dot.className = "w-1.5 h-1.5 rounded-full bg-rose-500";
+                text.textContent = "Sync Error";
+                pill.title = detail ? `Error: ${detail} (Tap for details)` : "Firebase sync error";
             } else {
-                dot.className += "bg-slate-400";
+                dot.className = "w-1.5 h-1.5 rounded-full bg-slate-400";
+                text.textContent = "Local";
+                pill.title = "Saved locally — paste firebaseConfig in HTML to enable live sync";
             }
         }
 
-        function showToast(msg, isError = false) {
-            const toast = $("status-toast");
-            const textEl = $("status-toast-msg");
-            const iconEl = $("status-toast-icon");
-            if (!toast || !textEl) return;
-
-            textEl.textContent = msg;
-            if (iconEl) {
-                iconEl.className = isError
-                    ? "fa-solid fa-circle-exclamation text-rose-400"
-                    : "fa-solid fa-circle-check text-emerald-400";
-            }
-
-            toast.classList.remove("hidden");
-            clearTimeout(toast._timer);
-            toast._timer = setTimeout(() => {
-                toast.classList.add("hidden");
-            }, 3400);
+        function isFirebaseConfigured() {
+            return Boolean(
+                firebaseConfig &&
+                firebaseConfig.apiKey &&
+                !firebaseConfig.apiKey.includes("YOUR_") &&
+                firebaseConfig.projectId &&
+                !firebaseConfig.projectId.includes("YOUR_")
+            );
         }
 
         function loadLocalEvents() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
-                const parsed = raw ? JSON.parse(raw) : [];
-                events = Array.isArray(parsed) ? parsed : [];
-            } catch {
-                events = [];
+                if (!raw) return [];
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+                console.error("Failed to parse local events:", e);
+                return [];
+            }
+        }
+
+        function saveLocalEvents() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+            } catch (e) {
+                console.error("Failed to save local events:", e);
             }
         }
 
         async function pushEventsToCloud() {
             if (!cloudReady || !db) return;
-            updateSyncPill("syncing", "Saving...");
             try {
-                const docRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
-                await setDoc(docRef, {
-                    updatedAt: new Date().toISOString(),
-                    events
+                setCloudStatus("syncing");
+                const plannerRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
+                await setDoc(plannerRef, {
+                    events,
+                    updatedAt: Date.now()
                 });
-                updateSyncPill("synced", "Live Sync", "Connected to Firebase Firestore");
+                setCloudStatus("synced");
             } catch (err) {
-                console.error("Firestore save error:", err);
-                const code = err?.code || err?.message || "Sync failed";
-                updateSyncPill("error", "Sync Error", `Firebase Error: ${code}`);
-                showToast(`Cloud sync error (${code})`, true);
+                console.error("Firebase save error:", err);
+                setCloudStatus("error", err.message || String(err));
             }
         }
 
         function saveEvents() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-            } catch (e) {
-                console.error("LocalStorage error:", e);
-            }
+            saveLocalEvents();
             pushEventsToCloud();
         }
 
         async function initFirebaseSync() {
             if (!isFirebaseConfigured()) {
-                updateSyncPill("local", "Local", "Paste your firebaseConfig into calendar.html to enable live sync.");
+                setCloudStatus("local");
                 return;
             }
 
-            updateSyncPill("syncing", "Connecting...");
             try {
+                setCloudStatus("syncing");
                 const app = initializeApp(firebaseConfig);
                 const auth = getAuth(app);
                 await signInAnonymously(auth);
 
                 db = getFirestore(app);
-                cloudReady = true;
+                const plannerRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
 
-                const docRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
                 onSnapshot(
-                    docRef,
-                    async (snap) => {
-                        if (snap.exists()) {
-                            const data = snap.data();
-                            if (Array.isArray(data?.events)) {
+                    plannerRef,
+                    (snapshot) => {
+                        cloudReady = true;
+                        if (snapshot.exists()) {
+                            const data = snapshot.data();
+                            if (Array.isArray(data.events)) {
                                 events = data.events;
-                                localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+                                saveLocalEvents();
                                 renderCalendar();
                             }
-                            updateSyncPill("synced", "Live Sync", "Real-time sync active");
+                            setCloudStatus("synced");
                         } else {
-                            await pushEventsToCloud();
+                            // First connection: seed cloud with any existing local events
+                            pushEventsToCloud();
                         }
                     },
                     (err) => {
-                        console.error("Firestore listener error:", err);
-                        const code = err?.code || err?.message || "Permission denied";
-                        updateSyncPill("error", "Sync Error", `Firebase Error: ${code}`);
+                        console.error("Firebase listener error:", err);
+                        setCloudStatus("error", err.message || String(err));
                     }
                 );
             } catch (err) {
-                console.error("Firebase init error:", err);
-                const code = err?.code || err?.message || "Connection failed";
-                updateSyncPill("error", "Sync Error", `Firebase Error: ${code}`);
+                console.error("Firebase initialization failed:", err);
+                setCloudStatus("error", err.message || String(err));
             }
         }
 
-        function formatDateKey(dateObj) {
-            const y = dateObj.getFullYear();
-            const m = String(dateObj.getMonth() + 1).padStart(2, "0");
-            const d = String(dateObj.getDate()).padStart(2, "0");
-            return `${y}-${m}-${d}`;
+        function formatDateKey(year, month, day) {
+            const m = String(month + 1).padStart(2, "0");
+            const d = String(day).padStart(2, "0");
+            return `${year}-${m}-${d}`;
         }
 
-        function parseDateKey(str) {
-            return new Date(`${str}T00:00:00`);
+        function parseDateKey(dateStr) {
+            const [y, m, d] = dateStr.split("-").map(Number);
+            return new Date(y, m - 1, d);
         }
 
-        function formatReadableDate(dateKey) {
-            const d = parseDateKey(dateKey);
-            return d.toLocaleDateString("en-GB", {
-                weekday: "long",
-                day: "numeric",
-                month: "short",
-                year: "numeric"
-            });
+        function addDays(dateStr, days) {
+            const dt = parseDateKey(dateStr);
+            dt.setDate(dt.getDate() + days);
+            return formatDateKey(dt.getFullYear(), dt.getMonth(), dt.getDate());
+        }
+
+        function addMonthsSafe(dateStr, monthsToAdd) {
+            const dt = parseDateKey(dateStr);
+            const targetMonth = dt.getMonth() + monthsToAdd;
+            const origDay = dt.getDate();
+            const res = new Date(dt.getFullYear(), targetMonth, 1);
+            const maxDay = new Date(res.getFullYear(), res.getMonth() + 1, 0).getDate();
+            res.setDate(Math.min(origDay, maxDay));
+            return formatDateKey(res.getFullYear(), res.getMonth(), res.getDate());
+        }
+
+        function addYearsSafe(dateStr, yearsToAdd) {
+            return addMonthsSafe(dateStr, yearsToAdd * 12);
+        }
+
+        function generateId() {
+            return "evt_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
         }
 
         function getDurationDays(evt) {
@@ -699,58 +729,100 @@
             return Math.max(1, diff + 1);
         }
 
-        function generateRecurringSeries(baseEvt) {
-            const rec = baseEvt.recurrence || "none";
-            const startObj = parseDateKey(baseEvt.startDate);
-            const endObj = parseDateKey(baseEvt.endDate || baseEvt.startDate);
-            const spanDays = Math.max(0, Math.round((endObj - startObj) / (1000 * 60 * 60 * 24)));
+        function sortDayEvents(dayEvts, dateKey) {
+            return [...dayEvts].sort((a, b) => {
+                const orderA = a.dayOrders && typeof a.dayOrders[dateKey] === "number" ? a.dayOrders[dateKey] : null;
+                const orderB = b.dayOrders && typeof b.dayOrders[dateKey] === "number" ? b.dayOrders[dateKey] : null;
+                if (orderA !== null && orderB !== null) return orderA - orderB;
+                if (orderA !== null) return -1;
+                if (orderB !== null) return 1;
+                return getDurationDays(b) - getDurationDays(a);
+            });
+        }
 
-            if (rec === "none") {
-                return [{
-                    ...baseEvt,
-                    id: baseEvt.id || `evt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-                    groupId: null,
-                    recurrence: "none"
-                }];
-            }
+        function reorderEventsWithinDay(dateKey, sourceId, targetId, insertAfter = false) {
+            if (!dateKey || !sourceId || !targetId || sourceId === targetId) return;
 
-            const groupId = baseEvt.groupId || `grp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-            const limitObj = parseDateKey(SERIES_END_LIMIT);
-            const list = [];
-            let step = 0;
+            const dayEvts = sortDayEvents(
+                events.filter((evt) => dateKey >= evt.startDate && dateKey <= (evt.endDate || evt.startDate)),
+                dateKey
+            );
 
-            while (true) {
-                const curStart = new Date(startObj);
-                if (rec === "daily") {
-                    curStart.setDate(startObj.getDate() + step);
-                } else if (rec === "weekly") {
-                    curStart.setDate(startObj.getDate() + step * 7);
-                } else if (rec === "biweekly") {
-                    curStart.setDate(startObj.getDate() + step * 14);
-                } else if (rec === "monthly") {
-                    curStart.setMonth(startObj.getMonth() + step);
-                } else if (rec === "yearly") {
-                    curStart.setFullYear(startObj.getFullYear() + step);
+            const fromIdx = dayEvts.findIndex((e) => e.id === sourceId);
+            const toIdx = dayEvts.findIndex((e) => e.id === targetId);
+            if (fromIdx === -1 || toIdx === -1) return;
+
+            const [moved] = dayEvts.splice(fromIdx, 1);
+            let insertIdx = dayEvts.findIndex((e) => e.id === targetId);
+            if (insertAfter) insertIdx += 1;
+            dayEvts.splice(insertIdx, 0, moved);
+
+            dayEvts.forEach((evt, index) => {
+                if (!evt.dayOrders || typeof evt.dayOrders !== "object") {
+                    evt.dayOrders = {};
                 }
+                evt.dayOrders[dateKey] = index;
+            });
 
-                if (curStart > limitObj || step > 800) break;
+            saveEvents();
+            renderCalendar();
+        }
 
-                const curEnd = new Date(curStart);
-                curEnd.setDate(curStart.getDate() + spanDays);
+        function generateRecurringSeries(baseEvt) {
+            const list = [];
+            const seriesId = baseEvt.seriesId || generateId();
+            const spanDays = getDurationDays(baseEvt) - 1;
+            let currentStart = baseEvt.startDate;
+            let count = 0;
 
+            while (currentStart <= SERIES_END_LIMIT && count < 1500) {
+                const currentEnd = addDays(currentStart, spanDays);
                 list.push({
-                    ...baseEvt,
-                    id: `evt_${Date.now()}_${step}_${Math.random().toString(36).slice(2, 7)}`,
-                    groupId,
-                    startDate: formatDateKey(curStart),
-                    endDate: formatDateKey(curEnd),
-                    recurrence: rec
+                    id: count === 0 && baseEvt.id ? baseEvt.id : generateId(),
+                    seriesId,
+                    title: baseEvt.title,
+                    startDate: currentStart,
+                    endDate: currentEnd,
+                    color: baseEvt.color,
+                    recurrence: baseEvt.recurrence
                 });
 
-                step++;
+                count++;
+                if (baseEvt.recurrence === "daily") {
+                    currentStart = addDays(currentStart, 1);
+                } else if (baseEvt.recurrence === "weekly") {
+                    currentStart = addDays(currentStart, 7);
+                } else if (baseEvt.recurrence === "biweekly") {
+                    currentStart = addDays(currentStart, 14);
+                } else if (baseEvt.recurrence === "monthly") {
+                    currentStart = addMonthsSafe(baseEvt.startDate, count);
+                } else if (baseEvt.recurrence === "yearly") {
+                    currentStart = addYearsSafe(baseEvt.startDate, count);
+                } else {
+                    break;
+                }
             }
-
             return list;
+        }
+
+        function renderColorPicker(selectedId = "blue") {
+            const container = $("color-picker-options");
+            container.innerHTML = "";
+            COLORS.forEach((c) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = `w-7 h-7 rounded-full ${c.dot} flex items-center justify-center transition transform hover:scale-110 focus:outline-none ${selectedId === c.id ? "ring-2 ring-offset-2 ring-slate-800 scale-110" : "opacity-80 hover:opacity-100"
+                    }`;
+                btn.title = c.id.charAt(0).toUpperCase() + c.id.slice(1);
+                if (selectedId === c.id) {
+                    btn.innerHTML = '<i class="fa-solid fa-check text-white text-xs"></i>';
+                }
+                btn.addEventListener("click", () => {
+                    $("event-color").value = c.id;
+                    renderColorPicker(c.id);
+                });
+                container.appendChild(btn);
+            });
         }
 
         function renderYearTabs() {
@@ -759,64 +831,83 @@
             container.innerHTML = "";
 
             const activeYear = MONTHS[activeMonthIndex].year;
-
-            YEARS.forEach((yr) => {
+            YEARS.forEach((year) => {
+                const isActive = year === activeYear;
                 const btn = document.createElement("button");
                 btn.type = "button";
-                btn.textContent = yr;
-                const isSelected = yr === activeYear;
-                btn.className = isSelected
-                    ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white shadow-xs transition min-h-[32px]"
-                    : "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/60 transition min-h-[32px]";
-
+                btn.textContent = String(year);
+                btn.className = `px-3 py-1 rounded-lg text-xs font-bold transition whitespace-nowrap ${isActive
+                        ? "bg-white text-blue-600 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+                    }`;
                 btn.addEventListener("click", () => {
                     const currentMonthNum = MONTHS[activeMonthIndex].month;
-                    // Try jumping to the same month in the chosen year, or the first available month of that year
-                    let targetIdx = MONTHS.findIndex((item) => item.year === yr && item.month === currentMonthNum);
+                    let targetIdx = MONTHS.findIndex((m) => m.year === year && m.month === currentMonthNum);
                     if (targetIdx === -1) {
-                        targetIdx = MONTHS.findIndex((item) => item.year === yr);
+                        targetIdx = MONTHS.findIndex((m) => m.year === year);
                     }
                     if (targetIdx !== -1) {
-                        activeMonthIndex = targetIdx;
-                        renderCalendar();
+                        setActiveMonth(targetIdx);
                     }
                 });
-
                 container.appendChild(btn);
             });
         }
 
         function renderMonthTabs() {
             const container = $("month-tabs");
-            if (!container) return;
             container.innerHTML = "";
 
             const activeYear = MONTHS[activeMonthIndex].year;
-            let activeBtn = null;
 
             MONTHS.forEach((m, idx) => {
                 if (m.year !== activeYear) return;
 
+                const isActive = idx === activeMonthIndex;
                 const btn = document.createElement("button");
                 btn.type = "button";
                 btn.textContent = m.shortLabel;
-                const active = idx === activeMonthIndex;
-                btn.className = active
-                    ? "flex-shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-xs transition min-h-[34px]"
-                    : "flex-shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/80 transition min-h-[34px]";
-
-                btn.addEventListener("click", () => {
-                    activeMonthIndex = idx;
-                    renderCalendar();
-                });
-
-                if (active) activeBtn = btn;
+                btn.title = m.full;
+                btn.className = `px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition flex-shrink-0 ${isActive
+                        ? "bg-blue-600 text-white shadow-xs"
+                        : "text-slate-600 hover:bg-slate-200/80 hover:text-slate-900"
+                    }`;
+                btn.addEventListener("click", () => setActiveMonth(idx));
                 container.appendChild(btn);
             });
+        }
 
-            if (activeBtn) {
-                activeBtn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+        function setActiveMonth(index) {
+            if (index < 0) index = 0;
+            if (index >= MONTHS.length) index = MONTHS.length - 1;
+            activeMonthIndex = index;
+
+            const activeMeta = MONTHS[activeMonthIndex];
+            const today = new Date();
+            if (today.getFullYear() === activeMeta.year && today.getMonth() === activeMeta.month) {
+                selectedDateKey = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+            } else {
+                selectedDateKey = formatDateKey(activeMeta.year, activeMeta.month, 1);
             }
+
+            renderYearTabs();
+            renderMonthTabs();
+            renderCalendar();
+
+            const activeBtn = $("month-tabs").querySelector(".bg-blue-600");
+            if (activeBtn) {
+                activeBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+            }
+        }
+
+        function formatReadableDate(dateKey) {
+            const dt = parseDateKey(dateKey);
+            return dt.toLocaleDateString("en-GB", {
+                weekday: "long",
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            });
         }
 
         function renderMobileAgenda() {
@@ -827,9 +918,10 @@
             titleEl.textContent = formatReadableDate(selectedDateKey);
             listEl.innerHTML = "";
 
-            const dayEvents = events
-                .filter((evt) => selectedDateKey >= evt.startDate && selectedDateKey <= (evt.endDate || evt.startDate))
-                .sort((a, b) => getDurationDays(b) - getDurationDays(a));
+            const dayEvents = sortDayEvents(
+                events.filter((evt) => selectedDateKey >= evt.startDate && selectedDateKey <= (evt.endDate || evt.startDate)),
+                selectedDateKey
+            );
 
             if (dayEvents.length === 0) {
                 const empty = document.createElement("p");
@@ -843,9 +935,16 @@
                 const c = COLORS.find((item) => item.id === evt.color) || COLORS[0];
                 const isMulti = evt.endDate && evt.endDate > evt.startDate;
 
-                const card = document.createElement("button");
-                card.type = "button";
-                card.className = `w-full text-left p-2.5 rounded-lg border flex items-center justify-between gap-2 transition active:scale-[0.99] ${c.bg} ${c.text} ${c.border}`;
+                const card = document.createElement("div");
+                card.draggable = dayEvents.length > 1;
+                card.dataset.eventId = evt.id;
+                card.className = `mobile-agenda-card w-full text-left p-2.5 rounded-lg border flex items-center justify-between gap-2 transition select-none cursor-pointer ${c.bg} ${c.text} ${c.border}`;
+
+                // Drag handle for reordering within the selected day
+                const dragHandle = document.createElement("span");
+                dragHandle.className = "mobile-drag-handle text-xs opacity-60 hover:opacity-100 flex-shrink-0 px-1 py-1 cursor-grab active:cursor-grabbing touch-none";
+                dragHandle.title = "Drag to reorder";
+                dragHandle.innerHTML = '<i class="fa-solid fa-grip-vertical"></i>';
 
                 const left = document.createElement("div");
                 left.className = "min-w-0 flex-1";
@@ -875,10 +974,104 @@
                 editIcon.className = "text-xs opacity-70 flex-shrink-0 px-1";
                 editIcon.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
 
+                if (dayEvents.length > 1) {
+                    card.appendChild(dragHandle);
+                }
                 card.appendChild(left);
                 card.appendChild(editIcon);
 
-                card.addEventListener("click", () => {
+                // Desktop/HTML5 drag-and-drop inside mobile agenda
+                card.addEventListener("dragstart", (e) => {
+                    draggedEventId = evt.id;
+                    draggedDateKey = selectedDateKey;
+                    card.classList.add("dragging-pill");
+                    if (e.dataTransfer) {
+                        e.dataTransfer.effectAllowed = "move";
+                        e.dataTransfer.setData("text/plain", evt.id);
+                    }
+                });
+
+                card.addEventListener("dragover", (e) => {
+                    if (!draggedEventId || draggedDateKey !== selectedDateKey || draggedEventId === evt.id) return;
+                    e.preventDefault();
+                    const rect = card.getBoundingClientRect();
+                    const after = e.clientY > rect.top + rect.height / 2;
+                    card.classList.toggle("drop-target-below", after);
+                    card.classList.toggle("drop-target-above", !after);
+                });
+
+                card.addEventListener("dragleave", () => {
+                    card.classList.remove("drop-target-above", "drop-target-below");
+                });
+
+                card.addEventListener("drop", (e) => {
+                    e.preventDefault();
+                    card.classList.remove("drop-target-above", "drop-target-below");
+                    if (!draggedEventId || draggedDateKey !== selectedDateKey || draggedEventId === evt.id) return;
+                    const rect = card.getBoundingClientRect();
+                    const after = e.clientY > rect.top + rect.height / 2;
+                    reorderEventsWithinDay(selectedDateKey, draggedEventId, evt.id, after);
+                });
+
+                card.addEventListener("dragend", () => {
+                    draggedEventId = null;
+                    draggedDateKey = null;
+                    card.classList.remove("dragging-pill", "drop-target-above", "drop-target-below");
+                });
+
+                // Touch drag-and-drop support on mobile devices
+                dragHandle.addEventListener("touchstart", (e) => {
+                    e.stopPropagation();
+                    draggedEventId = evt.id;
+                    draggedDateKey = selectedDateKey;
+                    card.classList.add("dragging-pill");
+                }, { passive: true });
+
+                dragHandle.addEventListener("touchmove", (e) => {
+                    if (!draggedEventId) return;
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const cards = Array.from(listEl.querySelectorAll(".mobile-agenda-card"));
+                    cards.forEach((cEl) => cEl.classList.remove("drop-target-above", "drop-target-below"));
+
+                    const hovered = cards.find((cEl) => {
+                        if (cEl.dataset.eventId === draggedEventId) return false;
+                        const r = cEl.getBoundingClientRect();
+                        return touch.clientY >= r.top && touch.clientY <= r.bottom;
+                    });
+
+                    if (hovered) {
+                        const r = hovered.getBoundingClientRect();
+                        const after = touch.clientY > r.top + r.height / 2;
+                        hovered.classList.toggle("drop-target-below", after);
+                        hovered.classList.toggle("drop-target-above", !after);
+                    }
+                }, { passive: false });
+
+                dragHandle.addEventListener("touchend", (e) => {
+                    if (!draggedEventId) return;
+                    const touch = e.changedTouches[0];
+                    const cards = Array.from(listEl.querySelectorAll(".mobile-agenda-card"));
+                    const hovered = cards.find((cEl) => {
+                        if (cEl.dataset.eventId === draggedEventId) return false;
+                        const r = cEl.getBoundingClientRect();
+                        return touch.clientY >= r.top && touch.clientY <= r.bottom;
+                    });
+
+                    cards.forEach((cEl) => cEl.classList.remove("dragging-pill", "drop-target-above", "drop-target-below"));
+                    const sourceId = draggedEventId;
+                    draggedEventId = null;
+                    draggedDateKey = null;
+
+                    if (hovered) {
+                        const r = hovered.getBoundingClientRect();
+                        const after = touch.clientY > r.top + r.height / 2;
+                        reorderEventsWithinDay(selectedDateKey, sourceId, hovered.dataset.eventId, after);
+                    }
+                });
+
+                card.addEventListener("click", (e) => {
+                    if (e.target.closest(".mobile-drag-handle")) return;
                     openEditModal(evt);
                 });
 
@@ -887,46 +1080,56 @@
         }
 
         function renderCalendar() {
-            const cur = MONTHS[activeMonthIndex];
-            const display = $("current-month-display");
-            if (display) display.textContent = cur.full;
-
-            renderYearTabs();
-            renderMonthTabs();
+            const { year, month, full } = MONTHS[activeMonthIndex];
+            $("current-month-display").textContent = full;
 
             const grid = $("calendar-days-grid");
-            if (!grid) return;
             grid.innerHTML = "";
 
-            const firstDay = new Date(cur.year, cur.month, 1);
+            const firstDay = new Date(year, month, 1);
+            // Convert JS Sunday=0..Saturday=6 into Monday=0..Sunday=6
             const startOffset = (firstDay.getDay() + 6) % 7;
-            const daysInMonth = new Date(cur.year, cur.month + 1, 0).getDate();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
             const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
-            const todayKey = formatDateKey(new Date());
+
+            const today = new Date();
+            const todayKey = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
 
             if (!selectedDateKey) {
-                selectedDateKey = todayKey;
+                selectedDateKey = todayKey.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`)
+                    ? todayKey
+                    : formatDateKey(year, month, 1);
             }
 
-            for (let i = 0; i < totalCells; i++) {
-                const dayNum = i - startOffset + 1;
-                const cellDate = new Date(cur.year, cur.month, dayNum);
-                const dateKey = formatDateKey(cellDate);
-                const inMonth = dayNum >= 1 && dayNum <= daysInMonth;
+            for (let cellIdx = 0; cellIdx < totalCells; cellIdx++) {
+                const dayNumber = cellIdx - startOffset + 1;
+                const cell = document.createElement("div");
+                cell.className = "day-cell border-b border-r border-slate-200 p-1 sm:p-2 min-h-[104px] sm:min-h-[120px] flex flex-col gap-1 transition relative group min-w-0 overflow-hidden";
+
+                if (dayNumber < 1 || dayNumber > daysInMonth) {
+                    cell.classList.add("bg-slate-50/70");
+                    grid.appendChild(cell);
+                    continue;
+                }
+
+                const dateKey = formatDateKey(year, month, dayNumber);
                 const isToday = dateKey === todayKey;
                 const isSelected = dateKey === selectedDateKey;
 
-                const cell = document.createElement("div");
-                cell.className = `day-cell border-b border-r border-slate-200 p-0.5 sm:p-2 min-h-[104px] sm:min-h-[125px] flex flex-col transition cursor-pointer min-w-0 ${isSelected
-                        ? "bg-blue-50/60 ring-2 ring-inset ring-blue-500 sm:ring-0 sm:bg-white sm:hover:bg-slate-50"
-                        : inMonth
-                            ? "bg-white hover:bg-slate-50"
-                            : "bg-slate-50/70 text-slate-400"
-                    }`;
+                cell.classList.add(
+                    "bg-white",
+                    "hover:bg-blue-50/30",
+                    "cursor-pointer"
+                );
+
+                if (isSelected) {
+                    cell.classList.add("ring-2", "ring-inset", "ring-blue-500", "bg-blue-50/30");
+                }
 
                 cell.addEventListener("click", (e) => {
                     const isMobile = window.innerWidth < 640;
                     if (isMobile) {
+                        // On mobile, tapping any cell only selects that date so edits/adds happen in the panel below
                         selectedDateKey = dateKey;
                         renderCalendar();
                         return;
@@ -936,22 +1139,22 @@
                 });
 
                 const headerRow = document.createElement("div");
-                headerRow.className = "flex items-center justify-between mb-1 px-0.5";
+                headerRow.className = "flex items-center justify-between";
 
                 const dayBadge = document.createElement("span");
-                dayBadge.textContent = cellDate.getDate();
-                if (isToday) {
-                    dayBadge.className = "is-today-badge inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-600 text-white text-[11px] sm:text-xs font-bold shadow-xs";
-                } else {
-                    dayBadge.className = `text-[11px] sm:text-xs font-semibold ${inMonth ? "text-slate-700" : "text-slate-400"}`;
-                }
+                dayBadge.textContent = dayNumber;
+                dayBadge.className = isToday
+                    ? "is-today-badge w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-600 text-white text-xs sm:text-sm font-bold flex items-center justify-center shadow-xs"
+                    : "text-xs sm:text-sm font-semibold text-slate-700 px-1";
+
                 headerRow.appendChild(dayBadge);
                 cell.appendChild(headerRow);
 
-                // Filter and sort events so multi-day events appear at the top (longest span first)
-                const dayEvents = events
-                    .filter((evt) => dateKey >= evt.startDate && dateKey <= (evt.endDate || evt.startDate))
-                    .sort((a, b) => getDurationDays(b) - getDurationDays(a));
+                // Filter and sort events (respecting custom per-day order first, then multi-day span)
+                const dayEvents = sortDayEvents(
+                    events.filter((evt) => dateKey >= evt.startDate && dateKey <= (evt.endDate || evt.startDate)),
+                    dateKey
+                );
 
                 const list = document.createElement("div");
                 list.className = "flex flex-col gap-1 min-w-0";
@@ -969,9 +1172,57 @@
                     const pill = document.createElement("button");
                     pill.type = "button";
                     pill.lang = "en";
-                    pill.className = `event-pill mobile-two-line-pill w-full text-left px-1 sm:px-1.5 py-0.5 rounded border text-[10px] sm:text-xs font-medium leading-tight transition hover:opacity-90 ${c.bg} ${c.text} ${c.border} sm:truncate`;
+                    pill.draggable = window.innerWidth >= 640 && dayEvents.length > 1;
+                    pill.className = `event-pill mobile-two-line-pill w-full text-left px-1 sm:px-1.5 py-0.5 rounded border text-[10px] sm:text-xs font-medium leading-tight transition hover:opacity-90 ${dayEvents.length > 1 ? "sm:cursor-grab sm:active:cursor-grabbing" : ""
+                        } ${c.bg} ${c.text} ${c.border} sm:truncate`;
                     pill.textContent = `${prefix}${evt.title}`;
-                    pill.title = evt.title;
+                    pill.title = dayEvents.length > 1 ? `${evt.title} (Drag to reorder within day)` : evt.title;
+
+                    // Same-day drag-and-drop reordering on desktop
+                    pill.addEventListener("dragstart", (e) => {
+                        if (window.innerWidth < 640) {
+                            e.preventDefault();
+                            return;
+                        }
+                        e.stopPropagation();
+                        draggedEventId = evt.id;
+                        draggedDateKey = dateKey;
+                        pill.classList.add("dragging-pill");
+                        if (e.dataTransfer) {
+                            e.dataTransfer.effectAllowed = "move";
+                            e.dataTransfer.setData("text/plain", evt.id);
+                        }
+                    });
+
+                    pill.addEventListener("dragover", (e) => {
+                        if (!draggedEventId || draggedDateKey !== dateKey || draggedEventId === evt.id) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const rect = pill.getBoundingClientRect();
+                        const after = e.clientY > rect.top + rect.height / 2;
+                        pill.classList.toggle("drop-target-below", after);
+                        pill.classList.toggle("drop-target-above", !after);
+                    });
+
+                    pill.addEventListener("dragleave", () => {
+                        pill.classList.remove("drop-target-above", "drop-target-below");
+                    });
+
+                    pill.addEventListener("drop", (e) => {
+                        if (!draggedEventId || draggedDateKey !== dateKey || draggedEventId === evt.id) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        pill.classList.remove("drop-target-above", "drop-target-below");
+                        const rect = pill.getBoundingClientRect();
+                        const after = e.clientY > rect.top + rect.height / 2;
+                        reorderEventsWithinDay(dateKey, draggedEventId, evt.id, after);
+                    });
+
+                    pill.addEventListener("dragend", () => {
+                        draggedEventId = null;
+                        draggedDateKey = null;
+                        pill.classList.remove("dragging-pill", "drop-target-above", "drop-target-below");
+                    });
 
                     pill.addEventListener("click", (e) => {
                         const isMobile = window.innerWidth < 640;
@@ -993,56 +1244,37 @@
             renderMobileAgenda();
         }
 
-        function renderColorPicker(selectedId) {
-            const container = $("color-picker-options");
-            if (!container) return;
-            container.innerHTML = "";
-
-            COLORS.forEach((c) => {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.ariaLabel = c.id;
-                const active = selectedId === c.id;
-                btn.className = `w-7 h-7 sm:w-8 sm:h-8 rounded-full ${c.dot} flex items-center justify-center text-white text-xs transition transform ${active ? "ring-2 ring-offset-2 ring-slate-900 scale-110" : "opacity-80 hover:opacity-100"
-                    }`;
-                btn.innerHTML = active ? '<i class="fa-solid fa-check text-[11px]"></i>' : "";
-
-                btn.addEventListener("click", () => {
-                    $("event-color").value = c.id;
-                    renderColorPicker(c.id);
-                });
-
-                container.appendChild(btn);
-            });
-        }
-
-        function openAddModal(dateStr) {
-            const cur = MONTHS[activeMonthIndex];
-            const defaultDate = dateStr || `${cur.year}-${String(cur.month + 1).padStart(2, "0")}-01`;
+        function openAddModal(defaultDate = null) {
+            const { year, month } = MONTHS[activeMonthIndex];
+            const fallbackDate = defaultDate || selectedDateKey || formatDateKey(year, month, 1);
 
             $("modal-title").textContent = "Add All-Day Event";
             $("event-id").value = "";
             $("event-title").value = "";
-            $("event-start-date").value = defaultDate;
-            $("event-end-date").value = defaultDate;
+            $("event-start-date").value = fallbackDate;
+            $("event-end-date").value = fallbackDate;
             $("event-recurrence").value = "none";
+            $("event-recurrence").disabled = false;
             $("event-color").value = "blue";
             renderColorPicker("blue");
             $("delete-event-btn").classList.add("hidden");
+
             $("event-modal").classList.remove("hidden");
+            setTimeout(() => $("event-title").focus(), 50);
         }
 
         function openEditModal(evt) {
             $("modal-title").textContent = "Edit Event";
             $("event-id").value = evt.id;
-            $("event-title").value = evt.title || "";
+            $("event-title").value = evt.title;
             $("event-start-date").value = evt.startDate;
             $("event-end-date").value = evt.endDate || evt.startDate;
             $("event-recurrence").value = evt.recurrence || "none";
-            const col = evt.color || "blue";
-            $("event-color").value = col;
-            renderColorPicker(col);
+            $("event-recurrence").disabled = Boolean(evt.seriesId);
+            $("event-color").value = evt.color || "blue";
+            renderColorPicker(evt.color || "blue");
             $("delete-event-btn").classList.remove("hidden");
+
             $("event-modal").classList.remove("hidden");
         }
 
@@ -1050,273 +1282,245 @@
             $("event-modal").classList.add("hidden");
         }
 
-        function closeDeleteRecurringModal() {
-            $("delete-recurring-modal").classList.add("hidden");
-            pendingDeleteEvent = null;
-        }
-
         function handleFormSubmit(e) {
             e.preventDefault();
-            const existingId = $("event-id").value;
+            const id = $("event-id").value.trim();
             const title = $("event-title").value.trim();
             const startDate = $("event-start-date").value;
             let endDate = $("event-end-date").value || startDate;
-            if (endDate < startDate) endDate = startDate;
             const recurrence = $("event-recurrence").value;
             const color = $("event-color").value || "blue";
 
             if (!title || !startDate) return;
+            if (endDate < startDate) {
+                endDate = startDate;
+            }
 
-            let existingGroupId = null;
-            if (existingId) {
-                const target = events.find((item) => item.id === existingId);
-                if (target && target.groupId) {
-                    existingGroupId = target.groupId;
-                    events = events.filter((item) => item.groupId !== existingGroupId);
+            if (id) {
+                const idx = events.findIndex((item) => item.id === id);
+                if (idx !== -1) {
+                    const existing = events[idx];
+                    if (existing.seriesId) {
+                        const oldStart = existing.startDate;
+                        const spanDays = getDurationDays({ startDate, endDate }) - 1;
+                        const deltaMs = parseDateKey(startDate) - parseDateKey(oldStart);
+                        const deltaDays = Math.round(deltaMs / (1000 * 60 * 60 * 24));
+
+                        events = events.map((item) => {
+                            if (item.seriesId === existing.seriesId && item.startDate >= oldStart) {
+                                const shiftedStart = addDays(item.startDate, deltaDays);
+                                return {
+                                    ...item,
+                                    title,
+                                    color,
+                                    startDate: shiftedStart,
+                                    endDate: addDays(shiftedStart, spanDays)
+                                };
+                            }
+                            return item;
+                        });
+                    } else if (recurrence !== "none") {
+                        events.splice(idx, 1);
+                        const generated = generateRecurringSeries({ title, startDate, endDate, color, recurrence });
+                        events.push(...generated);
+                    } else {
+                        events[idx] = { ...existing, title, startDate, endDate, color, recurrence: "none" };
+                    }
+                }
+            } else {
+                if (recurrence !== "none") {
+                    const generated = generateRecurringSeries({ title, startDate, endDate, color, recurrence });
+                    events.push(...generated);
                 } else {
-                    events = events.filter((item) => item.id !== existingId);
+                    events.push({
+                        id: generateId(),
+                        title,
+                        startDate,
+                        endDate,
+                        color,
+                        recurrence: "none"
+                    });
                 }
             }
 
-            const newSeries = generateRecurringSeries({
-                title,
-                startDate,
-                endDate,
-                recurrence,
-                color,
-                groupId: recurrence !== "none" ? (existingGroupId || `grp_${Date.now()}`) : null
-            });
-
-            events.push(...newSeries);
             selectedDateKey = startDate;
             saveEvents();
-            renderCalendar();
             closeEventModal();
+            renderCalendar();
+            showToast("Event saved");
         }
 
-        function handleDeleteTrigger() {
-            const existingId = $("event-id").value;
-            const evt = events.find((item) => item.id === existingId);
-            if (!evt) return;
+        function handleDeleteClick() {
+            const id = $("event-id").value.trim();
+            const target = events.find((item) => item.id === id);
+            if (!target) return;
 
-            if (evt.groupId) {
-                pendingDeleteEvent = evt;
+            if (target.seriesId) {
+                pendingDeleteEvent = target;
+                closeEventModal();
                 $("delete-recurring-modal").classList.remove("hidden");
             } else {
-                events = events.filter((item) => item.id !== evt.id);
+                events = events.filter((item) => item.id !== id);
                 saveEvents();
-                renderCalendar();
                 closeEventModal();
+                renderCalendar();
+                showToast("Event deleted");
             }
+        }
+
+        function executeRecurringDelete(mode) {
+            if (!pendingDeleteEvent) return;
+            const { id, seriesId, startDate } = pendingDeleteEvent;
+
+            if (mode === "single") {
+                events = events.filter((item) => item.id !== id);
+            } else if (mode === "following") {
+                events = events.filter((item) => !(item.seriesId === seriesId && item.startDate >= startDate));
+            } else if (mode === "all") {
+                events = events.filter((item) => item.seriesId !== seriesId);
+            }
+
+            pendingDeleteEvent = null;
+            $("delete-recurring-modal").classList.add("hidden");
+            saveEvents();
+            renderCalendar();
+            showToast("Series updated");
+        }
+
+        function handleSaveBackup() {
+            const payload = {
+                app: "UGG Knightsbridge Planner",
+                exportedAt: new Date().toISOString(),
+                events
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            const dateTag = new Date().toISOString().slice(0, 10);
+            a.href = url;
+            a.download = `ugg-knightsbridge-planner-backup-${dateTag}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Backup downloaded");
+        }
+
+        function handleRestoreBackup(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const parsed = JSON.parse(ev.target.result);
+                    const restoredList = Array.isArray(parsed) ? parsed : parsed.events;
+                    if (!Array.isArray(restoredList)) {
+                        throw new Error("Invalid backup structure");
+                    }
+                    events = restoredList;
+                    saveEvents();
+                    renderCalendar();
+                    showToast(`Restored ${events.length} event(s)`);
+                } catch (err) {
+                    console.error("Restore failed:", err);
+                    showToast("Invalid backup file", true);
+                } finally {
+                    e.target.value = "";
+                }
+            };
+            reader.readAsText(file);
         }
 
         function jumpToToday() {
             const now = new Date();
-            const todayStr = formatDateKey(now);
-            selectedDateKey = todayStr;
             const idx = MONTHS.findIndex((m) => m.year === now.getFullYear() && m.month === now.getMonth());
-            activeMonthIndex = idx >= 0 ? idx : 0;
-            renderCalendar();
+            activeMonthIndex = idx !== -1 ? idx : 0;
+            selectedDateKey = formatDateKey(now.getFullYear(), now.getMonth(), now.getDate());
+            setActiveMonth(activeMonthIndex);
         }
 
-        function handleSaveBackup() {
-            try {
-                const payload = JSON.stringify(
-                    {
-                        app: "UGG Knightsbridge Planner",
-                        exportedAt: new Date().toISOString(),
-                        events
-                    },
-                    null,
-                    2
-                );
-                const blob = new Blob([payload], { type: "application/json" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `ugg-knightsbridge-backup-${formatDateKey(new Date())}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setTimeout(() => URL.revokeObjectURL(url), 1000);
-                showToast("Backup file saved");
-            } catch (err) {
-                console.error("Backup error:", err);
-                showToast("Could not save backup", true);
-            }
-        }
-
-        function parseBackupPayload(rawText) {
-            let clean = rawText.replace(/^\uFEFF/, "").trim();
-            if (clean.startsWith("%7B") || clean.startsWith("%5B")) {
-                clean = decodeURIComponent(clean);
-            }
-            let parsed = JSON.parse(clean);
-            if (typeof parsed === "string") {
-                parsed = JSON.parse(parsed);
-            }
-            if (Array.isArray(parsed)) return parsed;
-            if (parsed && Array.isArray(parsed.events)) return parsed.events;
-            if (parsed && parsed.record && Array.isArray(parsed.record.events)) return parsed.record.events;
-            return null;
-        }
-
-        async function handleRestoreBackup(e) {
-            const file = e.target.files && e.target.files[0];
-            if (!file) return;
-
-            try {
-                let text = "";
-                if (typeof file.text === "function") {
-                    text = await file.text();
-                } else {
-                    text = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = () => resolve(String(reader.result || ""));
-                        reader.onerror = () => reject(reader.error);
-                        reader.readAsText(file);
-                    });
-                }
-
-                const restoredEvents = parseBackupPayload(text);
-                if (!restoredEvents) {
-                    throw new Error("Invalid backup structure");
-                }
-
-                events = restoredEvents;
-                saveEvents();
-                renderCalendar();
-                showToast(`Restored ${events.length} event${events.length === 1 ? "" : "s"}`);
-            } catch (err) {
-                console.error("Restore error:", err);
-                showToast("Could not read backup file", true);
-            } finally {
-                e.target.value = "";
-            }
-        }
-
-        function setupTouchSwipe() {
+        function setupSwipeNavigation() {
             const area = $("calendar-touch-area");
-            if (!area) return;
-            let startX = 0;
-            let startY = 0;
+            let touchStartX = 0;
+            let touchStartY = 0;
 
-            area.addEventListener(
-                "touchstart",
-                (e) => {
-                    if (e.touches.length === 1) {
-                        startX = e.touches[0].clientX;
-                        startY = e.touches[0].clientY;
+            area.addEventListener("touchstart", (e) => {
+                if (e.touches.length !== 1) return;
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            area.addEventListener("touchend", (e) => {
+                if (e.changedTouches.length !== 1) return;
+                const dx = e.changedTouches[0].clientX - touchStartX;
+                const dy = e.changedTouches[0].clientY - touchStartY;
+                if (Math.abs(dx) > 65 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+                    if (dx < 0 && activeMonthIndex < MONTHS.length - 1) {
+                        setActiveMonth(activeMonthIndex + 1);
+                    } else if (dx > 0 && activeMonthIndex > 0) {
+                        setActiveMonth(activeMonthIndex - 1);
                     }
-                },
-                { passive: true }
-            );
-
-            area.addEventListener(
-                "touchend",
-                (e) => {
-                    if (!startX || !startY) return;
-                    const endX = e.changedTouches[0].clientX;
-                    const endY = e.changedTouches[0].clientY;
-                    const dx = endX - startX;
-                    const dy = endY - startY;
-
-                    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-                        if (dx < 0 && activeMonthIndex < MONTHS.length - 1) {
-                            activeMonthIndex++;
-                            renderCalendar();
-                        } else if (dx > 0 && activeMonthIndex > 0) {
-                            activeMonthIndex--;
-                            renderCalendar();
-                        }
-                    }
-                    startX = 0;
-                    startY = 0;
-                },
-                { passive: true }
-            );
+                }
+            }, { passive: true });
         }
 
-        // Boot Application
-        document.addEventListener("DOMContentLoaded", () => {
-            loadLocalEvents();
-            jumpToToday();
-            initFirebaseSync();
-            setupTouchSwipe();
+        // Wire up UI event listeners
+        $("add-event-btn").addEventListener("click", () => openAddModal());
+        $("mobile-agenda-add-btn").addEventListener("click", () => openAddModal(selectedDateKey));
+        $("close-modal-btn").addEventListener("click", closeEventModal);
+        $("cancel-modal-btn").addEventListener("click", closeEventModal);
+        $("event-form").addEventListener("submit", handleFormSubmit);
+        $("delete-event-btn").addEventListener("click", handleDeleteClick);
 
-            $("cloud-sync-pill")?.addEventListener("click", () => {
-                if (lastSyncError) {
-                    showToast(lastSyncError, !cloudReady);
-                } else if (cloudReady) {
-                    pushEventsToCloud();
-                    showToast("Synced with Firebase");
-                }
-            });
-
-            $("prev-month-btn")?.addEventListener("click", () => {
-                if (activeMonthIndex > 0) {
-                    activeMonthIndex--;
-                    renderCalendar();
-                }
-            });
-
-            $("next-month-btn")?.addEventListener("click", () => {
-                if (activeMonthIndex < MONTHS.length - 1) {
-                    activeMonthIndex++;
-                    renderCalendar();
-                }
-            });
-
-            $("today-btn")?.addEventListener("click", jumpToToday);
-            $("add-event-btn")?.addEventListener("click", () => openAddModal(selectedDateKey));
-            $("mobile-agenda-add-btn")?.addEventListener("click", () => openAddModal(selectedDateKey));
-            $("save-backup-btn")?.addEventListener("click", handleSaveBackup);
-            $("restore-file-input")?.addEventListener("change", handleRestoreBackup);
-
-            $("close-modal-btn")?.addEventListener("click", closeEventModal);
-            $("cancel-modal-btn")?.addEventListener("click", closeEventModal);
-            $("event-form")?.addEventListener("submit", handleFormSubmit);
-            $("delete-event-btn")?.addEventListener("click", handleDeleteTrigger);
-
-            $("event-start-date")?.addEventListener("change", (e) => {
-                if ($("event-end-date").value < e.target.value) {
-                    $("event-end-date").value = e.target.value;
-                }
-            });
-
-            // Recurring delete prompt actions
-            $("delete-single-btn")?.addEventListener("click", () => {
-                if (!pendingDeleteEvent) return;
-                events = events.filter((item) => item.id !== pendingDeleteEvent.id);
-                saveEvents();
-                renderCalendar();
-                closeDeleteRecurringModal();
-                closeEventModal();
-            });
-
-            $("delete-following-btn")?.addEventListener("click", () => {
-                if (!pendingDeleteEvent) return;
-                const cutoff = pendingDeleteEvent.startDate;
-                const gid = pendingDeleteEvent.groupId;
-                events = events.filter((item) => !(item.groupId === gid && item.startDate >= cutoff));
-                saveEvents();
-                renderCalendar();
-                closeDeleteRecurringModal();
-                closeEventModal();
-            });
-
-            $("delete-all-btn")?.addEventListener("click", () => {
-                if (!pendingDeleteEvent) return;
-                const gid = pendingDeleteEvent.groupId;
-                events = events.filter((item) => item.groupId !== gid);
-                saveEvents();
-                renderCalendar();
-                closeDeleteRecurringModal();
-                closeEventModal();
-            });
-
-            $("cancel-delete-modal-btn")?.addEventListener("click", closeDeleteRecurringModal);
+        $("event-start-date").addEventListener("change", () => {
+            if ($("event-end-date").value < $("event-start-date").value) {
+                $("event-end-date").value = $("event-start-date").value;
+            }
         });
+
+        $("prev-month-btn").addEventListener("click", () => setActiveMonth(activeMonthIndex - 1));
+        $("next-month-btn").addEventListener("click", () => setActiveMonth(activeMonthIndex + 1));
+        $("today-btn").addEventListener("click", jumpToToday);
+
+        $("delete-single-btn").addEventListener("click", () => executeRecurringDelete("single"));
+        $("delete-following-btn").addEventListener("click", () => executeRecurringDelete("following"));
+        $("delete-all-btn").addEventListener("click", () => executeRecurringDelete("all"));
+        $("cancel-delete-modal-btn").addEventListener("click", () => {
+            pendingDeleteEvent = null;
+            $("delete-recurring-modal").classList.add("hidden");
+        });
+
+        $("save-backup-btn").addEventListener("click", handleSaveBackup);
+        $("restore-file-input").addEventListener("change", handleRestoreBackup);
+
+        $("cloud-sync-pill").addEventListener("click", () => {
+            if (cloudReady) {
+                pushEventsToCloud();
+                showToast("Synced with Firebase");
+            } else if (lastSyncError) {
+                showToast(lastSyncError, true);
+            } else {
+                showToast("Paste firebaseConfig in HTML for live sync");
+            }
+        });
+
+        // Close modals when clicking backdrop
+        $("event-modal").addEventListener("click", (e) => {
+            if (e.target === $("event-modal")) closeEventModal();
+        });
+        $("delete-recurring-modal").addEventListener("click", (e) => {
+            if (e.target === $("delete-recurring-modal")) {
+                pendingDeleteEvent = null;
+                $("delete-recurring-modal").classList.add("hidden");
+            }
+        });
+
+        // Boot application
+        events = loadLocalEvents();
+        jumpToToday();
+        setupSwipeNavigation();
+        initFirebaseSync();
     </script>
 </body>
 
