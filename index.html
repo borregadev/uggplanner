@@ -194,8 +194,7 @@
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col overflow-x-hidden">
 
     <!-- Password Lock Screen Overlay -->
-    <div id="lock-screen"
-        class="no-print fixed inset-0 z-[100] bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-4">
+    <div id="lock-screen" class="no-print fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm p-6 sm:p-7 text-center">
             <div
                 class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
@@ -225,8 +224,8 @@
         </div>
     </div>
 
-    <!-- Top Navigation / Action Bar (Hidden when Printing) -->
-    <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <!-- Top Navigation / Action Bar (Hidden when Printing or Locked) -->
+    <header id="app-header" class="hidden no-print bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
                 <!-- Branding / Title -->
@@ -310,8 +309,8 @@
         </div>
     </header>
 
-    <!-- Main Printable Calendar Area -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-1.5 sm:p-6 lg:p-8 page-container">
+    <!-- Main Printable Calendar Area (Hidden until Unlocked) -->
+    <main id="app-main" class="hidden flex-1 max-w-7xl w-full mx-auto p-1.5 sm:p-6 lg:p-8 page-container">
         <div id="calendar-touch-area"
             class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[580px] sm:min-h-[750px]">
             <!-- Calendar Month Title & Year Header -->
@@ -542,7 +541,7 @@
     <!-- Application Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, setPersistence, inMemoryPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // =========================================================================
@@ -1669,7 +1668,7 @@
             }
         });
 
-        // Firebase Email & Password Lock Screen Logic
+        // Firebase Password Lock Screen Logic (Requires password on every page load)
         let appBooted = false;
 
         function showAuthError(message) {
@@ -1690,6 +1689,8 @@
 
         function showUnlockedUI() {
             $("lock-screen").classList.add("hidden");
+            $("app-header").classList.remove("hidden");
+            $("app-main").classList.remove("hidden");
             $("unlock-error-msg").classList.add("hidden");
             $("unlock-password-input").value = "";
             startPlannerApp();
@@ -1701,6 +1702,8 @@
                 unsubscribeSnapshot = null;
             }
             cloudReady = false;
+            $("app-header").classList.add("hidden");
+            $("app-main").classList.add("hidden");
             $("lock-screen").classList.remove("hidden");
             setTimeout(() => $("unlock-password-input").focus(), 50);
         }
@@ -1736,8 +1739,9 @@
             submitBtn.textContent = "Unlocking...";
 
             try {
+                await setPersistence(auth, inMemoryPersistence);
                 await signInWithEmailAndPassword(auth, PLANNER_AUTH_EMAIL, password);
-                // onAuthStateChanged will unlock the planner automatically
+                showUnlockedUI();
             } catch (err) {
                 console.error("Sign-in failed:", err);
                 const code = err && err.code ? err.code : "";
@@ -1759,17 +1763,12 @@
 
         $("lock-planner-btn").addEventListener("click", lockPlanner);
 
-        // Monitor Firebase authentication state on load
+        // Always start locked on initial page load & clear any prior cached Firebase session
+        showLockedUI();
         if (initFirebaseServices()) {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    showUnlockedUI();
-                } else {
-                    showLockedUI();
-                }
-            });
-        } else {
-            showLockedUI();
+            setPersistence(auth, inMemoryPersistence)
+                .then(() => signOut(auth))
+                .catch(() => { });
         }
     </script>
 </body>
