@@ -365,7 +365,7 @@
             <!-- Event Form -->
             <form id="event-form" class="p-5 sm:p-6 space-y-4">
                 <input type="hidden" id="event-id">
-                <input type="hidden" id="event-color" value="blue">
+                <input type="hidden" id="event-color" value="cobalt">
 
                 <!-- Title -->
                 <div>
@@ -416,10 +416,13 @@
 
                 <!-- Color Palette Options -->
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
-                        Color Tag
-                    </label>
-                    <div id="color-picker-options" class="flex flex-wrap items-center gap-2 sm:gap-2.5">
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                            Color Tag
+                        </label>
+                        <span id="selected-color-name" class="text-[11px] font-medium text-slate-500">Cobalt Blue</span>
+                    </div>
+                    <div id="color-picker-options" class="grid grid-cols-6 gap-2.5">
                         <!-- Color swatches injected dynamically -->
                     </div>
                 </div>
@@ -524,20 +527,41 @@
             }
         });
 
+        // 12 maximally distinct, non-overlapping hues across the spectrum
         const COLORS = [
-            { id: "blue", bg: "bg-blue-100", text: "text-blue-800", border: "border-blue-300", dot: "bg-blue-600" },
-            { id: "emerald", bg: "bg-emerald-100", text: "text-emerald-800", border: "border-emerald-300", dot: "bg-emerald-600" },
-            { id: "purple", bg: "bg-purple-100", text: "text-purple-800", border: "border-purple-300", dot: "bg-purple-600" },
-            { id: "amber", bg: "bg-amber-100", text: "text-amber-800", border: "border-amber-300", dot: "bg-amber-500" },
-            { id: "rose", bg: "bg-rose-100", text: "text-rose-800", border: "border-rose-300", dot: "bg-rose-600" },
-            { id: "indigo", bg: "bg-indigo-100", text: "text-indigo-800", border: "border-indigo-300", dot: "bg-indigo-600" },
-            { id: "teal", bg: "bg-teal-100", text: "text-teal-800", border: "border-teal-300", dot: "bg-teal-600" },
-            { id: "cyan", bg: "bg-cyan-100", text: "text-cyan-800", border: "border-cyan-300", dot: "bg-cyan-600" },
-            { id: "violet", bg: "bg-violet-100", text: "text-violet-800", border: "border-violet-300", dot: "bg-violet-600" },
-            { id: "pink", bg: "bg-pink-100", text: "text-pink-800", border: "border-pink-300", dot: "bg-pink-600" },
-            { id: "orange", bg: "bg-orange-100", text: "text-orange-800", border: "border-orange-300", dot: "bg-orange-600" },
-            { id: "slate", bg: "bg-slate-200", text: "text-slate-800", border: "border-slate-400", dot: "bg-slate-600" }
+            { id: "crimson", name: "Crimson Red", bg: "bg-red-100", text: "text-red-900", border: "border-red-300", dot: "bg-red-600" },
+            { id: "tangerine", name: "Tangerine", bg: "bg-orange-100", text: "text-orange-900", border: "border-orange-300", dot: "bg-orange-500" },
+            { id: "gold", name: "Marigold Gold", bg: "bg-amber-100", text: "text-amber-900", border: "border-amber-300", dot: "bg-amber-400" },
+            { id: "lime", name: "Fresh Lime", bg: "bg-lime-100", text: "text-lime-900", border: "border-lime-300", dot: "bg-lime-500" },
+            { id: "forest", name: "Forest Green", bg: "bg-emerald-100", text: "text-emerald-900", border: "border-emerald-300", dot: "bg-emerald-600" },
+            { id: "teal", name: "Ocean Teal", bg: "bg-teal-100", text: "text-teal-900", border: "border-teal-300", dot: "bg-teal-600" },
+            { id: "sky", name: "Sky Cyan", bg: "bg-sky-100", text: "text-sky-900", border: "border-sky-300", dot: "bg-sky-500" },
+            { id: "cobalt", name: "Cobalt Blue", bg: "bg-blue-100", text: "text-blue-900", border: "border-blue-300", dot: "bg-blue-600" },
+            { id: "plum", name: "Royal Plum", bg: "bg-purple-100", text: "text-purple-900", border: "border-purple-300", dot: "bg-purple-600" },
+            { id: "magenta", name: "Magenta Pink", bg: "bg-pink-100", text: "text-pink-900", border: "border-pink-300", dot: "bg-pink-600" },
+            { id: "chestnut", name: "UGG Chestnut", bg: "bg-stone-200", text: "text-stone-900", border: "border-stone-400", dot: "bg-amber-800" },
+            { id: "charcoal", name: "Charcoal Slate", bg: "bg-slate-200", text: "text-slate-900", border: "border-slate-400", dot: "bg-slate-700" }
         ];
+
+        // Map legacy color IDs from earlier saved events to the new distinct palette
+        const LEGACY_COLOR_MAP = {
+            blue: "cobalt",
+            emerald: "forest",
+            purple: "plum",
+            amber: "gold",
+            rose: "crimson",
+            indigo: "plum",
+            cyan: "sky",
+            violet: "plum",
+            pink: "magenta",
+            orange: "tangerine",
+            slate: "charcoal"
+        };
+
+        function getColorTheme(colorId) {
+            const resolvedId = LEGACY_COLOR_MAP[colorId] || colorId;
+            return COLORS.find((item) => item.id === resolvedId) || COLORS[7];
+        }
 
         let activeMonthIndex = 0;
         let selectedDateKey = null;
@@ -805,17 +829,22 @@
             return list;
         }
 
-        function renderColorPicker(selectedId = "blue") {
+        function renderColorPicker(selectedId = "cobalt") {
             const container = $("color-picker-options");
+            const activeTheme = getColorTheme(selectedId);
+            const nameLabel = $("selected-color-name");
+            if (nameLabel) nameLabel.textContent = activeTheme.name;
+
             container.innerHTML = "";
             COLORS.forEach((c) => {
+                const isSelected = activeTheme.id === c.id;
                 const btn = document.createElement("button");
                 btn.type = "button";
-                btn.className = `w-7 h-7 rounded-full ${c.dot} flex items-center justify-center transition transform hover:scale-110 focus:outline-none ${selectedId === c.id ? "ring-2 ring-offset-2 ring-slate-800 scale-110" : "opacity-80 hover:opacity-100"
+                btn.className = `w-8 h-8 rounded-full ${c.dot} flex items-center justify-center transition transform hover:scale-110 focus:outline-none mx-auto ${isSelected ? "ring-2 ring-offset-2 ring-slate-900 scale-110 shadow-sm" : "opacity-85 hover:opacity-100"
                     }`;
-                btn.title = c.id.charAt(0).toUpperCase() + c.id.slice(1);
-                if (selectedId === c.id) {
-                    btn.innerHTML = '<i class="fa-solid fa-check text-white text-xs"></i>';
+                btn.title = c.name;
+                if (isSelected) {
+                    btn.innerHTML = '<i class="fa-solid fa-check text-white text-xs drop-shadow-xs"></i>';
                 }
                 btn.addEventListener("click", () => {
                     $("event-color").value = c.id;
@@ -932,7 +961,7 @@
             }
 
             dayEvents.forEach((evt) => {
-                const c = COLORS.find((item) => item.id === evt.color) || COLORS[0];
+                const c = getColorTheme(evt.color);
                 const isMulti = evt.endDate && evt.endDate > evt.startDate;
 
                 const card = document.createElement("div");
@@ -945,6 +974,9 @@
                 dragHandle.className = "mobile-drag-handle text-xs opacity-60 hover:opacity-100 flex-shrink-0 px-1 py-1 cursor-grab active:cursor-grabbing touch-none";
                 dragHandle.title = "Drag to reorder";
                 dragHandle.innerHTML = '<i class="fa-solid fa-grip-vertical"></i>';
+
+                const colorDot = document.createElement("span");
+                colorDot.className = `w-2.5 h-2.5 rounded-full flex-shrink-0 ${c.dot}`;
 
                 const left = document.createElement("div");
                 left.className = "min-w-0 flex-1";
@@ -977,6 +1009,7 @@
                 if (dayEvents.length > 1) {
                     card.appendChild(dragHandle);
                 }
+                card.appendChild(colorDot);
                 card.appendChild(left);
                 card.appendChild(editIcon);
 
@@ -1160,7 +1193,7 @@
                 list.className = "flex flex-col gap-1 min-w-0";
 
                 dayEvents.forEach((evt) => {
-                    const c = COLORS.find((item) => item.id === evt.color) || COLORS[0];
+                    const c = getColorTheme(evt.color);
                     const isMulti = evt.endDate && evt.endDate > evt.startDate;
                     let prefix = "";
                     if (isMulti) {
@@ -1255,8 +1288,8 @@
             $("event-end-date").value = fallbackDate;
             $("event-recurrence").value = "none";
             $("event-recurrence").disabled = false;
-            $("event-color").value = "blue";
-            renderColorPicker("blue");
+            $("event-color").value = "cobalt";
+            renderColorPicker("cobalt");
             $("delete-event-btn").classList.add("hidden");
 
             $("event-modal").classList.remove("hidden");
@@ -1264,6 +1297,7 @@
         }
 
         function openEditModal(evt) {
+            const resolvedColor = getColorTheme(evt.color).id;
             $("modal-title").textContent = "Edit Event";
             $("event-id").value = evt.id;
             $("event-title").value = evt.title;
@@ -1271,8 +1305,8 @@
             $("event-end-date").value = evt.endDate || evt.startDate;
             $("event-recurrence").value = evt.recurrence || "none";
             $("event-recurrence").disabled = Boolean(evt.seriesId);
-            $("event-color").value = evt.color || "blue";
-            renderColorPicker(evt.color || "blue");
+            $("event-color").value = resolvedColor;
+            renderColorPicker(resolvedColor);
             $("delete-event-btn").classList.remove("hidden");
 
             $("event-modal").classList.remove("hidden");
@@ -1289,7 +1323,7 @@
             const startDate = $("event-start-date").value;
             let endDate = $("event-end-date").value || startDate;
             const recurrence = $("event-recurrence").value;
-            const color = $("event-color").value || "blue";
+            const color = $("event-color").value || "cobalt";
 
             if (!title || !startDate) return;
             if (endDate < startDate) {
