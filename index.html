@@ -146,6 +146,22 @@
             -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
         }
+
+        /* Mobile event pill: strictly 2 lines with ... ellipsis when overflowing */
+        @media (max-width: 639px) {
+            .mobile-two-line-pill {
+                display: -webkit-box !important;
+                -webkit-box-orient: vertical !important;
+                -webkit-line-clamp: 2 !important;
+                line-clamp: 2 !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                word-break: break-word !important;
+                overflow-wrap: anywhere !important;
+                line-height: 1.2 !important;
+                max-height: calc(2 * 1.2em + 4px) !important;
+            }
+        }
     </style>
 </head>
 
@@ -629,7 +645,6 @@
                             }
                             updateSyncPill("synced", "Live Sync", "Real-time sync active");
                         } else {
-                            // Initialize cloud document with current local events
                             await pushEventsToCloud();
                         }
                     },
@@ -655,6 +670,16 @@
 
         function parseDateKey(str) {
             return new Date(`${str}T00:00:00`);
+        }
+
+        function formatReadableDate(dateKey) {
+            const d = parseDateKey(dateKey);
+            return d.toLocaleDateString("en-GB", {
+                weekday: "long",
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            });
         }
 
         function getDurationDays(evt) {
@@ -746,6 +771,73 @@
             }
         }
 
+        function renderMobileAgenda() {
+            const titleEl = $("mobile-agenda-date-title");
+            const listEl = $("mobile-agenda-list");
+            if (!titleEl || !listEl || !selectedDateKey) return;
+
+            titleEl.textContent = formatReadableDate(selectedDateKey);
+            listEl.innerHTML = "";
+
+            const dayEvents = events
+                .filter((evt) => selectedDateKey >= evt.startDate && selectedDateKey <= (evt.endDate || evt.startDate))
+                .sort((a, b) => getDurationDays(b) - getDurationDays(a));
+
+            if (dayEvents.length === 0) {
+                const empty = document.createElement("p");
+                empty.className = "text-xs text-slate-400 py-2 text-center";
+                empty.textContent = "No events scheduled for this date.";
+                listEl.appendChild(empty);
+                return;
+            }
+
+            dayEvents.forEach((evt) => {
+                const c = COLORS.find((item) => item.id === evt.color) || COLORS[0];
+                const isMulti = evt.endDate && evt.endDate > evt.startDate;
+
+                const card = document.createElement("button");
+                card.type = "button";
+                card.className = `w-full text-left p-2.5 rounded-lg border flex items-center justify-between gap-2 transition active:scale-[0.99] ${c.bg} ${c.text} ${c.border}`;
+
+                const left = document.createElement("div");
+                left.className = "min-w-0 flex-1";
+
+                const title = document.createElement("div");
+                title.className = "text-xs font-semibold break-words";
+                title.textContent = evt.title;
+                left.appendChild(title);
+
+                if (isMulti || (evt.recurrence && evt.recurrence !== "none")) {
+                    const meta = document.createElement("div");
+                    meta.className = "text-[10px] opacity-80 mt-0.5 flex flex-wrap items-center gap-2";
+                    if (isMulti) {
+                        const spanText = document.createElement("span");
+                        spanText.textContent = `${evt.startDate} → ${evt.endDate}`;
+                        meta.appendChild(spanText);
+                    }
+                    if (evt.recurrence && evt.recurrence !== "none") {
+                        const recText = document.createElement("span");
+                        recText.textContent = `Repeats ${evt.recurrence}`;
+                        meta.appendChild(recText);
+                    }
+                    left.appendChild(meta);
+                }
+
+                const editIcon = document.createElement("span");
+                editIcon.className = "text-xs opacity-70 flex-shrink-0 px-1";
+                editIcon.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
+
+                card.appendChild(left);
+                card.appendChild(editIcon);
+
+                card.addEventListener("click", () => {
+                    openEditModal(evt);
+                });
+
+                listEl.appendChild(card);
+            });
+        }
+
         function renderCalendar() {
             const cur = MONTHS[activeMonthIndex];
             const display = $("current-month-display");
@@ -784,18 +876,14 @@
                     }`;
 
                 cell.addEventListener("click", (e) => {
-                    if (e.target.closest(".event-pill")) return;
                     const isMobile = window.innerWidth < 640;
                     if (isMobile) {
-                        if (selectedDateKey === dateKey) {
-                            openAddModal(dateKey);
-                        } else {
-                            selectedDateKey = dateKey;
-                            renderCalendar();
-                        }
-                    } else {
-                        openAddModal(dateKey);
+                        selectedDateKey = dateKey;
+                        renderCalendar();
+                        return;
                     }
+                    if (e.target.closest(".event-pill")) return;
+                    openAddModal(dateKey);
                 });
 
                 const headerRow = document.createElement("div");
@@ -832,11 +920,16 @@
                     const pill = document.createElement("button");
                     pill.type = "button";
                     pill.lang = "en";
-                    pill.className = `event-pill w-full text-left px-1 sm:px-1.5 py-0.5 rounded border text-[10px] sm:text-xs font-medium leading-tight transition hover:opacity-90 ${c.bg} ${c.text} ${c.border} whitespace-normal break-normal hyphens-auto line-clamp-2 sm:line-clamp-none sm:truncate`;
+                    pill.className = `event-pill mobile-two-line-pill w-full text-left px-1 sm:px-1.5 py-0.5 rounded border text-[10px] sm:text-xs font-medium leading-tight transition hover:opacity-90 ${c.bg} ${c.text} ${c.border} sm:truncate`;
                     pill.textContent = `${prefix}${evt.title}`;
                     pill.title = evt.title;
 
                     pill.addEventListener("click", (e) => {
+                        const isMobile = window.innerWidth < 640;
+                        if (isMobile) {
+                            // On mobile, tapping a cell or event selects that date so user edits via section below
+                            return;
+                        }
                         e.stopPropagation();
                         openEditModal(evt);
                     });
@@ -851,53 +944,7 @@
             renderMobileAgenda();
         }
 
-        function renderMobileAgenda() {
-            const titleEl = $("mobile-agenda-date-title");
-            const listEl = $("mobile-agenda-list");
-            if (!titleEl || !listEl || !selectedDateKey) return;
-
-            const dObj = parseDateKey(selectedDateKey);
-            titleEl.textContent = dObj.toLocaleDateString("en-GB", {
-                weekday: "long",
-                day: "numeric",
-                month: "short",
-                year: "numeric"
-            });
-
-            const dayEvents = events
-                .filter((evt) => selectedDateKey >= evt.startDate && selectedDateKey <= (evt.endDate || evt.startDate))
-                .sort((a, b) => getDurationDays(b) - getDurationDays(a));
-
-            listEl.innerHTML = "";
-            if (dayEvents.length === 0) {
-                listEl.innerHTML = `<p class="text-xs text-slate-400 py-2 text-center">No events scheduled for this day. Tap <strong>Add Here</strong> to create one.</p>`;
-                return;
-            }
-
-            dayEvents.forEach((evt) => {
-                const c = COLORS.find((item) => item.id === evt.color) || COLORS[0];
-                const isMulti = evt.endDate && evt.endDate > evt.startDate;
-                const spanLabel = isMulti ? `${evt.startDate} → ${evt.endDate}` : "All Day";
-
-                const card = document.createElement("button");
-                card.type = "button";
-                card.className = `w-full text-left p-2.5 rounded-lg border flex items-center justify-between gap-2.5 transition active:scale-[0.99] ${c.bg} ${c.border}`;
-                card.innerHTML = `
-                    <div class="flex items-start gap-2.5 min-w-0">
-                        <span class="w-2.5 h-2.5 rounded-full ${c.dot} mt-1 flex-shrink-0"></span>
-                        <div class="min-w-0">
-                            <p class="text-xs font-semibold ${c.text} break-words">${evt.title}</p>
-                            <p class="text-[11px] opacity-75 ${c.text} mt-0.5">${spanLabel}${evt.recurrence && evt.recurrence !== "none" ? ` · Repeats ${evt.recurrence}` : ""}</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-pen text-xs opacity-60 ${c.text} flex-shrink-0"></i>
-                `;
-                card.addEventListener("click", () => openEditModal(evt));
-                listEl.appendChild(card);
-            });
-        }
-
-        function renderColorSwatches(selectedId) {
+        function renderColorPicker(selectedId) {
             const container = $("color-picker-options");
             if (!container) return;
             container.innerHTML = "";
@@ -905,34 +952,33 @@
             COLORS.forEach((c) => {
                 const btn = document.createElement("button");
                 btn.type = "button";
-                const isSelected = c.id === selectedId;
-                btn.className = `w-8 h-8 rounded-full ${c.dot} flex items-center justify-center text-white text-xs transition transform ${isSelected ? "ring-2 ring-offset-2 ring-slate-900 scale-110" : "opacity-80 hover:opacity-100"
+                btn.ariaLabel = c.id;
+                const active = selectedId === c.id;
+                btn.className = `w-7 h-7 sm:w-8 sm:h-8 rounded-full ${c.dot} flex items-center justify-center text-white text-xs transition transform ${active ? "ring-2 ring-offset-2 ring-slate-900 scale-110" : "opacity-80 hover:opacity-100"
                     }`;
-                btn.innerHTML = isSelected ? '<i class="fa-solid fa-check"></i>' : "";
+                btn.innerHTML = active ? '<i class="fa-solid fa-check text-[11px]"></i>' : "";
 
                 btn.addEventListener("click", () => {
                     $("event-color").value = c.id;
-                    renderColorSwatches(c.id);
+                    renderColorPicker(c.id);
                 });
 
                 container.appendChild(btn);
             });
         }
 
-        function openAddModal(defaultDateKey) {
+        function openAddModal(dateStr) {
             const cur = MONTHS[activeMonthIndex];
-            const fallbackDate = `${cur.year}-${String(cur.month + 1).padStart(2, "0")}-01`;
-            const targetDate = defaultDateKey || fallbackDate;
+            const defaultDate = dateStr || `${cur.year}-${String(cur.month + 1).padStart(2, "0")}-01`;
 
             $("modal-title").textContent = "Add All-Day Event";
             $("event-id").value = "";
             $("event-title").value = "";
-            $("event-start-date").value = targetDate;
-            $("event-end-date").value = targetDate;
+            $("event-start-date").value = defaultDate;
+            $("event-end-date").value = defaultDate;
             $("event-recurrence").value = "none";
             $("event-color").value = "blue";
-            renderColorSwatches("blue");
-
+            renderColorPicker("blue");
             $("delete-event-btn").classList.add("hidden");
             $("event-modal").classList.remove("hidden");
         }
@@ -946,17 +992,16 @@
             $("event-recurrence").value = evt.recurrence || "none";
             const col = evt.color || "blue";
             $("event-color").value = col;
-            renderColorSwatches(col);
-
+            renderColorPicker(col);
             $("delete-event-btn").classList.remove("hidden");
             $("event-modal").classList.remove("hidden");
         }
 
-        function closeModal() {
+        function closeEventModal() {
             $("event-modal").classList.add("hidden");
         }
 
-        function closeDeleteModal() {
+        function closeDeleteRecurringModal() {
             $("delete-recurring-modal").classList.add("hidden");
             pendingDeleteEvent = null;
         }
@@ -975,9 +1020,9 @@
 
             let existingGroupId = null;
             if (existingId) {
-                const oldEvt = events.find((item) => item.id === existingId);
-                if (oldEvt && oldEvt.groupId) {
-                    existingGroupId = oldEvt.groupId;
+                const target = events.find((item) => item.id === existingId);
+                if (target && target.groupId) {
+                    existingGroupId = target.groupId;
                     events = events.filter((item) => item.groupId !== existingGroupId);
                 } else {
                     events = events.filter((item) => item.id !== existingId);
@@ -997,61 +1042,67 @@
             selectedDateKey = startDate;
             saveEvents();
             renderCalendar();
-            closeModal();
+            closeEventModal();
         }
 
-        function handleDeleteClick() {
+        function handleDeleteTrigger() {
             const existingId = $("event-id").value;
-            const targetEvt = events.find((item) => item.id === existingId);
-            if (!targetEvt) return;
+            const evt = events.find((item) => item.id === existingId);
+            if (!evt) return;
 
-            if (targetEvt.groupId) {
-                pendingDeleteEvent = targetEvt;
+            if (evt.groupId) {
+                pendingDeleteEvent = evt;
                 $("delete-recurring-modal").classList.remove("hidden");
             } else {
-                events = events.filter((item) => item.id !== targetEvt.id);
+                events = events.filter((item) => item.id !== evt.id);
                 saveEvents();
                 renderCalendar();
-                closeModal();
+                closeEventModal();
             }
         }
 
-        function goToToday() {
+        function jumpToToday() {
             const now = new Date();
-            selectedDateKey = formatDateKey(now);
-            const foundIdx = MONTHS.findIndex((m) => m.year === now.getFullYear() && m.month === now.getMonth());
-            activeMonthIndex = foundIdx >= 0 ? foundIdx : 0;
+            const todayStr = formatDateKey(now);
+            selectedDateKey = todayStr;
+            const idx = MONTHS.findIndex((m) => m.year === now.getFullYear() && m.month === now.getMonth());
+            activeMonthIndex = idx >= 0 ? idx : 0;
             renderCalendar();
         }
 
         function handleSaveBackup() {
-            const payload = JSON.stringify(
-                {
-                    app: "UGG Knightsbridge Planner",
-                    exportedAt: new Date().toISOString(),
-                    events
-                },
-                null,
-                2
-            );
-            const blob = new Blob([payload], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `ugg-knightsbridge-backup-${formatDateKey(new Date())}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
-            showToast("Backup downloaded");
+            try {
+                const payload = JSON.stringify(
+                    {
+                        app: "UGG Knightsbridge Planner",
+                        exportedAt: new Date().toISOString(),
+                        events
+                    },
+                    null,
+                    2
+                );
+                const blob = new Blob([payload], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `ugg-knightsbridge-backup-${formatDateKey(new Date())}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showToast("Backup file saved");
+            } catch (err) {
+                console.error("Backup error:", err);
+                showToast("Could not save backup", true);
+            }
         }
 
-        function extractRestoredEvents(rawText) {
-            let cleaned = rawText.replace(/^\uFEFF/, "").trim();
-            if (cleaned.startsWith("%7B") || cleaned.startsWith("%5B")) {
-                cleaned = decodeURIComponent(cleaned);
+        function parseBackupPayload(rawText) {
+            let clean = rawText.replace(/^\uFEFF/, "").trim();
+            if (clean.startsWith("%7B") || clean.startsWith("%5B")) {
+                clean = decodeURIComponent(clean);
             }
-            let parsed = JSON.parse(cleaned);
+            let parsed = JSON.parse(clean);
             if (typeof parsed === "string") {
                 parsed = JSON.parse(parsed);
             }
@@ -1078,132 +1129,145 @@
                     });
                 }
 
-                const restored = extractRestoredEvents(text);
-                if (!restored) throw new Error("Invalid backup structure");
+                const restoredEvents = parseBackupPayload(text);
+                if (!restoredEvents) {
+                    throw new Error("Invalid backup structure");
+                }
 
-                events = restored;
+                events = restoredEvents;
                 saveEvents();
                 renderCalendar();
                 showToast(`Restored ${events.length} event${events.length === 1 ? "" : "s"}`);
             } catch (err) {
-                console.error("Restore failed:", err);
+                console.error("Restore error:", err);
                 showToast("Could not read backup file", true);
             } finally {
                 e.target.value = "";
             }
         }
 
-        function initSwipeNavigation() {
+        function setupTouchSwipe() {
             const area = $("calendar-touch-area");
             if (!area) return;
-            let touchStartX = 0;
-            let touchStartY = 0;
+            let startX = 0;
+            let startY = 0;
 
-            area.addEventListener("touchstart", (e) => {
-                if (e.touches.length === 1) {
-                    touchStartX = e.touches[0].clientX;
-                    touchStartY = e.touches[0].clientY;
-                }
-            }, { passive: true });
-
-            area.addEventListener("touchend", (e) => {
-                if (!touchStartX || !touchStartY) return;
-                const dx = e.changedTouches[0].clientX - touchStartX;
-                const dy = e.changedTouches[0].clientY - touchStartY;
-
-                if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-                    if (dx < 0 && activeMonthIndex < MONTHS.length - 1) {
-                        activeMonthIndex++;
-                        renderCalendar();
-                    } else if (dx > 0 && activeMonthIndex > 0) {
-                        activeMonthIndex--;
-                        renderCalendar();
+            area.addEventListener(
+                "touchstart",
+                (e) => {
+                    if (e.touches.length === 1) {
+                        startX = e.touches[0].clientX;
+                        startY = e.touches[0].clientY;
                     }
-                }
-                touchStartX = 0;
-                touchStartY = 0;
-            }, { passive: true });
+                },
+                { passive: true }
+            );
+
+            area.addEventListener(
+                "touchend",
+                (e) => {
+                    if (!startX || !startY) return;
+                    const endX = e.changedTouches[0].clientX;
+                    const endY = e.changedTouches[0].clientY;
+                    const dx = endX - startX;
+                    const dy = endY - startY;
+
+                    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+                        if (dx < 0 && activeMonthIndex < MONTHS.length - 1) {
+                            activeMonthIndex++;
+                            renderCalendar();
+                        } else if (dx > 0 && activeMonthIndex > 0) {
+                            activeMonthIndex--;
+                            renderCalendar();
+                        }
+                    }
+                    startX = 0;
+                    startY = 0;
+                },
+                { passive: true }
+            );
         }
 
         // Boot Application
-        loadLocalEvents();
-        goToToday();
-        initFirebaseSync();
-        initSwipeNavigation();
+        document.addEventListener("DOMContentLoaded", () => {
+            loadLocalEvents();
+            jumpToToday();
+            initFirebaseSync();
+            setupTouchSwipe();
 
-        $("cloud-sync-pill")?.addEventListener("click", () => {
-            if (!isFirebaseConfigured()) {
-                showToast("Paste your firebaseConfig in calendar.html to sync", true);
-            } else if (lastSyncError) {
-                showToast(lastSyncError, true);
-            } else {
-                pushEventsToCloud();
-                showToast("Synced with Firebase");
-            }
-        });
+            $("cloud-sync-pill")?.addEventListener("click", () => {
+                if (lastSyncError) {
+                    showToast(lastSyncError, !cloudReady);
+                } else if (cloudReady) {
+                    pushEventsToCloud();
+                    showToast("Synced with Firebase");
+                }
+            });
 
-        $("prev-month-btn")?.addEventListener("click", () => {
-            if (activeMonthIndex > 0) {
-                activeMonthIndex--;
+            $("prev-month-btn")?.addEventListener("click", () => {
+                if (activeMonthIndex > 0) {
+                    activeMonthIndex--;
+                    renderCalendar();
+                }
+            });
+
+            $("next-month-btn")?.addEventListener("click", () => {
+                if (activeMonthIndex < MONTHS.length - 1) {
+                    activeMonthIndex++;
+                    renderCalendar();
+                }
+            });
+
+            $("today-btn")?.addEventListener("click", jumpToToday);
+            $("add-event-btn")?.addEventListener("click", () => openAddModal(selectedDateKey));
+            $("mobile-agenda-add-btn")?.addEventListener("click", () => openAddModal(selectedDateKey));
+            $("save-backup-btn")?.addEventListener("click", handleSaveBackup);
+            $("restore-file-input")?.addEventListener("change", handleRestoreBackup);
+
+            $("close-modal-btn")?.addEventListener("click", closeEventModal);
+            $("cancel-modal-btn")?.addEventListener("click", closeEventModal);
+            $("event-form")?.addEventListener("submit", handleFormSubmit);
+            $("delete-event-btn")?.addEventListener("click", handleDeleteTrigger);
+
+            $("event-start-date")?.addEventListener("change", (e) => {
+                if ($("event-end-date").value < e.target.value) {
+                    $("event-end-date").value = e.target.value;
+                }
+            });
+
+            // Recurring delete prompt actions
+            $("delete-single-btn")?.addEventListener("click", () => {
+                if (!pendingDeleteEvent) return;
+                events = events.filter((item) => item.id !== pendingDeleteEvent.id);
+                saveEvents();
                 renderCalendar();
-            }
-        });
+                closeDeleteRecurringModal();
+                closeEventModal();
+            });
 
-        $("next-month-btn")?.addEventListener("click", () => {
-            if (activeMonthIndex < MONTHS.length - 1) {
-                activeMonthIndex++;
+            $("delete-following-btn")?.addEventListener("click", () => {
+                if (!pendingDeleteEvent) return;
+                const cutoff = pendingDeleteEvent.startDate;
+                const gid = pendingDeleteEvent.groupId;
+                events = events.filter((item) => !(item.groupId === gid && item.startDate >= cutoff));
+                saveEvents();
                 renderCalendar();
-            }
+                closeDeleteRecurringModal();
+                closeEventModal();
+            });
+
+            $("delete-all-btn")?.addEventListener("click", () => {
+                if (!pendingDeleteEvent) return;
+                const gid = pendingDeleteEvent.groupId;
+                events = events.filter((item) => item.groupId !== gid);
+                saveEvents();
+                renderCalendar();
+                closeDeleteRecurringModal();
+                closeEventModal();
+            });
+
+            $("cancel-delete-modal-btn")?.addEventListener("click", closeDeleteRecurringModal);
         });
-
-        $("today-btn")?.addEventListener("click", goToToday);
-        $("add-event-btn")?.addEventListener("click", () => openAddModal(selectedDateKey));
-        $("mobile-agenda-add-btn")?.addEventListener("click", () => openAddModal(selectedDateKey));
-        $("close-modal-btn")?.addEventListener("click", closeModal);
-        $("cancel-modal-btn")?.addEventListener("click", closeModal);
-        $("event-form")?.addEventListener("submit", handleFormSubmit);
-        $("delete-event-btn")?.addEventListener("click", handleDeleteClick);
-
-        $("event-start-date")?.addEventListener("change", (e) => {
-            if ($("event-end-date").value < e.target.value) {
-                $("event-end-date").value = e.target.value;
-            }
-        });
-
-        $("save-backup-btn")?.addEventListener("click", handleSaveBackup);
-        $("restore-file-input")?.addEventListener("change", handleRestoreBackup);
-
-        $("delete-single-btn")?.addEventListener("click", () => {
-            if (!pendingDeleteEvent) return;
-            events = events.filter((item) => item.id !== pendingDeleteEvent.id);
-            saveEvents();
-            renderCalendar();
-            closeDeleteModal();
-            closeModal();
-        });
-
-        $("delete-following-btn")?.addEventListener("click", () => {
-            if (!pendingDeleteEvent) return;
-            const cutoff = pendingDeleteEvent.startDate;
-            const gid = pendingDeleteEvent.groupId;
-            events = events.filter((item) => !(item.groupId === gid && item.startDate >= cutoff));
-            saveEvents();
-            renderCalendar();
-            closeDeleteModal();
-            closeModal();
-        });
-
-        $("delete-all-btn")?.addEventListener("click", () => {
-            if (!pendingDeleteEvent) return;
-            const gid = pendingDeleteEvent.groupId;
-            events = events.filter((item) => item.groupId !== gid);
-            saveEvents();
-            renderCalendar();
-            closeDeleteModal();
-            closeModal();
-        });
-
-        $("cancel-delete-modal-btn")?.addEventListener("click", closeDeleteModal);
     </script>
 </body>
 
