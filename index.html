@@ -83,8 +83,21 @@
                 border-top: 1px solid #cbd5e1 !important;
                 flex: 1 1 auto !important;
                 display: grid !important;
-                grid-template-columns: repeat(7, 1fr) !important;
+                grid-template-columns: 28px repeat(7, minmax(0, 1fr)) !important;
                 height: 100% !important;
+            }
+
+            .week-header-row {
+                grid-template-columns: 28px repeat(7, minmax(0, 1fr)) !important;
+            }
+
+            .week-num-cell {
+                border-color: #e2e8f0 !important;
+                border-width: 1px !important;
+                font-size: 7pt !important;
+                background-color: #f8fafc !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
             .day-cell {
@@ -279,7 +292,8 @@
 
             <!-- Days of Week Header -->
             <div
-                class="grid grid-cols-7 border-b border-slate-200 bg-slate-100/70 text-center text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-600 py-2 sm:py-2.5">
+                class="week-header-row grid grid-cols-[26px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] border-b border-slate-200 bg-slate-100/70 text-center text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-600 py-2 sm:py-2.5">
+                <div class="text-slate-400 border-r border-slate-200/80 flex items-center justify-center">Wk</div>
                 <div><span class="hidden sm:inline">Mon</span><span class="sm:hidden">M</span></div>
                 <div><span class="hidden sm:inline">Tue</span><span class="sm:hidden">T</span></div>
                 <div><span class="hidden sm:inline">Wed</span><span class="sm:hidden">W</span></div>
@@ -290,8 +304,9 @@
             </div>
 
             <!-- Calendar Days Grid -->
-            <div id="calendar-days-grid" class="calendar-grid grid grid-cols-7 flex-1">
-                <!-- Day cells injected dynamically -->
+            <div id="calendar-days-grid"
+                class="calendar-grid grid grid-cols-[26px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] flex-1">
+                <!-- Week number + Day cells injected dynamically -->
             </div>
         </div>
 
@@ -722,6 +737,26 @@
             return new Date(y, m - 1, d);
         }
 
+        // Calculate fiscal week number starting Week 1 on the first Monday-Sunday week containing April 1st
+        function getFiscalAprilWeekNumber(dateObj) {
+            const getMondayOfWeek = (d) => {
+                const copy = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+                const dayOffset = (copy.getDay() + 6) % 7;
+                copy.setDate(copy.getDate() - dayOffset);
+                copy.setHours(0, 0, 0, 0);
+                return copy;
+            };
+
+            const currentMonday = getMondayOfWeek(dateObj);
+            const currentYearApr1Monday = getMondayOfWeek(new Date(dateObj.getFullYear(), 3, 1));
+            const anchorMonday = currentMonday >= currentYearApr1Monday
+                ? currentYearApr1Monday
+                : getMondayOfWeek(new Date(dateObj.getFullYear() - 1, 3, 1));
+
+            const diffWeeks = Math.round((currentMonday - anchorMonday) / (7 * 24 * 60 * 60 * 1000));
+            return diffWeeks + 1;
+        }
+
         function addDays(dateStr, days) {
             const dt = parseDateKey(dateStr);
             dt.setDate(dt.getDate() + days);
@@ -1135,6 +1170,18 @@
             }
 
             for (let cellIdx = 0; cellIdx < totalCells; cellIdx++) {
+                // Insert the Week Number cell at the start of every 7-day row (Monday)
+                if (cellIdx % 7 === 0) {
+                    const rowMondayDate = new Date(year, month, 1 - startOffset + cellIdx);
+                    const weekNum = getFiscalAprilWeekNumber(rowMondayDate);
+
+                    const wkCell = document.createElement("div");
+                    wkCell.className = "week-num-cell border-b border-r border-slate-200 bg-slate-50/90 flex items-start justify-center pt-1.5 sm:pt-2.5 text-[10px] sm:text-xs font-bold text-slate-400 select-none";
+                    wkCell.textContent = `W${weekNum}`;
+                    wkCell.title = `Week ${weekNum} (Fiscal Year starting April)`;
+                    grid.appendChild(wkCell);
+                }
+
                 const dayNumber = cellIdx - startOffset + 1;
                 const cell = document.createElement("div");
                 cell.className = "day-cell border-b border-r border-slate-200 p-1 sm:p-2 min-h-[104px] sm:min-h-[120px] flex flex-col gap-1 transition relative group min-w-0 overflow-hidden";
