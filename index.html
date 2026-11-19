@@ -115,6 +115,10 @@
                 padding: 1px 3px !important;
                 margin-bottom: 1px !important;
                 line-height: 1.1 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                display: block !important;
             }
         }
 
@@ -218,9 +222,9 @@
     </header>
 
     <!-- Main Printable Calendar Area -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-2 sm:p-6 lg:p-8 page-container">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-1.5 sm:p-6 lg:p-8 page-container">
         <div id="calendar-touch-area"
-            class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[540px] sm:min-h-[750px]">
+            class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[580px] sm:min-h-[750px]">
             <!-- Calendar Month Title & Year Header -->
             <div
                 class="p-3.5 sm:p-6 border-b border-slate-200 flex flex-row justify-between items-center bg-slate-50/50 gap-2">
@@ -251,26 +255,27 @@
             <div id="calendar-days-grid" class="calendar-grid grid grid-cols-7 flex-1">
                 <!-- Day cells injected dynamically -->
             </div>
-
-            <!-- Mobile Selected-Day Agenda Panel (Hidden on Desktop & Print) -->
-            <div id="mobile-day-agenda" class="no-print sm:hidden border-t border-slate-200 bg-slate-50/90 p-3.5">
-                <div class="flex items-center justify-between gap-2 mb-2.5">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Selected Day</p>
-                        <h3 id="mobile-agenda-date-title" class="text-sm font-bold text-slate-900">Thursday, 19 Nov 2026
-                        </h3>
-                    </div>
-                    <button id="mobile-agenda-add-btn" type="button"
-                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition">
-                        <i class="fa-solid fa-plus text-[10px]"></i>
-                        <span>Add Here</span>
-                    </button>
-                </div>
-                <div id="mobile-agenda-list" class="space-y-2">
-                    <!-- Selected day events injected dynamically -->
-                </div>
-            </div>
         </div>
+
+        <!-- Mobile Selected-Day Agenda Drawer (Shows full details of tapped day while keeping text in grid) -->
+        <section id="mobile-day-agenda"
+            class="no-print sm:hidden mt-3 bg-white rounded-xl border border-slate-200 shadow-sm p-3.5">
+            <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+                <div>
+                    <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Selected Date</p>
+                    <h3 id="mobile-agenda-date-title" class="text-sm font-bold text-slate-900">Thursday, 19 Nov 2026
+                    </h3>
+                </div>
+                <button id="mobile-agenda-add-btn" type="button"
+                    class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-xs transition min-h-[36px]">
+                    <i class="fa-solid fa-plus text-[10px]"></i>
+                    <span>Add Here</span>
+                </button>
+            </div>
+            <div id="mobile-agenda-list" class="mt-2.5 space-y-2">
+                <!-- Selected day events injected dynamically -->
+            </div>
+        </section>
 
         <!-- Backup & Restore Actions Footer (Hidden when printing) -->
         <div
@@ -515,15 +520,18 @@
             );
         }
 
-        function setSyncPill(state, label, detail = "") {
-            const pill = $("cloud-sync-pill");
+        function updateSyncPill(state, label, detail = "") {
             const dot = $("cloud-sync-dot");
             const text = $("cloud-sync-text");
-            if (!pill || !dot || !text) return;
+            const pill = $("cloud-sync-pill");
+            if (!dot || !text) return;
 
             lastSyncError = detail;
             text.textContent = label;
-            pill.title = detail ? `Sync Error: ${detail} (Click to retry)` : "Click to sync now";
+            if (pill) {
+                pill.title = detail || label;
+            }
+
             dot.className = "w-1.5 h-1.5 rounded-full ";
             if (state === "synced") {
                 dot.className += "bg-emerald-500";
@@ -538,95 +546,103 @@
 
         function showToast(msg, isError = false) {
             const toast = $("status-toast");
-            const icon = $("status-toast-icon");
-            const text = $("status-toast-msg");
-            if (!toast || !icon || !text) return;
+            const textEl = $("status-toast-msg");
+            const iconEl = $("status-toast-icon");
+            if (!toast || !textEl) return;
 
-            text.textContent = msg;
-            icon.className = isError
-                ? "fa-solid fa-circle-exclamation text-rose-400"
-                : "fa-solid fa-circle-check text-emerald-400";
+            textEl.textContent = msg;
+            if (iconEl) {
+                iconEl.className = isError
+                    ? "fa-solid fa-circle-exclamation text-rose-400"
+                    : "fa-solid fa-circle-check text-emerald-400";
+            }
+
             toast.classList.remove("hidden");
             clearTimeout(toast._timer);
-            toast._timer = setTimeout(() => toast.classList.add("hidden"), 3500);
+            toast._timer = setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 3400);
         }
 
         function loadLocalEvents() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
-                events = raw ? JSON.parse(raw) : [];
-                if (!Array.isArray(events)) events = [];
+                const parsed = raw ? JSON.parse(raw) : [];
+                events = Array.isArray(parsed) ? parsed : [];
             } catch {
                 events = [];
             }
         }
 
-        async function pushEventsToFirestore() {
+        async function pushEventsToCloud() {
             if (!cloudReady || !db) return;
-            setSyncPill("syncing", "Saving...");
+            updateSyncPill("syncing", "Saving...");
             try {
-                const ref = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
-                await setDoc(ref, {
-                    events,
-                    updatedAt: new Date().toISOString()
+                const docRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
+                await setDoc(docRef, {
+                    updatedAt: new Date().toISOString(),
+                    events
                 });
-                setSyncPill("synced", "Live Sync");
+                updateSyncPill("synced", "Live Sync", "Connected to Firebase Firestore");
             } catch (err) {
                 console.error("Firestore save error:", err);
-                const msg = err?.code || err?.message || "Save failed";
-                setSyncPill("error", "Sync Error", msg);
-                showToast(`Cloud save failed: ${msg}`, true);
+                const code = err?.code || err?.message || "Sync failed";
+                updateSyncPill("error", "Sync Error", `Firebase Error: ${code}`);
+                showToast(`Cloud sync error (${code})`, true);
             }
         }
 
         function saveEvents() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-            pushEventsToFirestore();
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+            } catch (e) {
+                console.error("LocalStorage error:", e);
+            }
+            pushEventsToCloud();
         }
 
         async function initFirebaseSync() {
             if (!isFirebaseConfigured()) {
-                setSyncPill("local", "Local");
+                updateSyncPill("local", "Local", "Paste your firebaseConfig into calendar.html to enable live sync.");
                 return;
             }
 
-            setSyncPill("syncing", "Connecting...");
+            updateSyncPill("syncing", "Connecting...");
             try {
                 const app = initializeApp(firebaseConfig);
                 const auth = getAuth(app);
-                db = getFirestore(app);
-
                 await signInAnonymously(auth);
+
+                db = getFirestore(app);
                 cloudReady = true;
 
-                const ref = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
+                const docRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
                 onSnapshot(
-                    ref,
-                    (snap) => {
+                    docRef,
+                    async (snap) => {
                         if (snap.exists()) {
                             const data = snap.data();
-                            if (Array.isArray(data.events)) {
+                            if (Array.isArray(data?.events)) {
                                 events = data.events;
                                 localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
                                 renderCalendar();
                             }
-                            setSyncPill("synced", "Live Sync");
-                        } else if (events.length > 0) {
-                            pushEventsToFirestore();
+                            updateSyncPill("synced", "Live Sync", "Real-time sync active");
                         } else {
-                            setSyncPill("synced", "Live Sync");
+                            // Initialize cloud document with current local events
+                            await pushEventsToCloud();
                         }
                     },
                     (err) => {
                         console.error("Firestore listener error:", err);
-                        const msg = err?.code || err?.message || "Listener error";
-                        setSyncPill("error", "Sync Error", msg);
+                        const code = err?.code || err?.message || "Permission denied";
+                        updateSyncPill("error", "Sync Error", `Firebase Error: ${code}`);
                     }
                 );
             } catch (err) {
                 console.error("Firebase init error:", err);
-                const msg = err?.code || err?.message || "Connection failed";
-                setSyncPill("error", "Sync Error", msg);
+                const code = err?.code || err?.message || "Connection failed";
+                updateSyncPill("error", "Sync Error", `Firebase Error: ${code}`);
             }
         }
 
@@ -641,67 +657,65 @@
             return new Date(`${str}T00:00:00`);
         }
 
-        function formatReadableDate(dateKey) {
-            const d = parseDateKey(dateKey);
-            return d.toLocaleDateString("en-GB", {
-                weekday: "long",
-                day: "numeric",
-                month: "short",
-                year: "numeric"
-            });
-        }
-
         function getDurationDays(evt) {
-            const s = parseDateKey(evt.startDate);
-            const e = parseDateKey(evt.endDate || evt.startDate);
-            return Math.max(1, Math.round((e - s) / 86400000) + 1);
+            const start = parseDateKey(evt.startDate);
+            const end = parseDateKey(evt.endDate || evt.startDate);
+            const diff = Math.round((end - start) / (1000 * 60 * 60 * 24));
+            return Math.max(1, diff + 1);
         }
 
-        function expandRecurrence(baseEvt) {
+        function generateRecurringSeries(baseEvt) {
             const rec = baseEvt.recurrence || "none";
             const startObj = parseDateKey(baseEvt.startDate);
             const endObj = parseDateKey(baseEvt.endDate || baseEvt.startDate);
-            const spanDays = Math.max(0, Math.round((endObj - startObj) / 86400000));
+            const spanDays = Math.max(0, Math.round((endObj - startObj) / (1000 * 60 * 60 * 24)));
 
             if (rec === "none") {
                 return [{
                     ...baseEvt,
                     id: baseEvt.id || `evt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-                    seriesId: null,
+                    groupId: null,
                     recurrence: "none"
                 }];
             }
 
-            const seriesId = baseEvt.seriesId || `ser_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+            const groupId = baseEvt.groupId || `grp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
             const limitObj = parseDateKey(SERIES_END_LIMIT);
-            const created = [];
+            const list = [];
             let step = 0;
 
-            while (step < 800) {
+            while (true) {
                 const curStart = new Date(startObj);
-                if (rec === "daily") curStart.setDate(startObj.getDate() + step);
-                else if (rec === "weekly") curStart.setDate(startObj.getDate() + step * 7);
-                else if (rec === "biweekly") curStart.setDate(startObj.getDate() + step * 14);
-                else if (rec === "monthly") curStart.setMonth(startObj.getMonth() + step);
-                else if (rec === "yearly") curStart.setFullYear(startObj.getFullYear() + step);
+                if (rec === "daily") {
+                    curStart.setDate(startObj.getDate() + step);
+                } else if (rec === "weekly") {
+                    curStart.setDate(startObj.getDate() + step * 7);
+                } else if (rec === "biweekly") {
+                    curStart.setDate(startObj.getDate() + step * 14);
+                } else if (rec === "monthly") {
+                    curStart.setMonth(startObj.getMonth() + step);
+                } else if (rec === "yearly") {
+                    curStart.setFullYear(startObj.getFullYear() + step);
+                }
 
-                if (curStart > limitObj) break;
+                if (curStart > limitObj || step > 800) break;
 
                 const curEnd = new Date(curStart);
                 curEnd.setDate(curStart.getDate() + spanDays);
 
-                created.push({
+                list.push({
                     ...baseEvt,
                     id: `evt_${Date.now()}_${step}_${Math.random().toString(36).slice(2, 7)}`,
-                    seriesId,
+                    groupId,
                     startDate: formatDateKey(curStart),
                     endDate: formatDateKey(curEnd),
                     recurrence: rec
                 });
+
                 step++;
             }
 
-            return created;
+            return list;
         }
 
         function renderMonthTabs() {
@@ -715,96 +729,21 @@
                 btn.textContent = m.label;
                 const active = idx === activeMonthIndex;
                 btn.className = active
-                    ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-xs flex-shrink-0 transition"
-                    : "px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/80 flex-shrink-0 transition";
+                    ? "flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-xs transition min-h-[34px]"
+                    : "flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/80 transition min-h-[34px]";
 
                 btn.addEventListener("click", () => {
                     activeMonthIndex = idx;
-                    selectedDateKey = `${m.year}-${String(m.month + 1).padStart(2, "0")}-01`;
                     renderCalendar();
                 });
+
                 container.appendChild(btn);
             });
 
-            const activeEl = container.children[activeMonthIndex];
-            if (activeEl) {
-                activeEl.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+            const activeBtn = container.children[activeMonthIndex];
+            if (activeBtn) {
+                activeBtn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
             }
-        }
-
-        function renderMobileAgenda() {
-            const titleEl = $("mobile-agenda-date-title");
-            const listEl = $("mobile-agenda-list");
-            if (!titleEl || !listEl || !selectedDateKey) return;
-
-            titleEl.textContent = formatReadableDate(selectedDateKey);
-
-            const dayEvents = events.filter((evt) => {
-                const s = evt.startDate;
-                const e = evt.endDate || evt.startDate;
-                return selectedDateKey >= s && selectedDateKey <= e;
-            });
-
-            dayEvents.sort((a, b) => getDurationDays(b) - getDurationDays(a));
-            listEl.innerHTML = "";
-
-            if (dayEvents.length === 0) {
-                const empty = document.createElement("div");
-                empty.className = "text-xs text-slate-400 bg-white border border-dashed border-slate-200 rounded-xl py-3.5 px-3 text-center";
-                empty.textContent = 'No events scheduled for this day. Tap "Add Here" to create one.';
-                listEl.appendChild(empty);
-                return;
-            }
-
-            dayEvents.forEach((evt) => {
-                const c = COLORS.find((item) => item.id === evt.color) || COLORS[0];
-                const isMulti = evt.endDate && evt.endDate > evt.startDate;
-
-                const card = document.createElement("button");
-                card.type = "button";
-                card.className = `w-full text-left flex items-center justify-between gap-3 p-3 rounded-xl border bg-white shadow-2xs active:scale-[0.99] transition ${c.border}`;
-
-                const left = document.createElement("div");
-                left.className = "flex items-start gap-2.5 min-w-0";
-
-                const dot = document.createElement("span");
-                dot.className = `w-3 h-3 rounded-full mt-1 flex-shrink-0 ${c.dot}`;
-
-                const textWrap = document.createElement("div");
-                textWrap.className = "min-w-0";
-
-                const title = document.createElement("div");
-                title.className = "text-sm font-semibold text-slate-900 break-words leading-snug";
-                title.textContent = evt.title;
-                textWrap.appendChild(title);
-
-                if (isMulti || (evt.recurrence && evt.recurrence !== "none")) {
-                    const meta = document.createElement("div");
-                    meta.className = "text-[11px] text-slate-500 mt-0.5 flex flex-wrap items-center gap-2";
-                    if (isMulti) {
-                        const sLabel = parseDateKey(evt.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-                        const eLabel = parseDateKey(evt.endDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-                        meta.innerHTML += `<span><i class="fa-regular fa-calendar mr-1"></i>${sLabel} – ${eLabel}</span>`;
-                    }
-                    if (evt.recurrence && evt.recurrence !== "none") {
-                        meta.innerHTML += `<span class="capitalize"><i class="fa-solid fa-repeat mr-1"></i>${evt.recurrence}</span>`;
-                    }
-                    textWrap.appendChild(meta);
-                }
-
-                left.appendChild(dot);
-                left.appendChild(textWrap);
-
-                const editIcon = document.createElement("span");
-                editIcon.className = "text-slate-400 text-xs flex-shrink-0 px-1";
-                editIcon.innerHTML = '<i class="fa-solid fa-pen"></i>';
-
-                card.appendChild(left);
-                card.appendChild(editIcon);
-
-                card.addEventListener("click", () => openEditModal(evt));
-                listEl.appendChild(card);
-            });
         }
 
         function renderCalendar() {
@@ -837,8 +776,8 @@
                 const isSelected = dateKey === selectedDateKey;
 
                 const cell = document.createElement("div");
-                cell.className = `day-cell border-b border-r border-slate-200 p-1 sm:p-2 min-h-[62px] sm:min-h-[120px] flex flex-col transition cursor-pointer ${isSelected
-                        ? "bg-blue-50/70 sm:bg-white ring-2 ring-inset ring-blue-500 sm:ring-0"
+                cell.className = `day-cell border-b border-r border-slate-200 p-0.5 sm:p-2 min-h-[104px] sm:min-h-[125px] flex flex-col transition cursor-pointer min-w-0 ${isSelected
+                        ? "bg-blue-50/60 ring-2 ring-inset ring-blue-500 sm:ring-0 sm:bg-white sm:hover:bg-slate-50"
                         : inMonth
                             ? "bg-white hover:bg-slate-50"
                             : "bg-slate-50/70 text-slate-400"
@@ -846,63 +785,39 @@
 
                 cell.addEventListener("click", (e) => {
                     if (e.target.closest(".event-pill")) return;
-                    if (window.innerWidth < 640) {
-                        selectedDateKey = dateKey;
-                        renderCalendar();
+                    const isMobile = window.innerWidth < 640;
+                    if (isMobile) {
+                        if (selectedDateKey === dateKey) {
+                            openAddModal(dateKey);
+                        } else {
+                            selectedDateKey = dateKey;
+                            renderCalendar();
+                        }
                     } else {
                         openAddModal(dateKey);
                     }
                 });
 
                 const headerRow = document.createElement("div");
-                headerRow.className = "flex items-center justify-center sm:justify-between mb-1";
+                headerRow.className = "flex items-center justify-between mb-1 px-0.5";
 
-                const numSpan = document.createElement("span");
-                numSpan.textContent = cellDate.getDate();
+                const dayBadge = document.createElement("span");
+                dayBadge.textContent = cellDate.getDate();
                 if (isToday) {
-                    numSpan.className =
-                        "is-today-badge inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold shadow-xs";
+                    dayBadge.className = "is-today-badge inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-600 text-white text-[11px] sm:text-xs font-bold shadow-xs";
                 } else {
-                    numSpan.className = `text-xs font-semibold ${isSelected ? "text-blue-700 sm:text-slate-700 font-bold" : inMonth ? "text-slate-700" : "text-slate-400"
-                        }`;
+                    dayBadge.className = `text-[11px] sm:text-xs font-semibold ${inMonth ? "text-slate-700" : "text-slate-400"}`;
                 }
-                headerRow.appendChild(numSpan);
+                headerRow.appendChild(dayBadge);
                 cell.appendChild(headerRow);
 
-                const dayEvents = events.filter((evt) => {
-                    const s = evt.startDate;
-                    const e = evt.endDate || evt.startDate;
-                    return dateKey >= s && dateKey <= e;
-                });
+                // Filter and sort events so multi-day events appear at the top (longest span first)
+                const dayEvents = events
+                    .filter((evt) => dateKey >= evt.startDate && dateKey <= (evt.endDate || evt.startDate))
+                    .sort((a, b) => getDurationDays(b) - getDurationDays(a));
 
-                // Sort multi-day events to the top of the cell
-                dayEvents.sort((a, b) => getDurationDays(b) - getDurationDays(a));
-
-                // Mobile compact color bars (clean & scannable on small screens)
-                if (dayEvents.length > 0) {
-                    const mobileBars = document.createElement("div");
-                    mobileBars.className = "no-print flex sm:hidden flex-col gap-0.5 mt-0.5 px-0.5";
-
-                    dayEvents.slice(0, 3).forEach((evt) => {
-                        const c = COLORS.find((item) => item.id === evt.color) || COLORS[0];
-                        const bar = document.createElement("div");
-                        bar.className = `h-1.5 w-full rounded-full ${c.dot}`;
-                        mobileBars.appendChild(bar);
-                    });
-
-                    if (dayEvents.length > 3) {
-                        const more = document.createElement("span");
-                        more.className = "text-[9px] leading-none font-bold text-slate-500 text-center mt-0.5";
-                        more.textContent = `+${dayEvents.length - 3}`;
-                        mobileBars.appendChild(more);
-                    }
-
-                    cell.appendChild(mobileBars);
-                }
-
-                // Desktop & Print full event text pills
                 const list = document.createElement("div");
-                list.className = "hidden sm:flex flex-col gap-1 overflow-hidden";
+                list.className = "flex flex-col gap-1 min-w-0";
 
                 dayEvents.forEach((evt) => {
                     const c = COLORS.find((item) => item.id === evt.color) || COLORS[0];
@@ -916,7 +831,8 @@
 
                     const pill = document.createElement("button");
                     pill.type = "button";
-                    pill.className = `event-pill w-full text-left px-1.5 py-0.5 rounded border text-[10px] sm:text-xs font-medium truncate transition hover:brightness-95 ${c.bg} ${c.text} ${c.border}`;
+                    pill.lang = "en";
+                    pill.className = `event-pill w-full text-left px-1 sm:px-1.5 py-0.5 rounded border text-[10px] sm:text-xs font-medium leading-tight transition hover:opacity-90 ${c.bg} ${c.text} ${c.border} whitespace-normal break-normal hyphens-auto line-clamp-2 sm:line-clamp-none sm:truncate`;
                     pill.textContent = `${prefix}${evt.title}`;
                     pill.title = evt.title;
 
@@ -935,6 +851,52 @@
             renderMobileAgenda();
         }
 
+        function renderMobileAgenda() {
+            const titleEl = $("mobile-agenda-date-title");
+            const listEl = $("mobile-agenda-list");
+            if (!titleEl || !listEl || !selectedDateKey) return;
+
+            const dObj = parseDateKey(selectedDateKey);
+            titleEl.textContent = dObj.toLocaleDateString("en-GB", {
+                weekday: "long",
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            });
+
+            const dayEvents = events
+                .filter((evt) => selectedDateKey >= evt.startDate && selectedDateKey <= (evt.endDate || evt.startDate))
+                .sort((a, b) => getDurationDays(b) - getDurationDays(a));
+
+            listEl.innerHTML = "";
+            if (dayEvents.length === 0) {
+                listEl.innerHTML = `<p class="text-xs text-slate-400 py-2 text-center">No events scheduled for this day. Tap <strong>Add Here</strong> to create one.</p>`;
+                return;
+            }
+
+            dayEvents.forEach((evt) => {
+                const c = COLORS.find((item) => item.id === evt.color) || COLORS[0];
+                const isMulti = evt.endDate && evt.endDate > evt.startDate;
+                const spanLabel = isMulti ? `${evt.startDate} → ${evt.endDate}` : "All Day";
+
+                const card = document.createElement("button");
+                card.type = "button";
+                card.className = `w-full text-left p-2.5 rounded-lg border flex items-center justify-between gap-2.5 transition active:scale-[0.99] ${c.bg} ${c.border}`;
+                card.innerHTML = `
+                    <div class="flex items-start gap-2.5 min-w-0">
+                        <span class="w-2.5 h-2.5 rounded-full ${c.dot} mt-1 flex-shrink-0"></span>
+                        <div class="min-w-0">
+                            <p class="text-xs font-semibold ${c.text} break-words">${evt.title}</p>
+                            <p class="text-[11px] opacity-75 ${c.text} mt-0.5">${spanLabel}${evt.recurrence && evt.recurrence !== "none" ? ` · Repeats ${evt.recurrence}` : ""}</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-pen text-xs opacity-60 ${c.text} flex-shrink-0"></i>
+                `;
+                card.addEventListener("click", () => openEditModal(evt));
+                listEl.appendChild(card);
+            });
+        }
+
         function renderColorSwatches(selectedId) {
             const container = $("color-picker-options");
             if (!container) return;
@@ -943,20 +905,23 @@
             COLORS.forEach((c) => {
                 const btn = document.createElement("button");
                 btn.type = "button";
-                btn.className = `w-7 h-7 rounded-full ${c.dot} flex items-center justify-center text-white text-xs transition transform ${selectedId === c.id ? "ring-2 ring-offset-2 ring-slate-900 scale-110" : "opacity-80 hover:opacity-100"
+                const isSelected = c.id === selectedId;
+                btn.className = `w-8 h-8 rounded-full ${c.dot} flex items-center justify-center text-white text-xs transition transform ${isSelected ? "ring-2 ring-offset-2 ring-slate-900 scale-110" : "opacity-80 hover:opacity-100"
                     }`;
-                btn.innerHTML = selectedId === c.id ? '<i class="fa-solid fa-check text-[10px]"></i>' : "";
+                btn.innerHTML = isSelected ? '<i class="fa-solid fa-check"></i>' : "";
+
                 btn.addEventListener("click", () => {
                     $("event-color").value = c.id;
                     renderColorSwatches(c.id);
                 });
+
                 container.appendChild(btn);
             });
         }
 
         function openAddModal(defaultDateKey) {
-            const m = MONTHS[activeMonthIndex];
-            const fallbackDate = `${m.year}-${String(m.month + 1).padStart(2, "0")}-01`;
+            const cur = MONTHS[activeMonthIndex];
+            const fallbackDate = `${cur.year}-${String(cur.month + 1).padStart(2, "0")}-01`;
             const targetDate = defaultDateKey || fallbackDate;
 
             $("modal-title").textContent = "Add All-Day Event";
@@ -967,6 +932,7 @@
             $("event-recurrence").value = "none";
             $("event-color").value = "blue";
             renderColorSwatches("blue");
+
             $("delete-event-btn").classList.add("hidden");
             $("event-modal").classList.remove("hidden");
         }
@@ -974,12 +940,14 @@
         function openEditModal(evt) {
             $("modal-title").textContent = "Edit Event";
             $("event-id").value = evt.id;
-            $("event-title").value = evt.title;
+            $("event-title").value = evt.title || "";
             $("event-start-date").value = evt.startDate;
             $("event-end-date").value = evt.endDate || evt.startDate;
             $("event-recurrence").value = evt.recurrence || "none";
-            $("event-color").value = evt.color || "blue";
-            renderColorSwatches(evt.color || "blue");
+            const col = evt.color || "blue";
+            $("event-color").value = col;
+            renderColorSwatches(col);
+
             $("delete-event-btn").classList.remove("hidden");
             $("event-modal").classList.remove("hidden");
         }
@@ -995,7 +963,7 @@
 
         function handleFormSubmit(e) {
             e.preventDefault();
-            const id = $("event-id").value;
+            const existingId = $("event-id").value;
             const title = $("event-title").value.trim();
             const startDate = $("event-start-date").value;
             let endDate = $("event-end-date").value || startDate;
@@ -1005,27 +973,27 @@
 
             if (!title || !startDate) return;
 
-            let preservedSeriesId = null;
-            if (id) {
-                const existing = events.find((item) => item.id === id);
-                if (existing && existing.seriesId) {
-                    preservedSeriesId = existing.seriesId;
-                    events = events.filter((item) => item.seriesId !== existing.seriesId);
+            let existingGroupId = null;
+            if (existingId) {
+                const oldEvt = events.find((item) => item.id === existingId);
+                if (oldEvt && oldEvt.groupId) {
+                    existingGroupId = oldEvt.groupId;
+                    events = events.filter((item) => item.groupId !== existingGroupId);
                 } else {
-                    events = events.filter((item) => item.id !== id);
+                    events = events.filter((item) => item.id !== existingId);
                 }
             }
 
-            const newEntries = expandRecurrence({
+            const newSeries = generateRecurringSeries({
                 title,
                 startDate,
                 endDate,
                 recurrence,
                 color,
-                seriesId: recurrence !== "none" ? preservedSeriesId : null
+                groupId: recurrence !== "none" ? (existingGroupId || `grp_${Date.now()}`) : null
             });
 
-            events.push(...newEntries);
+            events.push(...newSeries);
             selectedDateKey = startDate;
             saveEvents();
             renderCalendar();
@@ -1033,15 +1001,15 @@
         }
 
         function handleDeleteClick() {
-            const id = $("event-id").value;
-            const target = events.find((item) => item.id === id);
-            if (!target) return;
+            const existingId = $("event-id").value;
+            const targetEvt = events.find((item) => item.id === existingId);
+            if (!targetEvt) return;
 
-            if (target.seriesId) {
-                pendingDeleteEvent = target;
+            if (targetEvt.groupId) {
+                pendingDeleteEvent = targetEvt;
                 $("delete-recurring-modal").classList.remove("hidden");
             } else {
-                events = events.filter((item) => item.id !== target.id);
+                events = events.filter((item) => item.id !== targetEvt.id);
                 saveEvents();
                 renderCalendar();
                 closeModal();
@@ -1056,58 +1024,69 @@
             renderCalendar();
         }
 
-        function exportBackup() {
+        function handleSaveBackup() {
             const payload = JSON.stringify(
-                { app: "UGG Knightsbridge Planner", exportedAt: new Date().toISOString(), events },
+                {
+                    app: "UGG Knightsbridge Planner",
+                    exportedAt: new Date().toISOString(),
+                    events
+                },
                 null,
                 2
             );
             const blob = new Blob([payload], { type: "application/json" });
             const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `ugg-knightsbridge-backup-${formatDateKey(new Date())}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `ugg-knightsbridge-backup-${formatDateKey(new Date())}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
             setTimeout(() => URL.revokeObjectURL(url), 1000);
-            showToast("Backup file saved");
+            showToast("Backup downloaded");
         }
 
-        function parseBackupPayload(rawText) {
-            let text = rawText.replace(/^\uFEFF/, "").trim();
-            if (text.startsWith("%7B") || text.startsWith("%5B")) {
-                text = decodeURIComponent(text);
+        function extractRestoredEvents(rawText) {
+            let cleaned = rawText.replace(/^\uFEFF/, "").trim();
+            if (cleaned.startsWith("%7B") || cleaned.startsWith("%5B")) {
+                cleaned = decodeURIComponent(cleaned);
             }
-            let data = JSON.parse(text);
-            if (typeof data === "string") data = JSON.parse(data);
-            if (Array.isArray(data)) return data;
-            if (data && Array.isArray(data.events)) return data.events;
+            let parsed = JSON.parse(cleaned);
+            if (typeof parsed === "string") {
+                parsed = JSON.parse(parsed);
+            }
+            if (Array.isArray(parsed)) return parsed;
+            if (parsed && Array.isArray(parsed.events)) return parsed.events;
+            if (parsed && parsed.record && Array.isArray(parsed.record.events)) return parsed.record.events;
             return null;
         }
 
-        async function importBackupFile(e) {
+        async function handleRestoreBackup(e) {
             const file = e.target.files && e.target.files[0];
             if (!file) return;
 
             try {
-                const rawText = typeof file.text === "function"
-                    ? await file.text()
-                    : await new Promise((resolve, reject) => {
-                        const r = new FileReader();
-                        r.onload = () => resolve(String(r.result || ""));
-                        r.onerror = () => reject(r.error);
-                        r.readAsText(file);
+                let text = "";
+                if (typeof file.text === "function") {
+                    text = await file.text();
+                } else {
+                    text = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(String(reader.result || ""));
+                        reader.onerror = () => reject(reader.error);
+                        reader.readAsText(file);
                     });
+                }
 
-                const restoredEvents = parseBackupPayload(rawText);
-                if (!restoredEvents) throw new Error("Invalid backup structure");
+                const restored = extractRestoredEvents(text);
+                if (!restored) throw new Error("Invalid backup structure");
 
-                events = restoredEvents;
+                events = restored;
                 saveEvents();
                 renderCalendar();
                 showToast(`Restored ${events.length} event${events.length === 1 ? "" : "s"}`);
-            } catch {
+            } catch (err) {
+                console.error("Restore failed:", err);
                 showToast("Could not read backup file", true);
             } finally {
                 e.target.value = "";
@@ -1117,45 +1096,55 @@
         function initSwipeNavigation() {
             const area = $("calendar-touch-area");
             if (!area) return;
-            let startX = 0;
-            let startY = 0;
+            let touchStartX = 0;
+            let touchStartY = 0;
 
             area.addEventListener("touchstart", (e) => {
                 if (e.touches.length === 1) {
-                    startX = e.touches[0].clientX;
-                    startY = e.touches[0].clientY;
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
                 }
             }, { passive: true });
 
             area.addEventListener("touchend", (e) => {
-                if (!startX || !startY) return;
-                const dx = e.changedTouches[0].clientX - startX;
-                const dy = e.changedTouches[0].clientY - startY;
+                if (!touchStartX || !touchStartY) return;
+                const dx = e.changedTouches[0].clientX - touchStartX;
+                const dy = e.changedTouches[0].clientY - touchStartY;
 
                 if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
                     if (dx < 0 && activeMonthIndex < MONTHS.length - 1) {
                         activeMonthIndex++;
-                        const m = MONTHS[activeMonthIndex];
-                        selectedDateKey = `${m.year}-${String(m.month + 1).padStart(2, "0")}-01`;
                         renderCalendar();
                     } else if (dx > 0 && activeMonthIndex > 0) {
                         activeMonthIndex--;
-                        const m = MONTHS[activeMonthIndex];
-                        selectedDateKey = `${m.year}-${String(m.month + 1).padStart(2, "0")}-01`;
                         renderCalendar();
                     }
                 }
-                startX = 0;
-                startY = 0;
+                touchStartX = 0;
+                touchStartY = 0;
             }, { passive: true });
         }
 
-        // Event Listeners & Bootstrapping
+        // Boot Application
+        loadLocalEvents();
+        goToToday();
+        initFirebaseSync();
+        initSwipeNavigation();
+
+        $("cloud-sync-pill")?.addEventListener("click", () => {
+            if (!isFirebaseConfigured()) {
+                showToast("Paste your firebaseConfig in calendar.html to sync", true);
+            } else if (lastSyncError) {
+                showToast(lastSyncError, true);
+            } else {
+                pushEventsToCloud();
+                showToast("Synced with Firebase");
+            }
+        });
+
         $("prev-month-btn")?.addEventListener("click", () => {
             if (activeMonthIndex > 0) {
                 activeMonthIndex--;
-                const m = MONTHS[activeMonthIndex];
-                selectedDateKey = `${m.year}-${String(m.month + 1).padStart(2, "0")}-01`;
                 renderCalendar();
             }
         });
@@ -1163,8 +1152,6 @@
         $("next-month-btn")?.addEventListener("click", () => {
             if (activeMonthIndex < MONTHS.length - 1) {
                 activeMonthIndex++;
-                const m = MONTHS[activeMonthIndex];
-                selectedDateKey = `${m.year}-${String(m.month + 1).padStart(2, "0")}-01`;
                 renderCalendar();
             }
         });
@@ -1183,19 +1170,8 @@
             }
         });
 
-        $("cloud-sync-pill")?.addEventListener("click", () => {
-            if (lastSyncError) {
-                showToast(`Sync issue: ${lastSyncError}`, true);
-            }
-            if (cloudReady) {
-                pushEventsToFirestore();
-            } else {
-                initFirebaseSync();
-            }
-        });
-
-        $("save-backup-btn")?.addEventListener("click", exportBackup);
-        $("restore-file-input")?.addEventListener("change", importBackupFile);
+        $("save-backup-btn")?.addEventListener("click", handleSaveBackup);
+        $("restore-file-input")?.addEventListener("change", handleRestoreBackup);
 
         $("delete-single-btn")?.addEventListener("click", () => {
             if (!pendingDeleteEvent) return;
@@ -1209,8 +1185,8 @@
         $("delete-following-btn")?.addEventListener("click", () => {
             if (!pendingDeleteEvent) return;
             const cutoff = pendingDeleteEvent.startDate;
-            const sid = pendingDeleteEvent.seriesId;
-            events = events.filter((item) => !(item.seriesId === sid && item.startDate >= cutoff));
+            const gid = pendingDeleteEvent.groupId;
+            events = events.filter((item) => !(item.groupId === gid && item.startDate >= cutoff));
             saveEvents();
             renderCalendar();
             closeDeleteModal();
@@ -1219,8 +1195,8 @@
 
         $("delete-all-btn")?.addEventListener("click", () => {
             if (!pendingDeleteEvent) return;
-            const sid = pendingDeleteEvent.seriesId;
-            events = events.filter((item) => item.seriesId !== sid);
+            const gid = pendingDeleteEvent.groupId;
+            events = events.filter((item) => item.groupId !== gid);
             saveEvents();
             renderCalendar();
             closeDeleteModal();
@@ -1228,12 +1204,6 @@
         });
 
         $("cancel-delete-modal-btn")?.addEventListener("click", closeDeleteModal);
-
-        // Initialize App
-        loadLocalEvents();
-        goToToday();
-        initSwipeNavigation();
-        initFirebaseSync();
     </script>
 </body>
 
