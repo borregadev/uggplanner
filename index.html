@@ -1350,12 +1350,28 @@
             showToast("Event saved");
         }
 
+        function isSameRecurringSeries(item, target) {
+            if (target.seriesId) {
+                return item.seriesId === target.seriesId;
+            }
+            // Fallback match for legacy recurring events that lack a seriesId
+            return (
+                item.recurrence &&
+                item.recurrence !== "none" &&
+                item.recurrence === target.recurrence &&
+                item.title === target.title &&
+                item.color === target.color
+            );
+        }
+
         function handleDeleteClick() {
             const id = $("event-id").value.trim();
             const target = events.find((item) => item.id === id);
             if (!target) return;
 
-            if (target.seriesId) {
+            const isRepeating = Boolean(target.seriesId) || (target.recurrence && target.recurrence !== "none");
+
+            if (isRepeating) {
                 pendingDeleteEvent = target;
                 closeEventModal();
                 $("delete-recurring-modal").classList.remove("hidden");
@@ -1370,21 +1386,27 @@
 
         function executeRecurringDelete(mode) {
             if (!pendingDeleteEvent) return;
-            const { id, seriesId, startDate } = pendingDeleteEvent;
+            const target = pendingDeleteEvent;
 
             if (mode === "single") {
-                events = events.filter((item) => item.id !== id);
+                events = events.filter((item) => item.id !== target.id);
             } else if (mode === "following") {
-                events = events.filter((item) => !(item.seriesId === seriesId && item.startDate >= startDate));
+                events = events.filter((item) => !(isSameRecurringSeries(item, target) && item.startDate >= target.startDate));
             } else if (mode === "all") {
-                events = events.filter((item) => item.seriesId !== seriesId);
+                events = events.filter((item) => !isSameRecurringSeries(item, target));
             }
 
             pendingDeleteEvent = null;
             $("delete-recurring-modal").classList.add("hidden");
             saveEvents();
             renderCalendar();
-            showToast("Series updated");
+            showToast(
+                mode === "single"
+                    ? "Deleted single occurrence"
+                    : mode === "following"
+                        ? "Deleted this and following events"
+                        : "Deleted all events in series"
+            );
         }
 
         function handleSaveBackup() {
