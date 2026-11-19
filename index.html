@@ -251,6 +251,25 @@
             <div id="calendar-days-grid" class="calendar-grid grid grid-cols-7 flex-1">
                 <!-- Day cells injected dynamically -->
             </div>
+
+            <!-- Mobile Selected-Day Agenda Panel (Hidden on Desktop & Print) -->
+            <div id="mobile-day-agenda" class="no-print sm:hidden border-t border-slate-200 bg-slate-50/90 p-3.5">
+                <div class="flex items-center justify-between gap-2 mb-2.5">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Selected Day</p>
+                        <h3 id="mobile-agenda-date-title" class="text-sm font-bold text-slate-900">Thursday, 19 Nov 2026
+                        </h3>
+                    </div>
+                    <button id="mobile-agenda-add-btn" type="button"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition">
+                        <i class="fa-solid fa-plus text-[10px]"></i>
+                        <span>Add Here</span>
+                    </button>
+                </div>
+                <div id="mobile-agenda-list" class="space-y-2">
+                    <!-- Selected day events injected dynamically -->
+                </div>
+            </div>
         </div>
 
         <!-- Backup & Restore Actions Footer (Hidden when printing) -->
@@ -477,6 +496,7 @@
         ];
 
         let activeMonthIndex = 0;
+        let selectedDateKey = null;
         let events = [];
         let pendingDeleteEvent = null;
         let db = null;
@@ -485,30 +505,25 @@
 
         const $ = (id) => document.getElementById(id);
 
-        function showToast(msg, isError = false) {
-            const toast = $("status-toast");
-            const text = $("status-toast-msg");
-            const icon = $("status-toast-icon");
-            if (!toast || !text) return;
-            text.textContent = msg;
-            if (icon) {
-                icon.className = isError
-                    ? "fa-solid fa-circle-exclamation text-rose-400"
-                    : "fa-solid fa-circle-check text-emerald-400";
-            }
-            toast.classList.remove("hidden");
-            clearTimeout(toast._timer);
-            toast._timer = setTimeout(() => toast.classList.add("hidden"), 3500);
+        function isFirebaseConfigured() {
+            return (
+                firebaseConfig &&
+                firebaseConfig.apiKey &&
+                firebaseConfig.projectId &&
+                firebaseConfig.apiKey !== "YOUR_API_KEY_HERE" &&
+                firebaseConfig.projectId !== "YOUR_PROJECT_ID"
+            );
         }
 
-        function setSyncStatus(state, label, detail = "") {
+        function setSyncPill(state, label, detail = "") {
+            const pill = $("cloud-sync-pill");
             const dot = $("cloud-sync-dot");
             const text = $("cloud-sync-text");
-            const pill = $("cloud-sync-pill");
+            if (!pill || !dot || !text) return;
+
             lastSyncError = detail;
-            if (!dot || !text) return;
             text.textContent = label;
-            if (pill && detail) pill.title = detail;
+            pill.title = detail ? `Sync Error: ${detail} (Click to retry)` : "Click to sync now";
             dot.className = "w-1.5 h-1.5 rounded-full ";
             if (state === "synced") {
                 dot.className += "bg-emerald-500";
@@ -521,56 +536,61 @@
             }
         }
 
-        function isFirebaseConfigured() {
-            return (
-                firebaseConfig &&
-                firebaseConfig.apiKey &&
-                firebaseConfig.projectId &&
-                firebaseConfig.apiKey !== "YOUR_API_KEY_HERE" &&
-                firebaseConfig.projectId !== "YOUR_PROJECT_ID"
-            );
+        function showToast(msg, isError = false) {
+            const toast = $("status-toast");
+            const icon = $("status-toast-icon");
+            const text = $("status-toast-msg");
+            if (!toast || !icon || !text) return;
+
+            text.textContent = msg;
+            icon.className = isError
+                ? "fa-solid fa-circle-exclamation text-rose-400"
+                : "fa-solid fa-circle-check text-emerald-400";
+            toast.classList.remove("hidden");
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.add("hidden"), 3500);
         }
 
         function loadLocalEvents() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
-                const parsed = raw ? JSON.parse(raw) : [];
-                events = Array.isArray(parsed) ? parsed : [];
+                events = raw ? JSON.parse(raw) : [];
+                if (!Array.isArray(events)) events = [];
             } catch {
                 events = [];
             }
         }
 
-        async function pushEventsToCloud() {
+        async function pushEventsToFirestore() {
             if (!cloudReady || !db) return;
-            setSyncStatus("syncing", "Saving...");
+            setSyncPill("syncing", "Saving...");
             try {
-                const docRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
-                await setDoc(docRef, {
-                    updatedAt: new Date().toISOString(),
-                    events: events
+                const ref = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
+                await setDoc(ref, {
+                    events,
+                    updatedAt: new Date().toISOString()
                 });
-                setSyncStatus("synced", "Live Sync", "Connected to Firebase Firestore");
+                setSyncPill("synced", "Live Sync");
             } catch (err) {
                 console.error("Firestore save error:", err);
-                const msg = err?.code || err?.message || "Firestore write failed";
-                setSyncStatus("error", "Sync Error", msg);
-                showToast(`Sync Error: ${msg}`, true);
+                const msg = err?.code || err?.message || "Save failed";
+                setSyncPill("error", "Sync Error", msg);
+                showToast(`Cloud save failed: ${msg}`, true);
             }
         }
 
         function saveEvents() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-            pushEventsToCloud();
+            pushEventsToFirestore();
         }
 
         async function initFirebaseSync() {
             if (!isFirebaseConfigured()) {
-                setSyncStatus("local", "Local", "Paste your firebaseConfig into calendar.html to enable Live Sync");
+                setSyncPill("local", "Local");
                 return;
             }
 
-            setSyncStatus("syncing", "Connecting...");
+            setSyncPill("syncing", "Connecting...");
             try {
                 const app = initializeApp(firebaseConfig);
                 const auth = getAuth(app);
@@ -579,37 +599,34 @@
                 await signInAnonymously(auth);
                 cloudReady = true;
 
-                const docRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
-                let initialSnapshotHandled = false;
-
+                const ref = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
                 onSnapshot(
-                    docRef,
-                    (snapshot) => {
-                        if (snapshot.exists()) {
-                            const data = snapshot.data();
-                            if (Array.isArray(data?.events)) {
+                    ref,
+                    (snap) => {
+                        if (snap.exists()) {
+                            const data = snap.data();
+                            if (Array.isArray(data.events)) {
                                 events = data.events;
                                 localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
                                 renderCalendar();
                             }
-                        } else if (!initialSnapshotHandled && events.length > 0) {
-                            pushEventsToCloud();
+                            setSyncPill("synced", "Live Sync");
+                        } else if (events.length > 0) {
+                            pushEventsToFirestore();
+                        } else {
+                            setSyncPill("synced", "Live Sync");
                         }
-                        initialSnapshotHandled = true;
-                        setSyncStatus("synced", "Live Sync", "Connected to Firebase Firestore");
                     },
                     (err) => {
                         console.error("Firestore listener error:", err);
-                        const msg = err?.code || err?.message || "Firestore connection error";
-                        setSyncStatus("error", "Sync Error", msg);
-                        showToast(`Firebase Error: ${msg}`, true);
+                        const msg = err?.code || err?.message || "Listener error";
+                        setSyncPill("error", "Sync Error", msg);
                     }
                 );
             } catch (err) {
                 console.error("Firebase init error:", err);
-                const msg = err?.code || err?.message || "Could not initialize Firebase";
-                setSyncStatus("error", "Sync Error", msg);
-                showToast(`Firebase Error: ${msg}`, true);
+                const msg = err?.code || err?.message || "Connection failed";
+                setSyncPill("error", "Sync Error", msg);
             }
         }
 
@@ -624,57 +641,67 @@
             return new Date(`${str}T00:00:00`);
         }
 
+        function formatReadableDate(dateKey) {
+            const d = parseDateKey(dateKey);
+            return d.toLocaleDateString("en-GB", {
+                weekday: "long",
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            });
+        }
+
         function getDurationDays(evt) {
             const s = parseDateKey(evt.startDate);
             const e = parseDateKey(evt.endDate || evt.startDate);
             return Math.max(1, Math.round((e - s) / 86400000) + 1);
         }
 
-        function generateSeries(base) {
-            const recurrence = base.recurrence || "none";
-            const startObj = parseDateKey(base.startDate);
-            const endObj = parseDateKey(base.endDate || base.startDate);
+        function expandRecurrence(baseEvt) {
+            const rec = baseEvt.recurrence || "none";
+            const startObj = parseDateKey(baseEvt.startDate);
+            const endObj = parseDateKey(baseEvt.endDate || baseEvt.startDate);
             const spanDays = Math.max(0, Math.round((endObj - startObj) / 86400000));
-            const groupId = base.groupId || `grp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
-            if (recurrence === "none") {
+            if (rec === "none") {
                 return [{
-                    ...base,
-                    id: base.id || `evt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-                    groupId: null,
+                    ...baseEvt,
+                    id: baseEvt.id || `evt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                    seriesId: null,
                     recurrence: "none"
                 }];
             }
 
-            const result = [];
+            const seriesId = baseEvt.seriesId || `ser_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
             const limitObj = parseDateKey(SERIES_END_LIMIT);
-            let idx = 0;
+            const created = [];
+            let step = 0;
 
-            while (true) {
+            while (step < 800) {
                 const curStart = new Date(startObj);
-                if (recurrence === "daily") curStart.setDate(startObj.getDate() + idx);
-                else if (recurrence === "weekly") curStart.setDate(startObj.getDate() + idx * 7);
-                else if (recurrence === "biweekly") curStart.setDate(startObj.getDate() + idx * 14);
-                else if (recurrence === "monthly") curStart.setMonth(startObj.getMonth() + idx);
-                else if (recurrence === "yearly") curStart.setFullYear(startObj.getFullYear() + idx);
+                if (rec === "daily") curStart.setDate(startObj.getDate() + step);
+                else if (rec === "weekly") curStart.setDate(startObj.getDate() + step * 7);
+                else if (rec === "biweekly") curStart.setDate(startObj.getDate() + step * 14);
+                else if (rec === "monthly") curStart.setMonth(startObj.getMonth() + step);
+                else if (rec === "yearly") curStart.setFullYear(startObj.getFullYear() + step);
 
-                if (curStart > limitObj || idx > 800) break;
+                if (curStart > limitObj) break;
 
                 const curEnd = new Date(curStart);
                 curEnd.setDate(curStart.getDate() + spanDays);
 
-                result.push({
-                    ...base,
-                    id: `evt_${Date.now()}_${idx}_${Math.random().toString(36).slice(2, 7)}`,
-                    groupId,
+                created.push({
+                    ...baseEvt,
+                    id: `evt_${Date.now()}_${step}_${Math.random().toString(36).slice(2, 7)}`,
+                    seriesId,
                     startDate: formatDateKey(curStart),
                     endDate: formatDateKey(curEnd),
-                    recurrence
+                    recurrence: rec
                 });
-                idx++;
+                step++;
             }
 
-            return result;
+            return created;
         }
 
         function renderMonthTabs() {
@@ -688,21 +715,96 @@
                 btn.textContent = m.label;
                 const active = idx === activeMonthIndex;
                 btn.className = active
-                    ? "flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-xs transition"
-                    : "flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/70 transition";
+                    ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-xs flex-shrink-0 transition"
+                    : "px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/80 flex-shrink-0 transition";
 
                 btn.addEventListener("click", () => {
                     activeMonthIndex = idx;
+                    selectedDateKey = `${m.year}-${String(m.month + 1).padStart(2, "0")}-01`;
                     renderCalendar();
                 });
-
                 container.appendChild(btn);
             });
 
-            const activeBtn = container.children[activeMonthIndex];
-            if (activeBtn) {
-                activeBtn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+            const activeEl = container.children[activeMonthIndex];
+            if (activeEl) {
+                activeEl.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
             }
+        }
+
+        function renderMobileAgenda() {
+            const titleEl = $("mobile-agenda-date-title");
+            const listEl = $("mobile-agenda-list");
+            if (!titleEl || !listEl || !selectedDateKey) return;
+
+            titleEl.textContent = formatReadableDate(selectedDateKey);
+
+            const dayEvents = events.filter((evt) => {
+                const s = evt.startDate;
+                const e = evt.endDate || evt.startDate;
+                return selectedDateKey >= s && selectedDateKey <= e;
+            });
+
+            dayEvents.sort((a, b) => getDurationDays(b) - getDurationDays(a));
+            listEl.innerHTML = "";
+
+            if (dayEvents.length === 0) {
+                const empty = document.createElement("div");
+                empty.className = "text-xs text-slate-400 bg-white border border-dashed border-slate-200 rounded-xl py-3.5 px-3 text-center";
+                empty.textContent = 'No events scheduled for this day. Tap "Add Here" to create one.';
+                listEl.appendChild(empty);
+                return;
+            }
+
+            dayEvents.forEach((evt) => {
+                const c = COLORS.find((item) => item.id === evt.color) || COLORS[0];
+                const isMulti = evt.endDate && evt.endDate > evt.startDate;
+
+                const card = document.createElement("button");
+                card.type = "button";
+                card.className = `w-full text-left flex items-center justify-between gap-3 p-3 rounded-xl border bg-white shadow-2xs active:scale-[0.99] transition ${c.border}`;
+
+                const left = document.createElement("div");
+                left.className = "flex items-start gap-2.5 min-w-0";
+
+                const dot = document.createElement("span");
+                dot.className = `w-3 h-3 rounded-full mt-1 flex-shrink-0 ${c.dot}`;
+
+                const textWrap = document.createElement("div");
+                textWrap.className = "min-w-0";
+
+                const title = document.createElement("div");
+                title.className = "text-sm font-semibold text-slate-900 break-words leading-snug";
+                title.textContent = evt.title;
+                textWrap.appendChild(title);
+
+                if (isMulti || (evt.recurrence && evt.recurrence !== "none")) {
+                    const meta = document.createElement("div");
+                    meta.className = "text-[11px] text-slate-500 mt-0.5 flex flex-wrap items-center gap-2";
+                    if (isMulti) {
+                        const sLabel = parseDateKey(evt.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+                        const eLabel = parseDateKey(evt.endDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+                        meta.innerHTML += `<span><i class="fa-regular fa-calendar mr-1"></i>${sLabel} – ${eLabel}</span>`;
+                    }
+                    if (evt.recurrence && evt.recurrence !== "none") {
+                        meta.innerHTML += `<span class="capitalize"><i class="fa-solid fa-repeat mr-1"></i>${evt.recurrence}</span>`;
+                    }
+                    textWrap.appendChild(meta);
+                }
+
+                left.appendChild(dot);
+                left.appendChild(textWrap);
+
+                const editIcon = document.createElement("span");
+                editIcon.className = "text-slate-400 text-xs flex-shrink-0 px-1";
+                editIcon.innerHTML = '<i class="fa-solid fa-pen"></i>';
+
+                card.appendChild(left);
+                card.appendChild(editIcon);
+
+                card.addEventListener("click", () => openEditModal(evt));
+                listEl.appendChild(card);
+            });
         }
 
         function renderCalendar() {
@@ -722,24 +824,38 @@
             const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
             const todayKey = formatDateKey(new Date());
 
+            if (!selectedDateKey) {
+                selectedDateKey = todayKey;
+            }
+
             for (let i = 0; i < totalCells; i++) {
                 const dayNum = i - startOffset + 1;
                 const cellDate = new Date(cur.year, cur.month, dayNum);
                 const dateKey = formatDateKey(cellDate);
                 const inMonth = dayNum >= 1 && dayNum <= daysInMonth;
                 const isToday = dateKey === todayKey;
+                const isSelected = dateKey === selectedDateKey;
 
                 const cell = document.createElement("div");
-                cell.className = `day-cell border-b border-r border-slate-200 p-1.5 sm:p-2 min-h-[84px] sm:min-h-[120px] flex flex-col transition cursor-pointer ${inMonth ? "bg-white hover:bg-slate-50" : "bg-slate-50/70 text-slate-400"
+                cell.className = `day-cell border-b border-r border-slate-200 p-1 sm:p-2 min-h-[62px] sm:min-h-[120px] flex flex-col transition cursor-pointer ${isSelected
+                        ? "bg-blue-50/70 sm:bg-white ring-2 ring-inset ring-blue-500 sm:ring-0"
+                        : inMonth
+                            ? "bg-white hover:bg-slate-50"
+                            : "bg-slate-50/70 text-slate-400"
                     }`;
 
                 cell.addEventListener("click", (e) => {
                     if (e.target.closest(".event-pill")) return;
-                    openAddModal(dateKey);
+                    if (window.innerWidth < 640) {
+                        selectedDateKey = dateKey;
+                        renderCalendar();
+                    } else {
+                        openAddModal(dateKey);
+                    }
                 });
 
                 const headerRow = document.createElement("div");
-                headerRow.className = "flex items-center justify-between mb-1";
+                headerRow.className = "flex items-center justify-center sm:justify-between mb-1";
 
                 const numSpan = document.createElement("span");
                 numSpan.textContent = cellDate.getDate();
@@ -747,7 +863,8 @@
                     numSpan.className =
                         "is-today-badge inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold shadow-xs";
                 } else {
-                    numSpan.className = `text-xs font-semibold ${inMonth ? "text-slate-700" : "text-slate-400"}`;
+                    numSpan.className = `text-xs font-semibold ${isSelected ? "text-blue-700 sm:text-slate-700 font-bold" : inMonth ? "text-slate-700" : "text-slate-400"
+                        }`;
                 }
                 headerRow.appendChild(numSpan);
                 cell.appendChild(headerRow);
@@ -761,8 +878,31 @@
                 // Sort multi-day events to the top of the cell
                 dayEvents.sort((a, b) => getDurationDays(b) - getDurationDays(a));
 
+                // Mobile compact color bars (clean & scannable on small screens)
+                if (dayEvents.length > 0) {
+                    const mobileBars = document.createElement("div");
+                    mobileBars.className = "no-print flex sm:hidden flex-col gap-0.5 mt-0.5 px-0.5";
+
+                    dayEvents.slice(0, 3).forEach((evt) => {
+                        const c = COLORS.find((item) => item.id === evt.color) || COLORS[0];
+                        const bar = document.createElement("div");
+                        bar.className = `h-1.5 w-full rounded-full ${c.dot}`;
+                        mobileBars.appendChild(bar);
+                    });
+
+                    if (dayEvents.length > 3) {
+                        const more = document.createElement("span");
+                        more.className = "text-[9px] leading-none font-bold text-slate-500 text-center mt-0.5";
+                        more.textContent = `+${dayEvents.length - 3}`;
+                        mobileBars.appendChild(more);
+                    }
+
+                    cell.appendChild(mobileBars);
+                }
+
+                // Desktop & Print full event text pills
                 const list = document.createElement("div");
-                list.className = "flex flex-col gap-1 overflow-hidden";
+                list.className = "hidden sm:flex flex-col gap-1 overflow-hidden";
 
                 dayEvents.forEach((evt) => {
                     const c = COLORS.find((item) => item.id === evt.color) || COLORS[0];
@@ -791,6 +931,8 @@
                 cell.appendChild(list);
                 grid.appendChild(cell);
             }
+
+            renderMobileAgenda();
         }
 
         function renderColorSwatches(selectedId) {
@@ -801,27 +943,27 @@
             COLORS.forEach((c) => {
                 const btn = document.createElement("button");
                 btn.type = "button";
-                const active = c.id === selectedId;
-                btn.className = `w-8 h-8 rounded-full ${c.dot} flex items-center justify-center text-white text-xs transition ${active ? "ring-2 ring-offset-2 ring-slate-900 scale-110" : "opacity-80 hover:opacity-100"
+                btn.className = `w-7 h-7 rounded-full ${c.dot} flex items-center justify-center text-white text-xs transition transform ${selectedId === c.id ? "ring-2 ring-offset-2 ring-slate-900 scale-110" : "opacity-80 hover:opacity-100"
                     }`;
-                btn.innerHTML = active ? '<i class="fa-solid fa-check"></i>' : "";
-
+                btn.innerHTML = selectedId === c.id ? '<i class="fa-solid fa-check text-[10px]"></i>' : "";
                 btn.addEventListener("click", () => {
                     $("event-color").value = c.id;
                     renderColorSwatches(c.id);
                 });
-
                 container.appendChild(btn);
             });
         }
 
-        function openAddModal(defaultDate) {
+        function openAddModal(defaultDateKey) {
+            const m = MONTHS[activeMonthIndex];
+            const fallbackDate = `${m.year}-${String(m.month + 1).padStart(2, "0")}-01`;
+            const targetDate = defaultDateKey || fallbackDate;
+
             $("modal-title").textContent = "Add All-Day Event";
             $("event-id").value = "";
             $("event-title").value = "";
-            const fallbackDate = `${MONTHS[activeMonthIndex].year}-${String(MONTHS[activeMonthIndex].month + 1).padStart(2, "0")}-01`;
-            $("event-start-date").value = defaultDate || fallbackDate;
-            $("event-end-date").value = defaultDate || fallbackDate;
+            $("event-start-date").value = targetDate;
+            $("event-end-date").value = targetDate;
             $("event-recurrence").value = "none";
             $("event-color").value = "blue";
             renderColorSwatches("blue");
@@ -836,9 +978,8 @@
             $("event-start-date").value = evt.startDate;
             $("event-end-date").value = evt.endDate || evt.startDate;
             $("event-recurrence").value = evt.recurrence || "none";
-            const colorId = evt.color || "blue";
-            $("event-color").value = colorId;
-            renderColorSwatches(colorId);
+            $("event-color").value = evt.color || "blue";
+            renderColorSwatches(evt.color || "blue");
             $("delete-event-btn").classList.remove("hidden");
             $("event-modal").classList.remove("hidden");
         }
@@ -854,7 +995,7 @@
 
         function handleFormSubmit(e) {
             e.preventDefault();
-            const editId = $("event-id").value;
+            const id = $("event-id").value;
             const title = $("event-title").value.trim();
             const startDate = $("event-start-date").value;
             let endDate = $("event-end-date").value || startDate;
@@ -864,38 +1005,39 @@
 
             if (!title || !startDate) return;
 
-            let existingGroupId = null;
-            if (editId) {
-                const target = events.find((item) => item.id === editId);
-                if (target && target.groupId) {
-                    existingGroupId = target.groupId;
-                    events = events.filter((item) => item.groupId !== existingGroupId);
+            let preservedSeriesId = null;
+            if (id) {
+                const existing = events.find((item) => item.id === id);
+                if (existing && existing.seriesId) {
+                    preservedSeriesId = existing.seriesId;
+                    events = events.filter((item) => item.seriesId !== existing.seriesId);
                 } else {
-                    events = events.filter((item) => item.id !== editId);
+                    events = events.filter((item) => item.id !== id);
                 }
             }
 
-            const generated = generateSeries({
+            const newEntries = expandRecurrence({
                 title,
                 startDate,
                 endDate,
                 recurrence,
                 color,
-                groupId: recurrence !== "none" ? (existingGroupId || `grp_${Date.now()}`) : null
+                seriesId: recurrence !== "none" ? preservedSeriesId : null
             });
 
-            events.push(...generated);
+            events.push(...newEntries);
+            selectedDateKey = startDate;
             saveEvents();
             renderCalendar();
             closeModal();
         }
 
-        function handleDeleteRequest() {
-            const editId = $("event-id").value;
-            const target = events.find((item) => item.id === editId);
+        function handleDeleteClick() {
+            const id = $("event-id").value;
+            const target = events.find((item) => item.id === id);
             if (!target) return;
 
-            if (target.groupId) {
+            if (target.seriesId) {
                 pendingDeleteEvent = target;
                 $("delete-recurring-modal").classList.remove("hidden");
             } else {
@@ -908,44 +1050,60 @@
 
         function goToToday() {
             const now = new Date();
+            selectedDateKey = formatDateKey(now);
             const foundIdx = MONTHS.findIndex((m) => m.year === now.getFullYear() && m.month === now.getMonth());
             activeMonthIndex = foundIdx >= 0 ? foundIdx : 0;
             renderCalendar();
         }
 
         function exportBackup() {
-            const payload = JSON.stringify({
-                app: "UGG Knightsbridge Planner",
-                exportedAt: new Date().toISOString(),
-                events
-            }, null, 2);
+            const payload = JSON.stringify(
+                { app: "UGG Knightsbridge Planner", exportedAt: new Date().toISOString(), events },
+                null,
+                2
+            );
             const blob = new Blob([payload], { type: "application/json" });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `ugg-knightsbridge-planner-${formatDateKey(new Date())}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `ugg-knightsbridge-backup-${formatDateKey(new Date())}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
             setTimeout(() => URL.revokeObjectURL(url), 1000);
-            showToast("Backup file downloaded");
+            showToast("Backup file saved");
         }
 
-        async function importBackup(e) {
+        function parseBackupPayload(rawText) {
+            let text = rawText.replace(/^\uFEFF/, "").trim();
+            if (text.startsWith("%7B") || text.startsWith("%5B")) {
+                text = decodeURIComponent(text);
+            }
+            let data = JSON.parse(text);
+            if (typeof data === "string") data = JSON.parse(data);
+            if (Array.isArray(data)) return data;
+            if (data && Array.isArray(data.events)) return data.events;
+            return null;
+        }
+
+        async function importBackupFile(e) {
             const file = e.target.files && e.target.files[0];
             if (!file) return;
-            try {
-                const raw = await file.text();
-                let cleaned = raw.replace(/^\uFEFF/, "").trim();
-                if (cleaned.startsWith("%7B") || cleaned.startsWith("%5B")) {
-                    cleaned = decodeURIComponent(cleaned);
-                }
-                let parsed = JSON.parse(cleaned);
-                if (typeof parsed === "string") parsed = JSON.parse(parsed);
-                const list = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.events) ? parsed.events : null;
-                if (!list) throw new Error("Invalid format");
 
-                events = list;
+            try {
+                const rawText = typeof file.text === "function"
+                    ? await file.text()
+                    : await new Promise((resolve, reject) => {
+                        const r = new FileReader();
+                        r.onload = () => resolve(String(r.result || ""));
+                        r.onerror = () => reject(r.error);
+                        r.readAsText(file);
+                    });
+
+                const restoredEvents = parseBackupPayload(rawText);
+                if (!restoredEvents) throw new Error("Invalid backup structure");
+
+                events = restoredEvents;
                 saveEvents();
                 renderCalendar();
                 showToast(`Restored ${events.length} event${events.length === 1 ? "" : "s"}`);
@@ -956,7 +1114,7 @@
             }
         }
 
-        function initTouchSwipe() {
+        function initSwipeNavigation() {
             const area = $("calendar-touch-area");
             if (!area) return;
             let startX = 0;
@@ -973,12 +1131,17 @@
                 if (!startX || !startY) return;
                 const dx = e.changedTouches[0].clientX - startX;
                 const dy = e.changedTouches[0].clientY - startY;
+
                 if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
                     if (dx < 0 && activeMonthIndex < MONTHS.length - 1) {
                         activeMonthIndex++;
+                        const m = MONTHS[activeMonthIndex];
+                        selectedDateKey = `${m.year}-${String(m.month + 1).padStart(2, "0")}-01`;
                         renderCalendar();
                     } else if (dx > 0 && activeMonthIndex > 0) {
                         activeMonthIndex--;
+                        const m = MONTHS[activeMonthIndex];
+                        selectedDateKey = `${m.year}-${String(m.month + 1).padStart(2, "0")}-01`;
                         renderCalendar();
                     }
                 }
@@ -987,15 +1150,12 @@
             }, { passive: true });
         }
 
-        // Boot
-        loadLocalEvents();
-        goToToday();
-        initTouchSwipe();
-        initFirebaseSync();
-
+        // Event Listeners & Bootstrapping
         $("prev-month-btn")?.addEventListener("click", () => {
             if (activeMonthIndex > 0) {
                 activeMonthIndex--;
+                const m = MONTHS[activeMonthIndex];
+                selectedDateKey = `${m.year}-${String(m.month + 1).padStart(2, "0")}-01`;
                 renderCalendar();
             }
         });
@@ -1003,35 +1163,39 @@
         $("next-month-btn")?.addEventListener("click", () => {
             if (activeMonthIndex < MONTHS.length - 1) {
                 activeMonthIndex++;
+                const m = MONTHS[activeMonthIndex];
+                selectedDateKey = `${m.year}-${String(m.month + 1).padStart(2, "0")}-01`;
                 renderCalendar();
             }
         });
 
         $("today-btn")?.addEventListener("click", goToToday);
-        $("add-event-btn")?.addEventListener("click", () => openAddModal());
+        $("add-event-btn")?.addEventListener("click", () => openAddModal(selectedDateKey));
+        $("mobile-agenda-add-btn")?.addEventListener("click", () => openAddModal(selectedDateKey));
         $("close-modal-btn")?.addEventListener("click", closeModal);
         $("cancel-modal-btn")?.addEventListener("click", closeModal);
         $("event-form")?.addEventListener("submit", handleFormSubmit);
-        $("delete-event-btn")?.addEventListener("click", handleDeleteRequest);
-        $("save-backup-btn")?.addEventListener("click", exportBackup);
-        $("restore-file-input")?.addEventListener("change", importBackup);
-
-        $("cloud-sync-pill")?.addEventListener("click", () => {
-            if (lastSyncError) {
-                showToast(`Status: ${lastSyncError}`, true);
-            } else if (cloudReady) {
-                pushEventsToCloud();
-                showToast("Synced with Firebase");
-            } else {
-                showToast("Add your firebaseConfig in calendar.html to enable Live Sync");
-            }
-        });
+        $("delete-event-btn")?.addEventListener("click", handleDeleteClick);
 
         $("event-start-date")?.addEventListener("change", (e) => {
             if ($("event-end-date").value < e.target.value) {
                 $("event-end-date").value = e.target.value;
             }
         });
+
+        $("cloud-sync-pill")?.addEventListener("click", () => {
+            if (lastSyncError) {
+                showToast(`Sync issue: ${lastSyncError}`, true);
+            }
+            if (cloudReady) {
+                pushEventsToFirestore();
+            } else {
+                initFirebaseSync();
+            }
+        });
+
+        $("save-backup-btn")?.addEventListener("click", exportBackup);
+        $("restore-file-input")?.addEventListener("change", importBackupFile);
 
         $("delete-single-btn")?.addEventListener("click", () => {
             if (!pendingDeleteEvent) return;
@@ -1045,8 +1209,8 @@
         $("delete-following-btn")?.addEventListener("click", () => {
             if (!pendingDeleteEvent) return;
             const cutoff = pendingDeleteEvent.startDate;
-            const gid = pendingDeleteEvent.groupId;
-            events = events.filter((item) => !(item.groupId === gid && item.startDate >= cutoff));
+            const sid = pendingDeleteEvent.seriesId;
+            events = events.filter((item) => !(item.seriesId === sid && item.startDate >= cutoff));
             saveEvents();
             renderCalendar();
             closeDeleteModal();
@@ -1055,8 +1219,8 @@
 
         $("delete-all-btn")?.addEventListener("click", () => {
             if (!pendingDeleteEvent) return;
-            const gid = pendingDeleteEvent.groupId;
-            events = events.filter((item) => item.groupId !== gid);
+            const sid = pendingDeleteEvent.seriesId;
+            events = events.filter((item) => item.seriesId !== sid);
             saveEvents();
             renderCalendar();
             closeDeleteModal();
@@ -1064,6 +1228,12 @@
         });
 
         $("cancel-delete-modal-btn")?.addEventListener("click", closeDeleteModal);
+
+        // Initialize App
+        loadLocalEvents();
+        goToToday();
+        initSwipeNavigation();
+        initFirebaseSync();
     </script>
 </body>
 
