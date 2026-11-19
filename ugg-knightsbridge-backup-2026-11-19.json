@@ -634,5 +634,77 @@
     "endDate": "2026-12-05",
     "color": "violet",
     "recurrence": "none"
+  },
+  {
+    "id": "evt_1794917830562_mbw2",
+    "title": "Gift Wrapping 12-7",
+    "startDate": "2026-12-19",
+    "endDate": "2026-12-19",
+    "color": "teal",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794917849058_980h",
+    "title": "Gift Wrapping 12-6",
+    "startDate": "2026-12-13",
+    "endDate": "2026-12-13",
+    "color": "teal",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794917854378_9ksi",
+    "title": "Gift Wrapping 12-6",
+    "startDate": "2026-12-20",
+    "endDate": "2026-12-20",
+    "color": "teal",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794917888418_o9fk",
+    "title": "Charms GWP",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-05",
+    "color": "pink",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794917906411_w3ib",
+    "title": "Gift Wrapping 12-7",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-12",
+    "color": "teal",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794917962755_ox6k",
+    "title": "Cards GWP",
+    "startDate": "2026-12-12",
+    "endDate": "2026-12-13",
+    "color": "orange",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794917965531_oror",
+    "title": "Cards GWP",
+    "startDate": "2026-12-19",
+    "endDate": "2026-12-20",
+    "color": "orange",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1794994438023_2qb5",
+    "title": "Overnight Secuy",
+    "startDate": "2026-11-30",
+    "endDate": "2026-11-30",
+    "color": "slate",
+    "recurrence": "none"
+  },
+  {
+    "id": "evt_1795002613029_sxbk",
+    "title": "Cyber Pack",
+    "startDate": "2026-11-22",
+    "endDate": "2026-11-22",
+    "color": "cyan",
+    "recurrence": "none"
   }
 ]
