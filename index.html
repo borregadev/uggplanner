@@ -927,9 +927,7 @@
                 btn.className = `w-8 h-8 rounded-full ${c.dot} flex items-center justify-center transition transform hover:scale-110 focus:outline-none mx-auto ${isSelected ? "ring-2 ring-offset-2 ring-slate-900 scale-110 shadow-sm" : "opacity-85 hover:opacity-100"
                     }`;
                 btn.title = c.name;
-                if (isSelected) {
-                    btn.innerHTML = '<i class="fa-solid fa-check text-white text-xs drop-shadow-xs"></i>';
-                }
+                btn.innerHTML = isSelected ? '<i class="fa-solid fa-check text-white text-xs"></i>' : "";
                 btn.addEventListener("click", () => {
                     $("event-color").value = c.id;
                     renderColorPicker(c.id);
@@ -941,27 +939,21 @@
         function renderYearTabs() {
             const container = $("year-tabs");
             if (!container) return;
+            const activeYear = MONTHS[activeMonthIndex].year;
             container.innerHTML = "";
 
-            const activeYear = MONTHS[activeMonthIndex].year;
             YEARS.forEach((year) => {
                 const isActive = year === activeYear;
                 const btn = document.createElement("button");
                 btn.type = "button";
-                btn.textContent = String(year);
-                btn.className = `px-3 py-1 rounded-lg text-xs font-bold transition whitespace-nowrap ${isActive
-                        ? "bg-white text-blue-600 shadow-xs"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-                    }`;
+                btn.textContent = year;
+                btn.className = isActive
+                    ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-blue-600 shadow-xs transition"
+                    : "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/60 transition";
                 btn.addEventListener("click", () => {
-                    const currentMonthNum = MONTHS[activeMonthIndex].month;
-                    let targetIdx = MONTHS.findIndex((m) => m.year === year && m.month === currentMonthNum);
-                    if (targetIdx === -1) {
-                        targetIdx = MONTHS.findIndex((m) => m.year === year);
-                    }
-                    if (targetIdx !== -1) {
-                        setActiveMonth(targetIdx);
-                    }
+                    const currentMonth = MONTHS[activeMonthIndex].month;
+                    const targetIdx = MONTHS.findIndex((m) => m.year === year && m.month === currentMonth);
+                    if (targetIdx !== -1) setActiveMonth(targetIdx);
                 });
                 container.appendChild(btn);
             });
@@ -969,58 +961,41 @@
 
         function renderMonthTabs() {
             const container = $("month-tabs");
-            container.innerHTML = "";
-
+            if (!container) return;
             const activeYear = MONTHS[activeMonthIndex].year;
+            container.innerHTML = "";
 
             MONTHS.forEach((m, idx) => {
                 if (m.year !== activeYear) return;
-
                 const isActive = idx === activeMonthIndex;
                 const btn = document.createElement("button");
                 btn.type = "button";
                 btn.textContent = m.shortLabel;
-                btn.title = m.full;
-                btn.className = `px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition flex-shrink-0 ${isActive
-                        ? "bg-blue-600 text-white shadow-xs"
-                        : "text-slate-600 hover:bg-slate-200/80 hover:text-slate-900"
-                    }`;
+                btn.className = isActive
+                    ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-xs transition flex-shrink-0"
+                    : "px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/80 transition flex-shrink-0";
                 btn.addEventListener("click", () => setActiveMonth(idx));
                 container.appendChild(btn);
             });
         }
 
         function setActiveMonth(index) {
-            if (index < 0) index = 0;
-            if (index >= MONTHS.length) index = MONTHS.length - 1;
+            if (index < 0 || index >= MONTHS.length) return;
             activeMonthIndex = index;
+            const { year, month } = MONTHS[activeMonthIndex];
 
-            const activeMeta = MONTHS[activeMonthIndex];
-            const today = new Date();
-            if (today.getFullYear() === activeMeta.year && today.getMonth() === activeMeta.month) {
-                selectedDateKey = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
-            } else {
-                selectedDateKey = formatDateKey(activeMeta.year, activeMeta.month, 1);
+            if (!selectedDateKey || !selectedDateKey.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`)) {
+                const now = new Date();
+                if (now.getFullYear() === year && now.getMonth() === month) {
+                    selectedDateKey = formatDateKey(year, month, now.getDate());
+                } else {
+                    selectedDateKey = formatDateKey(year, month, 1);
+                }
             }
 
             renderYearTabs();
             renderMonthTabs();
             renderCalendar();
-
-            const activeBtn = $("month-tabs").querySelector(".bg-blue-600");
-            if (activeBtn) {
-                activeBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-            }
-        }
-
-        function formatReadableDate(dateKey) {
-            const dt = parseDateKey(dateKey);
-            return dt.toLocaleDateString("en-GB", {
-                weekday: "long",
-                day: "numeric",
-                month: "short",
-                year: "numeric"
-            });
         }
 
         function renderMobileAgenda() {
@@ -1028,170 +1003,46 @@
             const listEl = $("mobile-agenda-list");
             if (!titleEl || !listEl || !selectedDateKey) return;
 
-            titleEl.textContent = formatReadableDate(selectedDateKey);
-            listEl.innerHTML = "";
+            const dt = parseDateKey(selectedDateKey);
+            titleEl.textContent = dt.toLocaleDateString("en-GB", {
+                weekday: "long",
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            });
 
             const dayEvents = sortDayEvents(
                 events.filter((evt) => selectedDateKey >= evt.startDate && selectedDateKey <= (evt.endDate || evt.startDate)),
                 selectedDateKey
             );
 
+            listEl.innerHTML = "";
             if (dayEvents.length === 0) {
-                const empty = document.createElement("p");
-                empty.className = "text-xs text-slate-400 py-2 text-center";
-                empty.textContent = "No events scheduled for this date.";
-                listEl.appendChild(empty);
+                listEl.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">No events scheduled for this day.</p>`;
                 return;
             }
 
             dayEvents.forEach((evt) => {
                 const c = getColorTheme(evt.color);
-                const isMulti = evt.endDate && evt.endDate > evt.startDate;
-
                 const card = document.createElement("div");
-                card.draggable = dayEvents.length > 1;
-                card.dataset.eventId = evt.id;
-                card.className = `mobile-agenda-card w-full text-left p-2.5 rounded-lg border flex items-center justify-between gap-2 transition select-none cursor-pointer ${c.bg} ${c.text} ${c.border}`;
+                card.className = `flex items-center justify-between gap-2 p-2.5 rounded-xl border ${c.bg} ${c.border} ${c.text}`;
 
-                // Drag handle for reordering within the selected day
-                const dragHandle = document.createElement("span");
-                dragHandle.className = "mobile-drag-handle text-xs opacity-60 hover:opacity-100 flex-shrink-0 px-1 py-1 cursor-grab active:cursor-grabbing touch-none";
-                dragHandle.title = "Drag to reorder";
-                dragHandle.innerHTML = '<i class="fa-solid fa-grip-vertical"></i>';
+                const info = document.createElement("div");
+                info.className = "min-w-0 flex-1";
+                const isMulti = evt.endDate && evt.endDate > evt.startDate;
+                info.innerHTML = `
+                    <p class="text-xs font-bold leading-snug break-words">${evt.title}</p>
+                    <p class="text-[10px] opacity-80 mt-0.5">${isMulti ? `${evt.startDate} → ${evt.endDate}` : "All-day event"}</p>
+                `;
 
-                const colorDot = document.createElement("span");
-                colorDot.className = `w-2.5 h-2.5 rounded-full flex-shrink-0 ${c.dot}`;
+                const editBtn = document.createElement("button");
+                editBtn.type = "button";
+                editBtn.className = "px-2.5 py-1.5 rounded-lg bg-white/80 hover:bg-white text-slate-800 text-xs font-semibold shadow-2xs flex-shrink-0";
+                editBtn.textContent = "Edit";
+                editBtn.addEventListener("click", () => openEditModal(evt));
 
-                const left = document.createElement("div");
-                left.className = "min-w-0 flex-1";
-
-                const title = document.createElement("div");
-                title.className = "text-xs font-semibold break-words";
-                title.textContent = evt.title;
-                left.appendChild(title);
-
-                if (isMulti || (evt.recurrence && evt.recurrence !== "none")) {
-                    const meta = document.createElement("div");
-                    meta.className = "text-[10px] opacity-80 mt-0.5 flex flex-wrap items-center gap-2";
-                    if (isMulti) {
-                        const spanText = document.createElement("span");
-                        spanText.textContent = `${evt.startDate} → ${evt.endDate}`;
-                        meta.appendChild(spanText);
-                    }
-                    if (evt.recurrence && evt.recurrence !== "none") {
-                        const recText = document.createElement("span");
-                        recText.textContent = `Repeats ${evt.recurrence}`;
-                        meta.appendChild(recText);
-                    }
-                    left.appendChild(meta);
-                }
-
-                const editIcon = document.createElement("span");
-                editIcon.className = "text-xs opacity-70 flex-shrink-0 px-1";
-                editIcon.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
-
-                if (dayEvents.length > 1) {
-                    card.appendChild(dragHandle);
-                }
-                card.appendChild(colorDot);
-                card.appendChild(left);
-                card.appendChild(editIcon);
-
-                // Desktop/HTML5 drag-and-drop inside mobile agenda
-                card.addEventListener("dragstart", (e) => {
-                    draggedEventId = evt.id;
-                    draggedDateKey = selectedDateKey;
-                    card.classList.add("dragging-pill");
-                    if (e.dataTransfer) {
-                        e.dataTransfer.effectAllowed = "move";
-                        e.dataTransfer.setData("text/plain", evt.id);
-                    }
-                });
-
-                card.addEventListener("dragover", (e) => {
-                    if (!draggedEventId || draggedDateKey !== selectedDateKey || draggedEventId === evt.id) return;
-                    e.preventDefault();
-                    const rect = card.getBoundingClientRect();
-                    const after = e.clientY > rect.top + rect.height / 2;
-                    card.classList.toggle("drop-target-below", after);
-                    card.classList.toggle("drop-target-above", !after);
-                });
-
-                card.addEventListener("dragleave", () => {
-                    card.classList.remove("drop-target-above", "drop-target-below");
-                });
-
-                card.addEventListener("drop", (e) => {
-                    e.preventDefault();
-                    card.classList.remove("drop-target-above", "drop-target-below");
-                    if (!draggedEventId || draggedDateKey !== selectedDateKey || draggedEventId === evt.id) return;
-                    const rect = card.getBoundingClientRect();
-                    const after = e.clientY > rect.top + rect.height / 2;
-                    reorderEventsWithinDay(selectedDateKey, draggedEventId, evt.id, after);
-                });
-
-                card.addEventListener("dragend", () => {
-                    draggedEventId = null;
-                    draggedDateKey = null;
-                    card.classList.remove("dragging-pill", "drop-target-above", "drop-target-below");
-                });
-
-                // Touch drag-and-drop support on mobile devices
-                dragHandle.addEventListener("touchstart", (e) => {
-                    e.stopPropagation();
-                    draggedEventId = evt.id;
-                    draggedDateKey = selectedDateKey;
-                    card.classList.add("dragging-pill");
-                }, { passive: true });
-
-                dragHandle.addEventListener("touchmove", (e) => {
-                    if (!draggedEventId) return;
-                    e.preventDefault();
-                    const touch = e.touches[0];
-                    const cards = Array.from(listEl.querySelectorAll(".mobile-agenda-card"));
-                    cards.forEach((cEl) => cEl.classList.remove("drop-target-above", "drop-target-below"));
-
-                    const hovered = cards.find((cEl) => {
-                        if (cEl.dataset.eventId === draggedEventId) return false;
-                        const r = cEl.getBoundingClientRect();
-                        return touch.clientY >= r.top && touch.clientY <= r.bottom;
-                    });
-
-                    if (hovered) {
-                        const r = hovered.getBoundingClientRect();
-                        const after = touch.clientY > r.top + r.height / 2;
-                        hovered.classList.toggle("drop-target-below", after);
-                        hovered.classList.toggle("drop-target-above", !after);
-                    }
-                }, { passive: false });
-
-                dragHandle.addEventListener("touchend", (e) => {
-                    if (!draggedEventId) return;
-                    const touch = e.changedTouches[0];
-                    const cards = Array.from(listEl.querySelectorAll(".mobile-agenda-card"));
-                    const hovered = cards.find((cEl) => {
-                        if (cEl.dataset.eventId === draggedEventId) return false;
-                        const r = cEl.getBoundingClientRect();
-                        return touch.clientY >= r.top && touch.clientY <= r.bottom;
-                    });
-
-                    cards.forEach((cEl) => cEl.classList.remove("dragging-pill", "drop-target-above", "drop-target-below"));
-                    const sourceId = draggedEventId;
-                    draggedEventId = null;
-                    draggedDateKey = null;
-
-                    if (hovered) {
-                        const r = hovered.getBoundingClientRect();
-                        const after = touch.clientY > r.top + r.height / 2;
-                        reorderEventsWithinDay(selectedDateKey, sourceId, hovered.dataset.eventId, after);
-                    }
-                });
-
-                card.addEventListener("click", (e) => {
-                    if (e.target.closest(".mobile-drag-handle")) return;
-                    openEditModal(evt);
-                });
-
+                card.appendChild(info);
+                card.appendChild(editBtn);
                 listEl.appendChild(card);
             });
         }
@@ -1200,43 +1051,38 @@
             const { year, month, full } = MONTHS[activeMonthIndex];
             $("current-month-display").textContent = full;
 
+            $("prev-month-btn").disabled = activeMonthIndex === 0;
+            $("prev-month-btn").classList.toggle("opacity-40", activeMonthIndex === 0);
+            $("next-month-btn").disabled = activeMonthIndex === MONTHS.length - 1;
+            $("next-month-btn").classList.toggle("opacity-40", activeMonthIndex === MONTHS.length - 1);
+
             const grid = $("calendar-days-grid");
             grid.innerHTML = "";
 
-            const firstDay = new Date(year, month, 1);
-            // Convert JS Sunday=0..Saturday=6 into Monday=0..Sunday=6
-            const startOffset = (firstDay.getDay() + 6) % 7;
+            const firstDayOfMonth = new Date(year, month, 1);
+            const startOffset = (firstDayOfMonth.getDay() + 6) % 7; // Monday = 0
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
 
             const today = new Date();
             const todayKey = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
 
-            if (!selectedDateKey) {
-                selectedDateKey = todayKey.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`)
-                    ? todayKey
-                    : formatDateKey(year, month, 1);
-            }
-
-            for (let cellIdx = 0; cellIdx < totalCells; cellIdx++) {
-                // Insert the Week Number cell at the start of every 7-day row (Monday)
-                if (cellIdx % 7 === 0) {
-                    const rowMondayDate = new Date(year, month, 1 - startOffset + cellIdx);
-                    const weekNum = getFiscalAprilWeekNumber(rowMondayDate);
-
+            for (let slot = 0; slot < totalCells; slot++) {
+                // Inject Fiscal April Week Number at the start of every 7-day row
+                if (slot % 7 === 0) {
+                    const rowDate = new Date(year, month, 1 - startOffset + slot);
+                    const wkNum = getFiscalAprilWeekNumber(rowDate);
                     const wkCell = document.createElement("div");
-                    wkCell.className = "week-num-cell border-b border-r border-slate-200 bg-slate-50/90 flex items-start justify-center pt-1.5 sm:pt-2.5 text-[10px] sm:text-xs font-bold text-slate-400 select-none";
-                    wkCell.textContent = `W${weekNum}`;
-                    wkCell.title = `Week ${weekNum} (Fiscal Year starting April)`;
+                    wkCell.className = "week-num-cell border-b border-r border-slate-200 bg-slate-50/90 text-slate-400 font-semibold text-[10px] sm:text-xs flex items-start justify-center pt-2 select-none";
+                    wkCell.textContent = `W${wkNum}`;
                     grid.appendChild(wkCell);
                 }
 
-                const dayNumber = cellIdx - startOffset + 1;
+                const dayNumber = slot - startOffset + 1;
                 const cell = document.createElement("div");
-                cell.className = "day-cell border-b border-r border-slate-200 p-1 sm:p-2 min-h-[104px] sm:min-h-[120px] flex flex-col gap-1 transition relative group min-w-0 overflow-hidden";
 
                 if (dayNumber < 1 || dayNumber > daysInMonth) {
-                    cell.classList.add("bg-slate-50/70");
+                    cell.className = "day-cell border-b border-r border-slate-200 bg-slate-50/40 min-h-[96px] sm:min-h-[120px]";
                     grid.appendChild(cell);
                     continue;
                 }
@@ -1245,14 +1091,9 @@
                 const isToday = dateKey === todayKey;
                 const isSelected = dateKey === selectedDateKey;
 
-                cell.classList.add(
-                    "bg-white",
-                    "hover:bg-blue-50/30",
-                    "cursor-pointer"
-                );
-
-                if (isSelected && !isToday) {
-                    cell.classList.add("ring-2", "ring-inset", "ring-blue-500", "bg-blue-50/30");
+                cell.className = "day-cell border-b border-r border-slate-200 p-1 sm:p-1.5 min-h-[96px] sm:min-h-[120px] flex flex-col gap-1 transition hover:bg-slate-50/80 cursor-pointer min-w-0";
+                if (isSelected) {
+                    cell.classList.add("bg-blue-50/40");
                 }
 
                 cell.addEventListener("click", (e) => {
