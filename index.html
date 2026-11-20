@@ -631,148 +631,12 @@
         let lastSyncError = "";
         let draggedEventId = null;
         let draggedDateKey = null;
+        let mobileTouchDragId = null;
 
         const $ = (id) => document.getElementById(id);
 
-        function showToast(message, isError = false) {
-            const toast = $("status-toast");
-            const msg = $("status-toast-msg");
-            const icon = $("status-toast-icon");
-            msg.textContent = message;
-            icon.className = isError
-                ? "fa-solid fa-circle-exclamation text-rose-400"
-                : "fa-solid fa-circle-check text-emerald-400";
-            toast.classList.remove("hidden");
-            clearTimeout(window.__toastTimer);
-            window.__toastTimer = setTimeout(() => {
-                toast.classList.add("hidden");
-            }, 3400);
-        }
-
-        function setCloudStatus(state, detail = "") {
-            const dot = $("cloud-sync-dot");
-            const text = $("cloud-sync-text");
-            const pill = $("cloud-sync-pill");
-            if (!dot || !text || !pill) return;
-
-            lastSyncError = detail;
-
-            if (state === "synced") {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
-                text.textContent = "Live Sync";
-                pill.title = "Firebase Firestore connected — syncing in real time";
-            } else if (state === "syncing") {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse";
-                text.textContent = "Syncing...";
-                pill.title = "Syncing with Firebase...";
-            } else if (state === "error") {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-rose-500";
-                text.textContent = "Sync Error";
-                pill.title = detail ? `Error: ${detail} (Tap for details)` : "Firebase sync error";
-            } else {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-slate-400";
-                text.textContent = "Local";
-                pill.title = "Saved locally — paste firebaseConfig in HTML to enable live sync";
-            }
-        }
-
-        function isFirebaseConfigured() {
-            return Boolean(
-                firebaseConfig &&
-                firebaseConfig.apiKey &&
-                !firebaseConfig.apiKey.includes("YOUR_") &&
-                firebaseConfig.projectId &&
-                !firebaseConfig.projectId.includes("YOUR_")
-            );
-        }
-
-        function loadLocalEvents() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (!raw) return [];
-                const parsed = JSON.parse(raw);
-                return Array.isArray(parsed) ? parsed : [];
-            } catch (e) {
-                console.error("Failed to parse local events:", e);
-                return [];
-            }
-        }
-
-        function saveLocalEvents() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-            } catch (e) {
-                console.error("Failed to save local events:", e);
-            }
-        }
-
-        async function pushEventsToCloud() {
-            if (!cloudReady || !db) return;
-            try {
-                setCloudStatus("syncing");
-                const plannerRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
-                await setDoc(plannerRef, {
-                    events,
-                    updatedAt: Date.now()
-                });
-                setCloudStatus("synced");
-            } catch (err) {
-                console.error("Firebase save error:", err);
-                setCloudStatus("error", err.message || String(err));
-            }
-        }
-
-        function saveEvents() {
-            saveLocalEvents();
-            pushEventsToCloud();
-        }
-
-        function startFirestoreListener() {
-            if (!db) return;
-            if (unsubscribeSnapshot) {
-                unsubscribeSnapshot();
-            }
-
-            setCloudStatus("syncing");
-            const plannerRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
-
-            unsubscribeSnapshot = onSnapshot(
-                plannerRef,
-                (snapshot) => {
-                    cloudReady = true;
-                    if (snapshot.exists()) {
-                        const data = snapshot.data();
-                        if (Array.isArray(data.events)) {
-                            events = data.events;
-                            saveLocalEvents();
-                            renderCalendar();
-                        }
-                        setCloudStatus("synced");
-                    } else {
-                        // First connection: seed cloud with any existing local events
-                        pushEventsToCloud();
-                    }
-                },
-                (err) => {
-                    console.error("Firebase listener error:", err);
-                    setCloudStatus("error", err.message || String(err));
-                }
-            );
-        }
-
-        function initFirebaseServices() {
-            if (!isFirebaseConfigured()) {
-                setCloudStatus("local");
-                showAuthError("Paste your firebaseConfig in calendar.html first.");
-                return false;
-            }
-
-            if (!firebaseApp) {
-                firebaseApp = initializeApp(firebaseConfig);
-                auth = getAuth(firebaseApp);
-                db = getFirestore(firebaseApp);
-            }
-            return true;
+        function generateId() {
+            return `evt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
         }
 
         function formatDateKey(year, month, day) {
@@ -786,148 +650,304 @@
             return new Date(y, m - 1, d);
         }
 
-        // Calculate fiscal week number starting Week 1 on the first Monday-Sunday week containing April 1st
-        function getFiscalAprilWeekNumber(dateObj) {
-            const getMondayOfWeek = (d) => {
-                const copy = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-                const dayOffset = (copy.getDay() + 6) % 7;
-                copy.setDate(copy.getDate() - dayOffset);
-                copy.setHours(0, 0, 0, 0);
-                return copy;
-            };
-
-            const currentMonday = getMondayOfWeek(dateObj);
-            const currentYearApr1Monday = getMondayOfWeek(new Date(dateObj.getFullYear(), 3, 1));
-            const anchorMonday = currentMonday >= currentYearApr1Monday
-                ? currentYearApr1Monday
-                : getMondayOfWeek(new Date(dateObj.getFullYear() - 1, 3, 1));
-
-            const diffWeeks = Math.round((currentMonday - anchorMonday) / (7 * 24 * 60 * 60 * 1000));
-            return diffWeeks + 1;
-        }
-
         function addDays(dateStr, days) {
             const dt = parseDateKey(dateStr);
             dt.setDate(dt.getDate() + days);
             return formatDateKey(dt.getFullYear(), dt.getMonth(), dt.getDate());
         }
 
-        function addMonthsSafe(dateStr, monthsToAdd) {
+        function addMonths(dateStr, monthsToAdd) {
             const dt = parseDateKey(dateStr);
-            const targetMonth = dt.getMonth() + monthsToAdd;
-            const origDay = dt.getDate();
-            const res = new Date(dt.getFullYear(), targetMonth, 1);
-            const maxDay = new Date(res.getFullYear(), res.getMonth() + 1, 0).getDate();
-            res.setDate(Math.min(origDay, maxDay));
-            return formatDateKey(res.getFullYear(), res.getMonth(), res.getDate());
+            const targetDay = dt.getDate();
+            dt.setDate(1);
+            dt.setMonth(dt.getMonth() + monthsToAdd);
+            const maxDay = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
+            dt.setDate(Math.min(targetDay, maxDay));
+            return formatDateKey(dt.getFullYear(), dt.getMonth(), dt.getDate());
         }
 
-        function addYearsSafe(dateStr, yearsToAdd) {
-            return addMonthsSafe(dateStr, yearsToAdd * 12);
-        }
-
-        function generateId() {
-            return "evt_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
+        function addYears(dateStr, yearsToAdd) {
+            return addMonths(dateStr, yearsToAdd * 12);
         }
 
         function getDurationDays(evt) {
+            if (!evt.endDate || evt.endDate <= evt.startDate) return 1;
             const start = parseDateKey(evt.startDate);
-            const end = parseDateKey(evt.endDate || evt.startDate);
-            const diff = Math.round((end - start) / (1000 * 60 * 60 * 24));
-            return Math.max(1, diff + 1);
+            const end = parseDateKey(evt.endDate);
+            return Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
         }
 
-        function sortDayEvents(dayEvts, dateKey) {
-            return [...dayEvts].sort((a, b) => {
-                const orderA = a.dayOrders && typeof a.dayOrders[dateKey] === "number" ? a.dayOrders[dateKey] : null;
-                const orderB = b.dayOrders && typeof b.dayOrders[dateKey] === "number" ? b.dayOrders[dateKey] : null;
-                if (orderA !== null && orderB !== null) return orderA - orderB;
-                if (orderA !== null) return -1;
-                if (orderB !== null) return 1;
+        // Fiscal week numbering: Week 1 (W1) starts on the Monday-to-Sunday week containing April 1st
+        function getFiscalAprilWeekNumber(dateObj) {
+            const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+            const dayIdx = (d.getDay() + 6) % 7; // Monday = 0
+            const rowMonday = new Date(d);
+            rowMonday.setDate(d.getDate() - dayIdx);
+
+            const getAprilWeek1Monday = (yr) => {
+                const apr1 = new Date(yr, 3, 1);
+                const apr1DayIdx = (apr1.getDay() + 6) % 7;
+                const wk1Mon = new Date(apr1);
+                wk1Mon.setDate(apr1.getDate() - apr1DayIdx);
+                return wk1Mon;
+            };
+
+            let wk1Start = getAprilWeek1Monday(rowMonday.getFullYear());
+            if (rowMonday < wk1Start) {
+                wk1Start = getAprilWeek1Monday(rowMonday.getFullYear() - 1);
+            }
+
+            const diffDays = Math.round((rowMonday - wk1Start) / (1000 * 60 * 60 * 24));
+            return Math.floor(diffDays / 7) + 1;
+        }
+
+        function formatReadableDate(dateStr) {
+            const dt = parseDateKey(dateStr);
+            return dt.toLocaleDateString("en-GB", {
+                weekday: "long",
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            });
+        }
+
+        function sortDayEvents(dayEvents, dateKey) {
+            return [...dayEvents].sort((a, b) => {
+                const orderA = a.dayOrders && typeof a.dayOrders[dateKey] === "number" ? a.dayOrders[dateKey] : Number.MAX_SAFE_INTEGER;
+                const orderB = b.dayOrders && typeof b.dayOrders[dateKey] === "number" ? b.dayOrders[dateKey] : Number.MAX_SAFE_INTEGER;
+                if (orderA !== orderB) return orderA - orderB;
                 return getDurationDays(b) - getDurationDays(a);
             });
         }
 
-        function reorderEventsWithinDay(dateKey, sourceId, targetId, insertAfter = false) {
+        function reorderEventsWithinDay(dateKey, sourceId, targetId, insertAfter) {
             if (!dateKey || !sourceId || !targetId || sourceId === targetId) return;
 
-            const dayEvts = sortDayEvents(
+            const dayEvents = sortDayEvents(
                 events.filter((evt) => dateKey >= evt.startDate && dateKey <= (evt.endDate || evt.startDate)),
                 dateKey
             );
 
-            const fromIdx = dayEvts.findIndex((e) => e.id === sourceId);
-            const toIdx = dayEvts.findIndex((e) => e.id === targetId);
-            if (fromIdx === -1 || toIdx === -1) return;
+            const fromIdx = dayEvents.findIndex((e) => e.id === sourceId);
+            const targetIdx = dayEvents.findIndex((e) => e.id === targetId);
+            if (fromIdx === -1 || targetIdx === -1) return;
 
-            const [moved] = dayEvts.splice(fromIdx, 1);
-            let insertIdx = dayEvts.findIndex((e) => e.id === targetId);
-            if (insertAfter) insertIdx += 1;
-            dayEvts.splice(insertIdx, 0, moved);
+            const [moved] = dayEvents.splice(fromIdx, 1);
+            const updatedTargetIdx = dayEvents.findIndex((e) => e.id === targetId);
+            const insertIdx = insertAfter ? updatedTargetIdx + 1 : updatedTargetIdx;
+            dayEvents.splice(insertIdx, 0, moved);
 
-            dayEvts.forEach((evt, index) => {
-                if (!evt.dayOrders || typeof evt.dayOrders !== "object") {
-                    evt.dayOrders = {};
-                }
-                evt.dayOrders[dateKey] = index;
+            const orderMap = new Map();
+            dayEvents.forEach((evt, idx) => orderMap.set(evt.id, idx));
+
+            events = events.map((evt) => {
+                if (!orderMap.has(evt.id)) return evt;
+                return {
+                    ...evt,
+                    dayOrders: {
+                        ...(evt.dayOrders || {}),
+                        [dateKey]: orderMap.get(evt.id)
+                    }
+                };
             });
 
             saveEvents();
             renderCalendar();
+            showToast("Event order updated");
         }
 
-        function generateRecurringSeries(baseEvt) {
-            const list = [];
-            const seriesId = baseEvt.seriesId || generateId();
-            const spanDays = getDurationDays(baseEvt) - 1;
-            let currentStart = baseEvt.startDate;
-            let count = 0;
+        function showToast(message, isError = false) {
+            const toast = $("status-toast");
+            const icon = $("status-toast-icon");
+            const msg = $("status-toast-msg");
+            msg.textContent = message;
+            icon.className = isError
+                ? "fa-solid fa-circle-exclamation text-rose-400"
+                : "fa-solid fa-circle-check text-emerald-400";
+            toast.classList.remove("hidden");
+            clearTimeout(toast._hideTimer);
+            toast._hideTimer = setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 2600);
+        }
 
-            while (currentStart <= SERIES_END_LIMIT && count < 1500) {
-                const currentEnd = addDays(currentStart, spanDays);
-                list.push({
-                    id: count === 0 && baseEvt.id ? baseEvt.id : generateId(),
+        function updateSyncStatus(state, label, errorDetail = "") {
+            const dot = $("cloud-sync-dot");
+            const text = $("cloud-sync-text");
+            lastSyncError = errorDetail;
+            text.textContent = label;
+
+            dot.className = "w-1.5 h-1.5 rounded-full";
+            if (state === "synced") {
+                dot.classList.add("bg-emerald-500");
+            } else if (state === "syncing") {
+                dot.classList.add("bg-amber-400", "animate-pulse");
+            } else if (state === "error") {
+                dot.classList.add("bg-rose-500");
+            } else {
+                dot.classList.add("bg-slate-400");
+            }
+        }
+
+        function loadLocalEvents() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return [];
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+                console.error("Failed to load local events:", e);
+                return [];
+            }
+        }
+
+        function saveLocalEvents(list) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+            } catch (e) {
+                console.error("Failed to save local events:", e);
+            }
+        }
+
+        function hasValidFirebaseConfig() {
+            return (
+                firebaseConfig &&
+                firebaseConfig.apiKey &&
+                !firebaseConfig.apiKey.includes("YOUR_API_KEY") &&
+                firebaseConfig.projectId &&
+                !firebaseConfig.projectId.includes("YOUR_PROJECT_ID")
+            );
+        }
+
+        function initFirebaseServices() {
+            if (!hasValidFirebaseConfig()) {
+                showAuthError("Paste your firebaseConfig in calendar.html first.");
+                updateSyncStatus("local", "Local");
+                return false;
+            }
+            try {
+                if (!firebaseApp) {
+                    firebaseApp = initializeApp(firebaseConfig);
+                    auth = getAuth(firebaseApp);
+                    db = getFirestore(firebaseApp);
+                }
+                return true;
+            } catch (err) {
+                console.error("Firebase init failed:", err);
+                showAuthError(err.message || "Firebase initialization failed.");
+                updateSyncStatus("error", "Config Error", err.message);
+                return false;
+            }
+        }
+
+        function startFirestoreListener() {
+            if (!db) return;
+            if (unsubscribeSnapshot) {
+                unsubscribeSnapshot();
+                unsubscribeSnapshot = null;
+            }
+
+            updateSyncStatus("syncing", "Connecting...");
+            const docRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
+
+            unsubscribeSnapshot = onSnapshot(
+                docRef,
+                (snap) => {
+                    cloudReady = true;
+                    updateSyncStatus("synced", "Cloud Sync");
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        if (Array.isArray(data.events)) {
+                            events = data.events;
+                            saveLocalEvents(events);
+                            renderCalendar();
+                        }
+                    } else if (events.length > 0) {
+                        pushEventsToCloud();
+                    }
+                },
+                (err) => {
+                    console.error("Firestore listener error:", err);
+                    cloudReady = false;
+                    updateSyncStatus("error", "Sync Error", err.message || "Check Firestore rules");
+                }
+            );
+        }
+
+        async function pushEventsToCloud() {
+            if (!db || !cloudReady) return;
+            try {
+                updateSyncStatus("syncing", "Saving...");
+                const docRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
+                await setDoc(docRef, {
+                    events,
+                    updatedAt: new Date().toISOString()
+                });
+                updateSyncStatus("synced", "Cloud Sync");
+            } catch (err) {
+                console.error("Failed to push events to Firestore:", err);
+                updateSyncStatus("error", "Sync Failed", err.message);
+            }
+        }
+
+        function saveEvents() {
+            saveLocalEvents(events);
+            pushEventsToCloud();
+        }
+
+        function generateRecurringSeries({ title, startDate, endDate, color, recurrence }) {
+            const seriesId = `series_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+            const durationDays = getDurationDays({ startDate, endDate }) - 1;
+            const created = [];
+            let currentStart = startDate;
+            let safetyCount = 0;
+
+            while (currentStart <= SERIES_END_LIMIT && safetyCount < 1850) {
+                const currentEnd = addDays(currentStart, durationDays);
+                created.push({
+                    id: generateId(),
                     seriesId,
-                    title: baseEvt.title,
+                    title,
                     startDate: currentStart,
                     endDate: currentEnd,
-                    color: baseEvt.color,
-                    recurrence: baseEvt.recurrence
+                    color,
+                    recurrence
                 });
 
-                count++;
-                if (baseEvt.recurrence === "daily") {
+                if (recurrence === "daily") {
                     currentStart = addDays(currentStart, 1);
-                } else if (baseEvt.recurrence === "weekly") {
+                } else if (recurrence === "weekly") {
                     currentStart = addDays(currentStart, 7);
-                } else if (baseEvt.recurrence === "biweekly") {
+                } else if (recurrence === "biweekly") {
                     currentStart = addDays(currentStart, 14);
-                } else if (baseEvt.recurrence === "monthly") {
-                    currentStart = addMonthsSafe(baseEvt.startDate, count);
-                } else if (baseEvt.recurrence === "yearly") {
-                    currentStart = addYearsSafe(baseEvt.startDate, count);
+                } else if (recurrence === "monthly") {
+                    currentStart = addMonths(currentStart, 1);
+                } else if (recurrence === "yearly") {
+                    currentStart = addYears(currentStart, 1);
                 } else {
                     break;
                 }
+                safetyCount++;
             }
-            return list;
+
+            return created;
         }
 
-        function renderColorPicker(selectedId = "cobalt") {
+        function renderColorPicker(selectedColorId) {
             const container = $("color-picker-options");
-            const activeTheme = getColorTheme(selectedId);
-            const nameLabel = $("selected-color-name");
-            if (nameLabel) nameLabel.textContent = activeTheme.name;
+            const activeTheme = getColorTheme(selectedColorId);
+            const nameBadge = $("selected-color-name");
+            if (nameBadge) nameBadge.textContent = activeTheme.name;
 
             container.innerHTML = "";
             COLORS.forEach((c) => {
-                const isSelected = activeTheme.id === c.id;
+                const isSelected = c.id === activeTheme.id;
                 const btn = document.createElement("button");
                 btn.type = "button";
-                btn.className = `w-8 h-8 rounded-full ${c.dot} flex items-center justify-center transition transform hover:scale-110 focus:outline-none mx-auto ${isSelected ? "ring-2 ring-offset-2 ring-slate-900 scale-110 shadow-sm" : "opacity-85 hover:opacity-100"
-                    }`;
                 btn.title = c.name;
-                btn.innerHTML = isSelected ? '<i class="fa-solid fa-check text-white text-xs"></i>' : "";
+                btn.className = `w-9 h-9 rounded-full flex items-center justify-center border-2 transition ${c.bg} ${isSelected ? "border-slate-900 scale-110 shadow-xs" : "border-transparent hover:scale-105"
+                    }`;
+                btn.innerHTML = `<span class="w-4 h-4 rounded-full ${c.dot}"></span>`;
                 btn.addEventListener("click", () => {
                     $("event-color").value = c.id;
                     renderColorPicker(c.id);
@@ -938,22 +958,23 @@
 
         function renderYearTabs() {
             const container = $("year-tabs");
-            if (!container) return;
             const activeYear = MONTHS[activeMonthIndex].year;
             container.innerHTML = "";
 
-            YEARS.forEach((year) => {
-                const isActive = year === activeYear;
+            YEARS.forEach((yr) => {
+                const isActive = yr === activeYear;
                 const btn = document.createElement("button");
                 btn.type = "button";
-                btn.textContent = year;
+                btn.textContent = yr;
                 btn.className = isActive
-                    ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-blue-600 shadow-xs transition"
-                    : "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/60 transition";
+                    ? "px-3 py-1 rounded-lg text-xs font-bold bg-white text-blue-600 shadow-2xs transition"
+                    : "px-3 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition";
                 btn.addEventListener("click", () => {
-                    const currentMonth = MONTHS[activeMonthIndex].month;
-                    const targetIdx = MONTHS.findIndex((m) => m.year === year && m.month === currentMonth);
-                    if (targetIdx !== -1) setActiveMonth(targetIdx);
+                    const currentMonthNum = MONTHS[activeMonthIndex].month;
+                    const targetIdx = MONTHS.findIndex((m) => m.year === yr && m.month === currentMonthNum);
+                    if (targetIdx !== -1) {
+                        setActiveMonth(targetIdx);
+                    }
                 });
                 container.appendChild(btn);
             });
@@ -961,7 +982,6 @@
 
         function renderMonthTabs() {
             const container = $("month-tabs");
-            if (!container) return;
             const activeYear = MONTHS[activeMonthIndex].year;
             container.innerHTML = "";
 
@@ -972,18 +992,17 @@
                 btn.type = "button";
                 btn.textContent = m.shortLabel;
                 btn.className = isActive
-                    ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-xs transition flex-shrink-0"
-                    : "px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/80 transition flex-shrink-0";
+                    ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-xs whitespace-nowrap transition flex-shrink-0"
+                    : "px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/70 whitespace-nowrap transition flex-shrink-0";
                 btn.addEventListener("click", () => setActiveMonth(idx));
                 container.appendChild(btn);
             });
         }
 
-        function setActiveMonth(index) {
-            if (index < 0 || index >= MONTHS.length) return;
-            activeMonthIndex = index;
+        function setActiveMonth(idx) {
+            if (idx < 0 || idx >= MONTHS.length) return;
+            activeMonthIndex = idx;
             const { year, month } = MONTHS[activeMonthIndex];
-
             if (!selectedDateKey || !selectedDateKey.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`)) {
                 const now = new Date();
                 if (now.getFullYear() === year && now.getMonth() === month) {
@@ -992,7 +1011,6 @@
                     selectedDateKey = formatDateKey(year, month, 1);
                 }
             }
-
             renderYearTabs();
             renderMonthTabs();
             renderCalendar();
@@ -1003,13 +1021,7 @@
             const listEl = $("mobile-agenda-list");
             if (!titleEl || !listEl || !selectedDateKey) return;
 
-            const dt = parseDateKey(selectedDateKey);
-            titleEl.textContent = dt.toLocaleDateString("en-GB", {
-                weekday: "long",
-                day: "numeric",
-                month: "short",
-                year: "numeric"
-            });
+            titleEl.textContent = formatReadableDate(selectedDateKey);
 
             const dayEvents = sortDayEvents(
                 events.filter((evt) => selectedDateKey >= evt.startDate && selectedDateKey <= (evt.endDate || evt.startDate)),
@@ -1017,15 +1029,82 @@
             );
 
             listEl.innerHTML = "";
+
             if (dayEvents.length === 0) {
-                listEl.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">No events scheduled for this day.</p>`;
+                listEl.innerHTML = `<p class="text-xs text-slate-400 py-2 text-center">No events scheduled for this day.</p>`;
                 return;
             }
 
             dayEvents.forEach((evt) => {
                 const c = getColorTheme(evt.color);
                 const card = document.createElement("div");
-                card.className = `flex items-center justify-between gap-2 p-2.5 rounded-xl border ${c.bg} ${c.border} ${c.text}`;
+                card.dataset.eventId = evt.id;
+                card.className = `mobile-agenda-card flex items-center justify-between gap-2 p-2.5 rounded-xl border transition-transform ${c.bg} ${c.border} ${c.text}`;
+
+                if (dayEvents.length > 1) {
+                    const grip = document.createElement("div");
+                    grip.className = "mobile-drag-handle px-1.5 py-2 -ml-1 text-slate-500/80 active:text-slate-900 touch-none cursor-grab flex items-center justify-center flex-shrink-0";
+                    grip.title = "Drag to reorder";
+                    grip.innerHTML = '<i class="fa-solid fa-grip-vertical text-xs"></i>';
+
+                    grip.addEventListener("touchstart", (e) => {
+                        if (e.touches.length !== 1) return;
+                        e.preventDefault();
+                        mobileTouchDragId = evt.id;
+                        card.classList.add("opacity-60", "scale-[0.98]", "shadow-md");
+                    }, { passive: false });
+
+                    grip.addEventListener("touchmove", (e) => {
+                        if (!mobileTouchDragId || e.touches.length !== 1) return;
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+                        const targetCard = targetEl ? targetEl.closest(".mobile-agenda-card") : null;
+
+                        listEl.querySelectorAll(".mobile-agenda-card").forEach((el) => {
+                            el.classList.remove("drop-target-above", "drop-target-below");
+                        });
+
+                        if (targetCard && targetCard.dataset.eventId && targetCard.dataset.eventId !== mobileTouchDragId) {
+                            const rect = targetCard.getBoundingClientRect();
+                            const after = touch.clientY > rect.top + rect.height / 2;
+                            targetCard.classList.toggle("drop-target-below", after);
+                            targetCard.classList.toggle("drop-target-above", !after);
+                        }
+                    }, { passive: false });
+
+                    const finishTouchDrag = (e) => {
+                        if (!mobileTouchDragId) return;
+                        const sourceId = mobileTouchDragId;
+                        mobileTouchDragId = null;
+                        card.classList.remove("opacity-60", "scale-[0.98]", "shadow-md");
+
+                        const touch = e.changedTouches && e.changedTouches[0];
+                        let targetCard = null;
+                        let after = false;
+
+                        if (touch) {
+                            const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+                            targetCard = targetEl ? targetEl.closest(".mobile-agenda-card") : null;
+                            if (targetCard) {
+                                const rect = targetCard.getBoundingClientRect();
+                                after = touch.clientY > rect.top + rect.height / 2;
+                            }
+                        }
+
+                        listEl.querySelectorAll(".mobile-agenda-card").forEach((el) => {
+                            el.classList.remove("drop-target-above", "drop-target-below");
+                        });
+
+                        if (targetCard && targetCard.dataset.eventId && targetCard.dataset.eventId !== sourceId) {
+                            reorderEventsWithinDay(selectedDateKey, sourceId, targetCard.dataset.eventId, after);
+                        }
+                    };
+
+                    grip.addEventListener("touchend", finishTouchDrag);
+                    grip.addEventListener("touchcancel", finishTouchDrag);
+                    card.appendChild(grip);
+                }
 
                 const info = document.createElement("div");
                 info.className = "min-w-0 flex-1";
