@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,9 +30,7 @@
                 size: A4 landscape;
                 margin: 4mm;
             }
-
-            html,
-            body {
+            html, body {
                 width: 100% !important;
                 height: 100% !important;
                 margin: 0 !important;
@@ -43,11 +40,9 @@
                 color: #0f172a !important;
                 font-size: 9pt;
             }
-
             .no-print {
                 display: none !important;
             }
-
             .page-container {
                 padding: 0 !important;
                 margin: 0 !important;
@@ -57,7 +52,6 @@
                 display: flex !important;
                 flex-direction: column !important;
             }
-
             .workspace-grid {
                 display: flex !important;
                 flex-direction: column !important;
@@ -65,7 +59,6 @@
                 height: 100% !important;
                 gap: 0 !important;
             }
-
             .calendar-primary-col {
                 width: 100% !important;
                 height: 100% !important;
@@ -74,7 +67,6 @@
                 flex-direction: column !important;
                 gap: 0 !important;
             }
-
             .calendar-shell {
                 width: 100% !important;
                 height: 100% !important;
@@ -85,12 +77,10 @@
                 border: 1px solid #94a3b8 !important;
                 box-shadow: none !important;
             }
-
             .calendar-top-bar {
                 padding: 6px 10px !important;
                 flex-shrink: 0 !important;
             }
-
             .week-header-row {
                 grid-template-columns: 30px repeat(7, minmax(0, 1fr)) !important;
                 padding: 4px 0 !important;
@@ -99,7 +89,6 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-
             .calendar-grid {
                 border-top: 1px solid #cbd5e1 !important;
                 flex: 1 1 auto !important;
@@ -109,7 +98,6 @@
                 grid-auto-rows: minmax(0, 1fr) !important;
                 height: 100% !important;
             }
-
             .week-num-cell {
                 border-color: #cbd5e1 !important;
                 border-width: 0 1px 1px 0 !important;
@@ -119,7 +107,6 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-
             .day-cell {
                 min-height: 0 !important;
                 height: 100% !important;
@@ -132,7 +119,6 @@
                 box-shadow: none !important;
                 outline: none !important;
             }
-
             .is-today-badge {
                 background-color: transparent !important;
                 color: #0f172a !important;
@@ -142,7 +128,6 @@
                 width: auto !important;
                 height: auto !important;
             }
-
             .event-pill {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -162,29 +147,23 @@
             height: 5px;
             width: 5px;
         }
-
         .clean-scroll::-webkit-scrollbar-track {
             background: transparent;
         }
-
         .clean-scroll::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 9999px;
         }
-
         .clean-scroll::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
-
         .clean-scroll {
             -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
         }
-
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
-
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
@@ -214,49 +193,35 @@
         .dragging-pill {
             opacity: 0.45 !important;
         }
-
         .drop-target-above {
             box-shadow: 0 -2px 0 0 #0f172a !important;
         }
-
         .drop-target-below {
             box-shadow: 0 2px 0 0 #0f172a !important;
         }
     </style>
 </head>
-
-<body
-    class="bg-[#F6F7F9] font-sans text-slate-900 min-h-screen flex flex-col overflow-x-hidden antialiased selection:bg-slate-200 selection:text-slate-900">
+<body class="bg-[#F6F7F9] font-sans text-slate-900 min-h-screen flex flex-col overflow-x-hidden antialiased selection:bg-slate-200 selection:text-slate-900">
 
     <!-- Password Lock Screen Overlay -->
     <div id="lock-screen" class="no-print fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl border border-slate-200/80 w-full max-w-sm p-7 sm:p-8 text-center">
-            <div
-                class="bg-slate-900 text-white w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-md">
+            <div class="bg-slate-900 text-white w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-md">
                 <i class="fa-solid fa-calendar-check text-2xl"></i>
             </div>
-            <span
-                class="inline-block text-[10px] font-bold uppercase tracking-widest text-slate-600 bg-slate-100 border border-slate-200/80 px-2.5 py-1 rounded-full mb-2">Knightsbridge
-                Flagship</span>
+            <span class="inline-block text-[10px] font-bold uppercase tracking-widest text-slate-600 bg-slate-100 border border-slate-200/80 px-2.5 py-1 rounded-full mb-2">Knightsbridge Flagship</span>
             <h2 class="text-xl font-bold text-slate-900 tracking-tight">UGG Store Planner</h2>
             <p class="text-xs text-slate-500 mt-1.5 mb-6">Enter your password to unlock the schedule.</p>
 
             <form id="unlock-form" class="space-y-3.5 text-left">
                 <div class="relative">
-                    <input type="password" id="unlock-password-input" required autocomplete="current-password"
-                        placeholder="Enter password..."
-                        class="w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
-                    <button type="button" id="toggle-password-visibility"
-                        class="absolute inset-y-0 right-0 px-3.5 text-slate-400 hover:text-slate-800 flex items-center justify-center transition"
-                        title="Show/Hide Password">
+                    <input type="password" id="unlock-password-input" required autocomplete="current-password" placeholder="Enter password..." class="w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
+                    <button type="button" id="toggle-password-visibility" class="absolute inset-y-0 right-0 px-3.5 text-slate-400 hover:text-slate-800 flex items-center justify-center transition" title="Show/Hide Password">
                         <i id="toggle-password-icon" class="fa-regular fa-eye text-sm"></i>
                     </button>
                 </div>
-                <p id="unlock-error-msg"
-                    class="hidden text-xs font-medium text-red-600 text-center bg-red-50 py-2 px-3 rounded-lg border border-red-100">
-                    Incorrect password. Please try again.</p>
-                <button type="submit" id="unlock-submit-btn"
-                    class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-semibold rounded-xl text-sm shadow-sm transition">
+                <p id="unlock-error-msg" class="hidden text-xs font-medium text-red-600 text-center bg-red-50 py-2 px-3 rounded-lg border border-red-100">Incorrect password. Please try again.</p>
+                <button type="submit" id="unlock-submit-btn" class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-semibold rounded-xl text-sm shadow-sm transition">
                     Unlock Planner
                 </button>
             </form>
@@ -264,65 +229,52 @@
     </div>
 
     <!-- Minimalist Monochrome Top Header (Hidden when Printing or Locked) -->
-    <header id="app-header"
-        class="hidden no-print bg-white/95 backdrop-blur-md border-b border-slate-200/90 sticky top-0 z-30">
+    <header id="app-header" class="hidden no-print bg-white/95 backdrop-blur-md border-b border-slate-200/90 sticky top-0 z-30">
         <div class="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8">
             <div class="flex flex-wrap sm:flex-nowrap items-center justify-between py-2 sm:py-0 sm:h-16 gap-2 sm:gap-3">
                 <!-- Brand Identity -->
                 <div class="flex items-center gap-2.5 sm:gap-3">
-                    <div
-                        class="bg-slate-900 text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl flex-shrink-0">
+                    <div class="bg-slate-900 text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl flex-shrink-0">
                         <i class="fa-solid fa-calendar-days text-sm sm:text-lg"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-[15px] sm:text-base text-slate-900 tracking-tight leading-tight">UGG
-                            Knightsbridge</h1>
+                        <h1 class="font-bold text-[15px] sm:text-base text-slate-900 tracking-tight leading-tight">UGG Knightsbridge</h1>
                     </div>
                 </div>
 
                 <!-- Center Year Switcher (Desktop) -->
-                <div id="year-tabs-desktop"
-                    class="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80">
+                <div id="year-tabs-desktop" class="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80">
                     <!-- Year buttons injected dynamically -->
                 </div>
 
                 <!-- Right Global Controls -->
-                <div
-                    class="flex items-center justify-end gap-1.5 sm:gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                <div class="flex items-center justify-end gap-1.5 sm:gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                     <!-- Cloud Sync Pill -->
-                    <button id="cloud-sync-pill" type="button" title="Click to sync now"
-                        class="mr-auto sm:mr-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200/80 hover:bg-slate-200/60 transition cursor-pointer">
+                    <button id="cloud-sync-pill" type="button" title="Click to sync now" class="mr-auto sm:mr-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200/80 hover:bg-slate-200/60 transition cursor-pointer">
                         <span id="cloud-sync-dot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                         <span id="cloud-sync-text">Local</span>
                     </button>
 
                     <!-- Primary Add Event CTA -->
-                    <button id="add-event-btn"
-                        class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]">
+                    <button id="add-event-btn" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]">
                         <i class="fa-solid fa-plus text-xs"></i>
                         <span>New Event</span>
                     </button>
 
                     <!-- Print / PDF -->
-                    <button onclick="window.print()"
-                        class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]"
-                        title="Export / Save as PDF">
+                    <button onclick="window.print()" class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]" title="Export / Save as PDF">
                         <i class="fa-solid fa-print text-xs text-slate-500"></i>
                         <span class="hidden lg:inline">PDF</span>
                     </button>
 
                     <!-- Unified Settings (Voice, API Key & Backup) -->
-                    <button id="settings-btn" type="button"
-                        class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]"
-                        title="Settings: AI Voice, API Key & Backup">
+                    <button id="settings-btn" type="button" class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]" title="Settings: AI Voice, API Key & Backup">
                         <i class="fa-solid fa-gear text-xs text-slate-500"></i>
                         <span class="hidden lg:inline">Settings</span>
                     </button>
 
                     <!-- Lock Button -->
-                    <button id="lock-planner-btn" type="button"
-                        class="inline-flex items-center justify-center bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]"
-                        title="Lock Planner">
+                    <button id="lock-planner-btn" type="button" class="inline-flex items-center justify-center bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]" title="Lock Planner">
                         <i class="fa-solid fa-lock text-xs text-slate-500"></i>
                     </button>
                 </div>
@@ -330,8 +282,7 @@
 
             <!-- Mobile Year Bar -->
             <div class="md:hidden pb-2 flex items-center justify-center">
-                <div id="year-tabs-mobile"
-                    class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full justify-between">
+                <div id="year-tabs-mobile" class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full justify-between">
                     <!-- Year buttons injected dynamically -->
                 </div>
             </div>
@@ -339,38 +290,29 @@
     </header>
 
     <!-- Main Restructured Two-Column Workspace -->
-    <main id="app-main"
-        class="hidden flex-1 max-w-[1440px] w-full mx-auto px-2 sm:px-6 lg:px-8 py-3 sm:py-6 page-container">
+    <main id="app-main" class="hidden flex-1 max-w-[1440px] w-full mx-auto px-2 sm:px-6 lg:px-8 py-3 sm:py-6 page-container">
         <div class="workspace-grid grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
 
             <!-- LEFT / PRIMARY COLUMN (8 cols on desktop): Month Ribbon + Calendar Grid -->
             <div class="calendar-primary-col lg:col-span-8 flex flex-col gap-3 min-w-0">
-                <div id="calendar-touch-area"
-                    class="calendar-shell bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden flex flex-col min-h-[560px] sm:min-h-[760px]">
-
+                <div id="calendar-touch-area" class="calendar-shell bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden flex flex-col min-h-[560px] sm:min-h-[760px]">
+                    
                     <!-- Calendar Header & Quick Controls -->
-                    <div
-                        class="calendar-top-bar px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-200/80 flex flex-col sm:flex-row items-center justify-center sm:justify-between text-center sm:text-left gap-3 bg-white">
+                    <div class="calendar-top-bar px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-200/80 flex flex-col sm:flex-row items-center justify-center sm:justify-between text-center sm:text-left gap-3 bg-white">
                         <div class="flex items-center justify-center sm:justify-start gap-3">
-                            <h2 id="current-month-display"
-                                class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">
+                            <h2 id="current-month-display" class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">
                                 November 2026
                             </h2>
                         </div>
 
                         <div class="no-print flex items-center justify-center gap-1.5">
-                            <button id="prev-month-btn"
-                                class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition"
-                                title="Previous Month">
+                            <button id="prev-month-btn" class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition" title="Previous Month">
                                 <i class="fa-solid fa-chevron-left text-xs"></i>
                             </button>
-                            <button id="today-btn"
-                                class="px-3 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold transition">
+                            <button id="today-btn" class="px-3 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold transition">
                                 Today
                             </button>
-                            <button id="next-month-btn"
-                                class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition"
-                                title="Next Month">
+                            <button id="next-month-btn" class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition" title="Next Month">
                                 <i class="fa-solid fa-chevron-right text-xs"></i>
                             </button>
                         </div>
@@ -378,31 +320,25 @@
 
                     <!-- Sleek Month Ribbon -->
                     <div class="no-print px-3 sm:px-5 py-2 bg-slate-50/70 border-b border-slate-200/80">
-                        <div id="month-tabs"
-                            class="no-scrollbar flex items-center gap-1 overflow-x-auto justify-start sm:justify-between">
+                        <div id="month-tabs" class="no-scrollbar flex items-center gap-1 overflow-x-auto justify-start sm:justify-between">
                             <!-- Month buttons injected dynamically -->
                         </div>
                     </div>
 
                     <!-- Days of Week Header -->
-                    <div
-                        class="week-header-row grid grid-cols-[24px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] border-b border-slate-200/90 bg-slate-50/50 text-center text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 py-2.5">
-                        <div class="text-slate-400 border-r border-slate-200/80 flex items-center justify-center">Wk
-                        </div>
+                    <div class="week-header-row grid grid-cols-[24px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] border-b border-slate-200/90 bg-slate-50/50 text-center text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 py-2.5">
+                        <div class="text-slate-400 border-r border-slate-200/80 flex items-center justify-center">Wk</div>
                         <div><span class="hidden sm:inline">Mon</span><span class="sm:hidden">M</span></div>
                         <div><span class="hidden sm:inline">Tue</span><span class="sm:hidden">T</span></div>
                         <div><span class="hidden sm:inline">Wed</span><span class="sm:hidden">W</span></div>
                         <div><span class="hidden sm:inline">Thu</span><span class="sm:hidden">T</span></div>
                         <div><span class="hidden sm:inline">Fri</span><span class="sm:hidden">F</span></div>
-                        <div class="text-slate-400"><span class="hidden sm:inline">Sat</span><span
-                                class="sm:hidden">S</span></div>
-                        <div class="text-slate-400"><span class="hidden sm:inline">Sun</span><span
-                                class="sm:hidden">S</span></div>
+                        <div class="text-slate-400"><span class="hidden sm:inline">Sat</span><span class="sm:hidden">S</span></div>
+                        <div class="text-slate-400"><span class="hidden sm:inline">Sun</span><span class="sm:hidden">S</span></div>
                     </div>
 
                     <!-- Calendar Days Grid -->
-                    <div id="calendar-days-grid"
-                        class="calendar-grid grid grid-cols-[24px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] flex-1 touch-pan-y will-change-transform">
+                    <div id="calendar-days-grid" class="calendar-grid grid grid-cols-[24px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] flex-1 touch-pan-y will-change-transform">
                         <!-- Week number + Day cells injected dynamically -->
                     </div>
                 </div>
@@ -415,46 +351,58 @@
                 <section class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4">
                     <div class="flex items-center justify-between mb-2.5">
                         <div class="flex items-center gap-2">
-                            <span
-                                class="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center text-xs">
+                            <span class="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center text-xs">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                             </span>
                             <h3 class="text-xs font-bold text-slate-900">AI Schedule Assistant</h3>
                         </div>
-                        <button type="button" id="ai-undo-btn"
+                        <button
+                            type="button"
+                            id="ai-undo-btn"
                             class="hidden items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition"
-                            title="Undo last AI change">
+                            title="Undo last AI change"
+                        >
                             <i class="fa-solid fa-rotate-left text-[10px]"></i>
                             <span>Undo</span>
                         </button>
                     </div>
 
                     <form id="ai-command-form" class="space-y-2">
-                        <div
-                            class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus-within:bg-white focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/10 transition">
-                            <input type="text" id="ai-command-input" placeholder="Type..."
-                                class="flex-1 min-w-0 bg-transparent text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none py-1">
-                            <button type="button" id="ai-voice-btn"
+                        <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus-within:bg-white focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/10 transition">
+                            <input
+                                type="text"
+                                id="ai-command-input"
+                                placeholder="Type..."
+                                class="flex-1 min-w-0 bg-transparent text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none py-1"
+                            >
+                            <button
+                                type="button"
+                                id="ai-voice-btn"
                                 class="w-8 h-8 rounded-lg bg-white hover:bg-slate-100 active:scale-95 text-slate-600 hover:text-slate-900 border border-slate-200/90 flex items-center justify-center transition flex-shrink-0"
-                                title="Speak your command">
+                                title="Speak your command"
+                            >
                                 <i id="ai-voice-icon" class="fa-solid fa-microphone text-xs"></i>
                             </button>
-                            <button type="button" id="ai-live-call-btn"
+                            <button
+                                type="button"
+                                id="ai-live-call-btn"
                                 class="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200/80 active:scale-95 text-slate-800 border border-slate-200/90 inline-flex items-center gap-1.5 text-[11px] font-semibold transition flex-shrink-0"
-                                title="Start real-time two-way AI voice conversation">
-                                <svg class="w-3.5 h-3.5 text-slate-700" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                                    stroke-linejoin="round" aria-hidden="true">
-                                    <path d="M12 3v18" />
-                                    <path d="M8 8v8" />
-                                    <path d="M16 8v8" />
-                                    <path d="M4 11v2" />
-                                    <path d="M20 11v2" />
+                                title="Start real-time two-way AI voice conversation"
+                            >
+                                <svg class="w-3.5 h-3.5 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12 3v18"/>
+                                    <path d="M8 8v8"/>
+                                    <path d="M16 8v8"/>
+                                    <path d="M4 11v2"/>
+                                    <path d="M20 11v2"/>
                                 </svg>
                                 <span>Voice</span>
                             </button>
-                            <button type="submit" id="ai-submit-btn"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 active:scale-95 text-white transition flex-shrink-0">
+                            <button
+                                type="submit"
+                                id="ai-submit-btn"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 active:scale-95 text-white transition flex-shrink-0"
+                            >
                                 <span id="ai-submit-label">Run</span>
                                 <i id="ai-submit-icon" class="fa-solid fa-arrow-right text-[10px]"></i>
                             </button>
@@ -466,8 +414,7 @@
                         <div class="bg-slate-900 text-white rounded-xl p-3">
                             <div class="flex items-center justify-between gap-2">
                                 <div class="flex items-center gap-2.5 min-w-0">
-                                    <span id="live-call-pulse"
-                                        class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 animate-pulse">
+                                    <span id="live-call-pulse" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 animate-pulse">
                                         <i class="fa-solid fa-tower-broadcast text-xs"></i>
                                     </span>
                                     <div class="min-w-0">
@@ -475,19 +422,24 @@
                                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                                             <p class="text-xs font-bold tracking-tight">Gemini Live Voice</p>
                                         </div>
-                                        <p id="live-call-status" class="text-[11px] text-slate-300 truncate">
-                                            Connecting...</p>
+                                        <p id="live-call-status" class="text-[11px] text-slate-300 truncate">Connecting...</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1.5 flex-shrink-0">
-                                    <button type="button" id="live-call-mute-btn"
+                                    <button
+                                        type="button"
+                                        id="live-call-mute-btn"
                                         class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition"
-                                        title="Mute / Unmute Microphone">
+                                        title="Mute / Unmute Microphone"
+                                    >
                                         <i id="live-call-mute-icon" class="fa-solid fa-microphone text-xs"></i>
                                     </button>
-                                    <button type="button" id="live-call-end-btn"
+                                    <button
+                                        type="button"
+                                        id="live-call-end-btn"
                                         class="px-3 h-8 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-white border border-white/20 text-[11px] font-semibold inline-flex items-center gap-1.5 transition"
-                                        title="Stop AI Voice Session">
+                                        title="Stop AI Voice Session"
+                                    >
                                         <span class="w-2 h-2 rounded-[2px] bg-white inline-block"></span>
                                         <span>Stop</span>
                                     </button>
@@ -499,10 +451,12 @@
                     <!-- Live On-Screen Transcript / Conversation Log -->
                     <div id="ai-transcript-wrapper" class="hidden mt-3 pt-3 border-t border-slate-100">
                         <div class="flex items-center justify-between mb-1.5">
-                            <span
-                                class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Conversation</span>
-                            <button type="button" id="ai-transcript-clear-btn"
-                                class="text-[10px] font-semibold text-slate-400 hover:text-slate-700 transition">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Conversation</span>
+                            <button
+                                type="button"
+                                id="ai-transcript-clear-btn"
+                                class="text-[10px] font-semibold text-slate-400 hover:text-slate-700 transition"
+                            >
                                 Clear
                             </button>
                         </div>
@@ -516,21 +470,19 @@
                 <section class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4">
                     <div class="flex items-center justify-between gap-2 mb-3">
                         <div class="flex items-center gap-2 min-w-0">
-                            <span
-                                class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center text-xs flex-shrink-0">
+                            <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center text-xs flex-shrink-0">
                                 <i class="fa-regular fa-calendar"></i>
                             </span>
                             <div class="min-w-0">
-                                <span
-                                    class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Selected
-                                    Day</span>
-                                <h3 id="selected-day-title"
-                                    class="text-xs sm:text-sm font-bold text-slate-900 truncate">Monday, 23 Nov 2026
-                                </h3>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Selected Day</span>
+                                <h3 id="selected-day-title" class="text-xs sm:text-sm font-bold text-slate-900 truncate">Monday, 23 Nov 2026</h3>
                             </div>
                         </div>
-                        <button type="button" id="selected-day-add-btn"
-                            class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition flex-shrink-0">
+                        <button
+                            type="button"
+                            id="selected-day-add-btn"
+                            class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition flex-shrink-0"
+                        >
                             <i class="fa-solid fa-plus text-[10px]"></i>
                             <span>Add</span>
                         </button>
@@ -545,21 +497,26 @@
                 <section class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <span
-                                class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center text-xs">
+                            <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center text-xs">
                                 <i class="fa-solid fa-list-check"></i>
                             </span>
                             <h3 class="text-xs font-bold text-slate-900">Schedule Briefing</h3>
                         </div>
                         <div class="flex items-center gap-1">
-                            <button type="button" id="ai-briefing-refresh-btn"
+                            <button
+                                type="button"
+                                id="ai-briefing-refresh-btn"
                                 class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition"
-                                title="Refresh Briefing">
+                                title="Refresh Briefing"
+                            >
                                 <i class="fa-solid fa-rotate text-[11px]"></i>
                             </button>
-                            <button type="button" id="ai-briefing-toggle-btn"
+                            <button
+                                type="button"
+                                id="ai-briefing-toggle-btn"
                                 class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition"
-                                title="Collapse / Expand Briefing">
+                                title="Collapse / Expand Briefing"
+                            >
                                 <i id="ai-briefing-toggle-icon" class="fa-solid fa-chevron-up text-[10px]"></i>
                             </button>
                         </div>
@@ -567,20 +524,15 @@
 
                     <div id="ai-briefing-body" class="mt-3 space-y-2">
                         <div class="p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80">
-                            <span
-                                class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Today</span>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Today</span>
                             <p id="ai-briefing-today" class="text-xs text-slate-800 leading-relaxed">Loading...</p>
                         </div>
                         <div class="p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80">
-                            <span
-                                class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">This
-                                Week</span>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">This Week</span>
                             <p id="ai-briefing-this-week" class="text-xs text-slate-800 leading-relaxed">Loading...</p>
                         </div>
                         <div class="p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80">
-                            <span
-                                class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Next
-                                Week</span>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Next Week</span>
                             <p id="ai-briefing-next-week" class="text-xs text-slate-800 leading-relaxed">Loading...</p>
                         </div>
                     </div>
@@ -591,29 +543,23 @@
     </main>
 
     <!-- Status Toast Notification -->
-    <div id="status-toast"
-        class="no-print hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-full shadow-xl border border-slate-700/80 flex items-center gap-2 transition-opacity duration-300">
+    <div id="status-toast" class="no-print hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-full shadow-xl border border-slate-700/80 flex items-center gap-2 transition-opacity duration-300">
         <i id="status-toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
         <span id="status-toast-msg">Saved</span>
     </div>
 
     <!-- Add / Edit Event Modal -->
-    <div id="event-modal"
-        class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div
-            class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto transform transition-all">
+    <div id="event-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto transform transition-all">
             <!-- Modal Header -->
-            <div
-                class="px-6 py-4 bg-white border-b border-slate-100 flex justify-between items-center sticky top-0 z-10">
+            <div class="px-6 py-4 bg-white border-b border-slate-100 flex justify-between items-center sticky top-0 z-10">
                 <div class="flex items-center gap-2.5">
-                    <span
-                        class="w-8 h-8 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center text-sm">
+                    <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center text-sm">
                         <i class="fa-regular fa-calendar-plus"></i>
                     </span>
                     <h3 id="modal-title" class="font-bold text-slate-900 text-base">Add All-Day Event</h3>
                 </div>
-                <button id="close-modal-btn"
-                    class="text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition w-9 h-9 flex items-center justify-center">
+                <button id="close-modal-btn" class="text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition w-9 h-9 flex items-center justify-center">
                     <i class="fa-solid fa-xmark text-base"></i>
                 </button>
             </div>
@@ -625,42 +571,34 @@
 
                 <!-- Title -->
                 <div>
-                    <label for="event-title"
-                        class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                    <label for="event-title" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                         Event Title
                     </label>
-                    <input type="text" id="event-title" required placeholder="e.g. Annual Strategy Retreat"
-                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
+                    <input type="text" id="event-title" required placeholder="e.g. Annual Strategy Retreat" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                 </div>
 
                 <!-- Date Range Inputs -->
                 <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3">
                     <div>
-                        <label for="event-start-date"
-                            class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                        <label for="event-start-date" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                             Start Date
                         </label>
-                        <input type="date" id="event-start-date" required
-                            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
+                        <input type="date" id="event-start-date" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                     </div>
                     <div>
-                        <label for="event-end-date"
-                            class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                        <label for="event-end-date" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                             End Date
                         </label>
-                        <input type="date" id="event-end-date" required
-                            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
+                        <input type="date" id="event-end-date" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                     </div>
                 </div>
 
                 <!-- Recurrence Options -->
                 <div>
-                    <label for="event-recurrence"
-                        class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                    <label for="event-recurrence" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                         Repeat Schedule
                     </label>
-                    <select id="event-recurrence"
-                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
+                    <select id="event-recurrence" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                         <option value="none">Does not repeat</option>
                         <option value="daily">Daily</option>
                         <option value="weekly">Every Week</option>
@@ -676,27 +614,23 @@
                         <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                             Category Color
                         </label>
-                        <span id="selected-color-name" class="text-[11px] font-semibold text-slate-700">Royal
-                            Cobalt</span>
+                        <span id="selected-color-name" class="text-[11px] font-semibold text-slate-700">Royal Cobalt</span>
                     </div>
                     <div id="color-picker-options" class="grid grid-cols-5 gap-3 justify-items-center py-1">
                         <!-- 10 circular color swatches injected dynamically -->
                     </div>
                 </div>
 
-                <!-- Modal Actions -->
+                    <!-- Modal Actions -->
                 <div class="flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-slate-100">
-                    <button type="button" id="delete-event-btn"
-                        class="hidden text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl hover:bg-red-50 transition">
+                    <button type="button" id="delete-event-btn" class="hidden text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl hover:bg-red-50 transition">
                         <i class="fa-regular fa-trash-can mr-1"></i> Delete
                     </button>
                     <div class="flex gap-2 ml-auto">
-                        <button type="button" id="cancel-modal-btn"
-                            class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs sm:text-sm font-semibold hover:bg-slate-50 transition">
+                        <button type="button" id="cancel-modal-btn" class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs sm:text-sm font-semibold hover:bg-slate-50 transition">
                             Cancel
                         </button>
-                        <button type="submit"
-                            class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs sm:text-sm font-semibold transition">
+                        <button type="submit" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs sm:text-sm font-semibold transition">
                             Save Event
                         </button>
                     </div>
@@ -706,48 +640,38 @@
     </div>
 
     <!-- Recurring Delete Prompt Modal -->
-    <div id="delete-recurring-modal"
-        class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div
-            class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm overflow-hidden p-6 text-center">
-            <div
-                class="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
+    <div id="delete-recurring-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm overflow-hidden p-6 text-center">
+            <div class="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-trash-can"></i>
             </div>
             <h3 class="font-bold text-slate-900 text-base mb-1.5">Delete Repeating Event</h3>
-            <p class="text-xs text-slate-500 mb-5">This event belongs to a recurring series. Choose which occurrences to
-                remove:</p>
-
+            <p class="text-xs text-slate-500 mb-5">This event belongs to a recurring series. Choose which occurrences to remove:</p>
+            
             <div class="space-y-2">
-                <button id="delete-single-btn"
-                    class="w-full py-3 px-4 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                <button id="delete-single-btn" class="w-full py-3 px-4 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
                     <span>Only this event</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
                 </button>
-                <button id="delete-following-btn"
-                    class="w-full py-3 px-4 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                <button id="delete-following-btn" class="w-full py-3 px-4 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
                     <span>This and following events</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
                 </button>
-                <button id="delete-all-btn"
-                    class="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold transition text-left flex items-center justify-between shadow-sm">
+                <button id="delete-all-btn" class="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold transition text-left flex items-center justify-between shadow-sm">
                     <span>All events in series</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-red-200"></i>
                 </button>
             </div>
 
-            <button id="cancel-delete-modal-btn"
-                class="mt-4 py-2 px-4 text-xs font-semibold text-slate-400 hover:text-slate-700 transition">
+            <button id="cancel-delete-modal-btn" class="mt-4 py-2 px-4 text-xs font-semibold text-slate-400 hover:text-slate-700 transition">
                 Cancel
             </button>
         </div>
     </div>
 
     <!-- Unified Settings Modal (AI Voice, API Key & Backup) -->
-    <div id="settings-modal"
-        class="hidden no-print fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div
-            class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto p-6">
+    <div id="settings-modal" class="hidden no-print fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto p-6">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center">
@@ -755,8 +679,7 @@
                     </div>
                     <h3 class="font-bold text-slate-900 text-base">Planner Settings</h3>
                 </div>
-                <button type="button" id="close-settings-modal-btn"
-                    class="text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition w-9 h-9 flex items-center justify-center">
+                <button type="button" id="close-settings-modal-btn" class="text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition w-9 h-9 flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -764,14 +687,15 @@
             <form id="settings-form" class="mt-5 space-y-5">
                 <!-- 1. AI Voice Selection & Live Preview -->
                 <div class="space-y-2">
-                    <label for="ai-voice-select"
-                        class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <label for="ai-voice-select" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                         AI Assistant Voice
                     </label>
                     <div class="flex items-center gap-2">
                         <div class="relative flex-1 min-w-0">
-                            <select id="ai-voice-select"
-                                class="w-full appearance-none pl-3.5 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition cursor-pointer">
+                            <select
+                                id="ai-voice-select"
+                                class="w-full appearance-none pl-3.5 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition cursor-pointer"
+                            >
                                 <option value="Aoede">Aoede — Warm & Conversational</option>
                                 <option value="Kore">Kore — Firm & Articulate</option>
                                 <option value="Leda">Leda — Youthful & Bright</option>
@@ -781,12 +705,14 @@
                                 <option value="Fenrir">Fenrir — Dynamic & Engaging</option>
                                 <option value="Orus">Orus — Grounded & Steady</option>
                             </select>
-                            <i
-                                class="fa-solid fa-chevron-down text-xs text-slate-400 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2"></i>
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2"></i>
                         </div>
-                        <button type="button" id="preview-ai-voice-btn"
+                        <button
+                            type="button"
+                            id="preview-ai-voice-btn"
                             class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200/80 text-slate-800 border border-slate-200 rounded-xl text-xs font-semibold transition flex-shrink-0"
-                            title="Listen to selected voice">
+                            title="Listen to selected voice"
+                        >
                             <i id="preview-ai-voice-icon" class="fa-solid fa-volume-high text-xs"></i>
                             <span id="preview-ai-voice-label">Preview</span>
                         </button>
@@ -796,17 +722,19 @@
                 <!-- 2. Gemini API Key -->
                 <div class="pt-4 border-t border-slate-100 space-y-2">
                     <div class="flex items-center justify-between">
-                        <label for="ai-api-key-input"
-                            class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                        <label for="ai-api-key-input" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                             Gemini API Key
                         </label>
-                        <button type="button" id="clear-ai-key-btn"
-                            class="text-[11px] font-semibold text-red-600 hover:text-red-700">
+                        <button type="button" id="clear-ai-key-btn" class="text-[11px] font-semibold text-red-600 hover:text-red-700">
                             Remove Key
                         </button>
                     </div>
-                    <input type="password" id="ai-api-key-input" placeholder="AIzaSy..."
-                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
+                    <input
+                        type="password"
+                        id="ai-api-key-input"
+                        placeholder="AIzaSy..."
+                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition"
+                    >
                     <p class="text-[11px] text-slate-500 leading-relaxed">
                         Stored inside your locked Firebase database and synced across your devices.
                     </p>
@@ -818,29 +746,24 @@
                         Schedule Backup
                     </span>
                     <div class="grid grid-cols-2 gap-2.5">
-                        <button type="button" id="save-backup-btn"
-                            class="inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs transition">
+                        <button type="button" id="save-backup-btn" class="inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs transition">
                             <i class="fa-solid fa-download text-xs text-slate-500"></i>
                             <span>Export JSON</span>
                         </button>
-                        <label for="restore-file-input" id="restore-backup-btn"
-                            class="cursor-pointer inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs transition relative overflow-hidden">
+                        <label for="restore-file-input" id="restore-backup-btn" class="cursor-pointer inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs transition relative overflow-hidden">
                             <i class="fa-solid fa-upload text-xs text-slate-500"></i>
                             <span>Import JSON</span>
-                            <input type="file" id="restore-file-input" accept=".json,application/json,text/plain"
-                                class="sr-only">
+                            <input type="file" id="restore-file-input" accept=".json,application/json,text/plain" class="sr-only">
                         </label>
                     </div>
                 </div>
 
                 <!-- Modal Footer -->
                 <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
-                    <button type="button" id="cancel-settings-btn"
-                        class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition">
+                    <button type="button" id="cancel-settings-btn" class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition">
                         Cancel
                     </button>
-                    <button type="submit"
-                        class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition">
+                    <button type="submit" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition">
                         Save Settings
                     </button>
                 </div>
@@ -858,14 +781,14 @@
         // FIREBASE CONFIGURATION (PASTE YOUR firebaseConfig OBJECT BELOW)
         // =========================================================================
         const PLANNER_AUTH_EMAIL = "planner@uggknightsbridge.local";
-        const firebaseConfig = {
-            apiKey: "AIzaSyByj3GVxWv678OZpa6BOvETTc2mOYDZN2A",
-            authDomain: "uggplanner.firebaseapp.com",
-            projectId: "uggplanner",
-            storageBucket: "uggplanner.firebasestorage.app",
-            messagingSenderId: "461693599454",
-            appId: "1:461693599454:web:198fb89db4c34699abcc4f"
-        };
+const firebaseConfig = {
+  apiKey: "AIzaSyByj3GVxWv678OZpa6BOvETTc2mOYDZN2A",
+  authDomain: "uggplanner.firebaseapp.com",
+  projectId: "uggplanner",
+  storageBucket: "uggplanner.firebasestorage.app",
+  messagingSenderId: "461693599454",
+  appId: "1:461693599454:web:198fb89db4c34699abcc4f"
+};
         // =========================================================================
 
         const STORAGE_KEY = "ugg_knightsbridge_planner_events_v1";
@@ -1320,7 +1243,15 @@
         function getEventsForDate(dateKey) {
             return events
                 .filter((ev) => dateKey >= ev.startDate && dateKey <= ev.endDate)
-                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+                .sort((a, b) => {
+                    const orderA = a.dailyOrders && typeof a.dailyOrders[dateKey] === "number"
+                        ? a.dailyOrders[dateKey]
+                        : (a.order ?? 0);
+                    const orderB = b.dailyOrders && typeof b.dailyOrders[dateKey] === "number"
+                        ? b.dailyOrders[dateKey]
+                        : (b.order ?? 0);
+                    return orderA - orderB;
+                });
         }
 
         function renderCalendar() {
@@ -1390,8 +1321,8 @@
                     dateBadge.className = isToday
                         ? "is-today-badge w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-900 text-white text-[10px] sm:text-xs font-bold flex items-center justify-center"
                         : isCurrentMonth
-                            ? "text-[11px] sm:text-xs font-semibold text-slate-800"
-                            : "text-[10px] sm:text-xs font-medium text-slate-400";
+                        ? "text-[11px] sm:text-xs font-semibold text-slate-800"
+                        : "text-[10px] sm:text-xs font-medium text-slate-400";
 
                     headerRow.appendChild(dateBadge);
                     cell.appendChild(headerRow);
@@ -1482,7 +1413,12 @@
 
             dayEvents.forEach((ev, index) => {
                 const target = events.find((item) => item.id === ev.id);
-                if (target) target.order = index;
+                if (target) {
+                    if (!target.dailyOrders || typeof target.dailyOrders !== "object") {
+                        target.dailyOrders = {};
+                    }
+                    target.dailyOrders[dateKey] = index;
+                }
             });
             commitEvents();
         }
@@ -1520,10 +1456,11 @@
                     <span class="w-2.5 h-2.5 rounded-full ${palette.dot} flex-shrink-0"></span>
                     <div class="min-w-0">
                         <p class="text-xs font-semibold text-slate-900 truncate">${escapeHtml(ev.title)}</p>
-                        <p class="text-[10px] text-slate-500">${ev.startDate === ev.endDate
-                        ? "All day"
-                        : `${formatEuropeanFullDate(ev.startDate)} → ${formatEuropeanFullDate(ev.endDate)}`
-                    }</p>
+                        <p class="text-[10px] text-slate-500">${
+                            ev.startDate === ev.endDate
+                                ? "All day"
+                                : `${formatEuropeanFullDate(ev.startDate)} → ${formatEuropeanFullDate(ev.endDate)}`
+                        }</p>
                     </div>
                 `;
                 left.addEventListener("click", () => openEditEventModal(ev.id));
@@ -1588,11 +1525,13 @@
                 const btn = document.createElement("button");
                 btn.type = "button";
                 btn.title = info.name;
-                btn.className = `w-9 h-9 rounded-full ${info.swatch} flex items-center justify-center ${isLightSwatch ? "text-slate-950" : "text-white"
-                    } shadow-xs transition ${isSelected
+                btn.className = `w-9 h-9 rounded-full ${info.swatch} flex items-center justify-center ${
+                    isLightSwatch ? "text-slate-950" : "text-white"
+                } shadow-xs transition ${
+                    isSelected
                         ? "ring-2 ring-offset-2 ring-slate-900 scale-110"
                         : "opacity-85 hover:opacity-100 hover:scale-105"
-                    }`;
+                }`;
                 btn.innerHTML = isSelected ? `<i class="fa-solid fa-check text-xs"></i>` : "";
                 btn.addEventListener("click", () => renderColorSwatches(key));
                 container.appendChild(btn);
@@ -1838,7 +1777,7 @@
                     try {
                         const errData = await response.json();
                         if (errData?.error?.message) msg = errData.error.message;
-                    } catch (_) { }
+                    } catch (_) {}
                     throw new Error(msg);
                 }
 
@@ -1943,19 +1882,19 @@
             $("ai-briefing-this-week").textContent =
                 thisWeekEvents.length > 0
                     ? `${thisWeekEvents.length} item${thisWeekEvents.length > 1 ? "s" : ""}: ` +
-                    thisWeekEvents
-                        .slice(0, 5)
-                        .map((e) => `${e.title} (${formatEuropeanShortDate(e.startDate)})`)
-                        .join(", ")
+                      thisWeekEvents
+                          .slice(0, 5)
+                          .map((e) => `${e.title} (${formatEuropeanShortDate(e.startDate)})`)
+                          .join(", ")
                     : "Clear week ahead.";
 
             $("ai-briefing-next-week").textContent =
                 nextWeekEvents.length > 0
                     ? `${nextWeekEvents.length} item${nextWeekEvents.length > 1 ? "s" : ""}: ` +
-                    nextWeekEvents
-                        .slice(0, 5)
-                        .map((e) => `${e.title} (${formatEuropeanShortDate(e.startDate)})`)
-                        .join(", ")
+                      nextWeekEvents
+                          .slice(0, 5)
+                          .map((e) => `${e.title} (${formatEuropeanShortDate(e.startDate)})`)
+                          .join(", ")
                     : "Nothing scheduled next week yet.";
 
             if (forceToast) showToast("Schedule briefing refreshed");
@@ -2166,7 +2105,7 @@ Return ONLY valid JSON with this exact shape:
             voiceBtn.addEventListener("click", () => {
                 try {
                     speechRecognition.start();
-                } catch (_) { }
+                } catch (_) {}
             });
         }
 
@@ -2187,7 +2126,7 @@ Return ONLY valid JSON with this exact shape:
             activeAudioSources.forEach((src) => {
                 try {
                     src.stop();
-                } catch (_) { }
+                } catch (_) {}
             });
             activeAudioSources = [];
             if (playbackAudioCtx) {
@@ -2455,13 +2394,13 @@ Return ONLY valid JSON with this exact shape:
             if (micProcessorNode) {
                 try {
                     micProcessorNode.disconnect();
-                } catch (_) { }
+                } catch (_) {}
                 micProcessorNode = null;
             }
             if (micAudioCtx) {
                 try {
                     micAudioCtx.close();
-                } catch (_) { }
+                } catch (_) {}
                 micAudioCtx = null;
             }
             if (micMediaStream) {
@@ -2471,7 +2410,7 @@ Return ONLY valid JSON with this exact shape:
             if (liveWs) {
                 try {
                     liveWs.close();
-                } catch (_) { }
+                } catch (_) {}
                 liveWs = null;
             }
 
@@ -2699,5 +2638,4 @@ Return ONLY valid JSON with this exact shape:
         initApp();
     </script>
 </body>
-
 </html>
