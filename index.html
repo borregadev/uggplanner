@@ -95,7 +95,7 @@
                 grid-template-columns: 30px repeat(7, minmax(0, 1fr)) !important;
                 padding: 4px 0 !important;
                 flex-shrink: 0 !important;
-                background-color: #eff6ff !important;
+                background-color: #f8fafc !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -135,7 +135,7 @@
 
             .is-today-badge {
                 background-color: transparent !important;
-                color: #1e3a8a !important;
+                color: #0f172a !important;
                 font-weight: 800 !important;
                 border: none !important;
                 box-shadow: none !important;
@@ -216,28 +216,27 @@
         }
 
         .drop-target-above {
-            box-shadow: 0 -2px 0 0 #2563eb !important;
+            box-shadow: 0 -2px 0 0 #0f172a !important;
         }
 
         .drop-target-below {
-            box-shadow: 0 2px 0 0 #2563eb !important;
+            box-shadow: 0 2px 0 0 #0f172a !important;
         }
     </style>
 </head>
 
 <body
-    class="bg-[#F2F6FA] font-sans text-slate-800 min-h-screen flex flex-col overflow-x-hidden antialiased selection:bg-blue-100 selection:text-blue-950">
+    class="bg-[#F6F7F9] font-sans text-slate-900 min-h-screen flex flex-col overflow-x-hidden antialiased selection:bg-slate-200 selection:text-slate-900">
 
     <!-- Password Lock Screen Overlay -->
-    <div id="lock-screen"
-        class="no-print fixed inset-0 z-[100] bg-gradient-to-br from-slate-950 via-blue-950 to-teal-950 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl border border-blue-100/80 w-full max-w-sm p-7 sm:p-8 text-center">
+    <div id="lock-screen" class="no-print fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl border border-slate-200/80 w-full max-w-sm p-7 sm:p-8 text-center">
             <div
-                class="bg-gradient-to-tr from-blue-600 to-teal-500 text-white w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-600/25">
+                class="bg-slate-900 text-white w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-md">
                 <i class="fa-solid fa-calendar-check text-2xl"></i>
             </div>
             <span
-                class="inline-block text-[10px] font-bold uppercase tracking-widest text-teal-700 bg-teal-50 border border-teal-100 px-2.5 py-1 rounded-full mb-2">Knightsbridge
+                class="inline-block text-[10px] font-bold uppercase tracking-widest text-slate-600 bg-slate-100 border border-slate-200/80 px-2.5 py-1 rounded-full mb-2">Knightsbridge
                 Flagship</span>
             <h2 class="text-xl font-bold text-slate-900 tracking-tight">UGG Store Planner</h2>
             <p class="text-xs text-slate-500 mt-1.5 mb-6">Enter your password to unlock the schedule.</p>
@@ -246,33 +245,33 @@
                 <div class="relative">
                     <input type="password" id="unlock-password-input" required autocomplete="current-password"
                         placeholder="Enter password..."
-                        class="w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition">
+                        class="w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                     <button type="button" id="toggle-password-visibility"
-                        class="absolute inset-y-0 right-0 px-3.5 text-slate-400 hover:text-blue-600 flex items-center justify-center transition"
+                        class="absolute inset-y-0 right-0 px-3.5 text-slate-400 hover:text-slate-800 flex items-center justify-center transition"
                         title="Show/Hide Password">
                         <i id="toggle-password-icon" class="fa-regular fa-eye text-sm"></i>
                     </button>
                 </div>
                 <p id="unlock-error-msg"
-                    class="hidden text-xs font-medium text-rose-600 text-center bg-rose-50 py-2 px-3 rounded-lg border border-rose-100">
+                    class="hidden text-xs font-medium text-red-600 text-center bg-red-50 py-2 px-3 rounded-lg border border-red-100">
                     Incorrect password. Please try again.</p>
                 <button type="submit" id="unlock-submit-btn"
-                    class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white font-semibold rounded-xl text-sm shadow-md shadow-blue-600/20 transition">
+                    class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-semibold rounded-xl text-sm shadow-sm transition">
                     Unlock Planner
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Clean White, Cobalt & Teal Top Header (Hidden when Printing or Locked) -->
+    <!-- Minimalist Monochrome Top Header (Hidden when Printing or Locked) -->
     <header id="app-header"
-        class="hidden no-print bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30">
+        class="hidden no-print bg-white/95 backdrop-blur-md border-b border-slate-200/90 sticky top-0 z-30">
         <div class="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8">
             <div class="flex flex-wrap sm:flex-nowrap items-center justify-between py-2 sm:py-0 sm:h-16 gap-2 sm:gap-3">
                 <!-- Brand Identity -->
                 <div class="flex items-center gap-2.5 sm:gap-3">
                     <div
-                        class="bg-gradient-to-br from-blue-600 to-teal-500 text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl shadow-sm shadow-blue-600/20 flex-shrink-0">
+                        class="bg-slate-900 text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl flex-shrink-0">
                         <i class="fa-solid fa-calendar-days text-sm sm:text-lg"></i>
                     </div>
                     <div>
@@ -283,7 +282,7 @@
 
                 <!-- Center Year Switcher (Desktop) -->
                 <div id="year-tabs-desktop"
-                    class="hidden md:flex items-center gap-1 bg-slate-100/90 p-1 rounded-xl border border-slate-200/70">
+                    class="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80">
                     <!-- Year buttons injected dynamically -->
                 </div>
 
@@ -292,14 +291,14 @@
                     class="flex items-center justify-end gap-1.5 sm:gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                     <!-- Cloud Sync Pill -->
                     <button id="cloud-sync-pill" type="button" title="Click to sync now"
-                        class="mr-auto sm:mr-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-teal-50/80 text-teal-800 border border-teal-200/70 hover:bg-teal-100/70 transition cursor-pointer">
+                        class="mr-auto sm:mr-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200/80 hover:bg-slate-200/60 transition cursor-pointer">
                         <span id="cloud-sync-dot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                         <span id="cloud-sync-text">Local</span>
                     </button>
 
                     <!-- Primary Add Event CTA -->
                     <button id="add-event-btn"
-                        class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition shadow-sm shadow-blue-600/20 active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]">
+                        class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]">
                         <i class="fa-solid fa-plus text-xs"></i>
                         <span>New Event</span>
                     </button>
@@ -308,23 +307,23 @@
                     <button onclick="window.print()"
                         class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]"
                         title="Export / Save as PDF">
-                        <i class="fa-solid fa-print text-xs text-blue-600"></i>
+                        <i class="fa-solid fa-print text-xs text-slate-500"></i>
                         <span class="hidden lg:inline">PDF</span>
                     </button>
 
                     <!-- Unified Settings (Voice, API Key & Backup) -->
                     <button id="settings-btn" type="button"
-                        class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]"
+                        class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]"
                         title="Settings: AI Voice, API Key & Backup">
-                        <i class="fa-solid fa-gear text-xs text-blue-600"></i>
+                        <i class="fa-solid fa-gear text-xs text-slate-500"></i>
                         <span class="hidden lg:inline">Settings</span>
                     </button>
 
                     <!-- Lock Button -->
                     <button id="lock-planner-btn" type="button"
-                        class="inline-flex items-center justify-center bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-800 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]"
+                        class="inline-flex items-center justify-center bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]"
                         title="Lock Planner">
-                        <i class="fa-solid fa-lock text-xs"></i>
+                        <i class="fa-solid fa-lock text-xs text-slate-500"></i>
                     </button>
                 </div>
             </div>
@@ -351,7 +350,7 @@
 
                     <!-- Calendar Header & Quick Controls -->
                     <div
-                        class="calendar-top-bar px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-center sm:justify-between text-center sm:text-left gap-3 bg-gradient-to-r from-white via-white to-blue-50/40">
+                        class="calendar-top-bar px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-200/80 flex flex-col sm:flex-row items-center justify-center sm:justify-between text-center sm:text-left gap-3 bg-white">
                         <div class="flex items-center justify-center sm:justify-start gap-3">
                             <h2 id="current-month-display"
                                 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">
@@ -361,16 +360,16 @@
 
                         <div class="no-print flex items-center justify-center gap-1.5">
                             <button id="prev-month-btn"
-                                class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-blue-50 hover:border-blue-200 text-slate-600 hover:text-blue-600 flex items-center justify-center transition"
+                                class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition"
                                 title="Previous Month">
                                 <i class="fa-solid fa-chevron-left text-xs"></i>
                             </button>
                             <button id="today-btn"
-                                class="px-3 h-8 rounded-lg border border-teal-200 bg-teal-50/80 hover:bg-teal-100 text-teal-800 text-xs font-semibold transition">
+                                class="px-3 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold transition">
                                 Today
                             </button>
                             <button id="next-month-btn"
-                                class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-blue-50 hover:border-blue-200 text-slate-600 hover:text-blue-600 flex items-center justify-center transition"
+                                class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition"
                                 title="Next Month">
                                 <i class="fa-solid fa-chevron-right text-xs"></i>
                             </button>
@@ -378,7 +377,7 @@
                     </div>
 
                     <!-- Sleek Month Ribbon -->
-                    <div class="no-print px-3 sm:px-5 py-2 bg-slate-50/80 border-b border-slate-200/80">
+                    <div class="no-print px-3 sm:px-5 py-2 bg-slate-50/70 border-b border-slate-200/80">
                         <div id="month-tabs"
                             class="no-scrollbar flex items-center gap-1 overflow-x-auto justify-start sm:justify-between">
                             <!-- Month buttons injected dynamically -->
@@ -387,17 +386,17 @@
 
                     <!-- Days of Week Header -->
                     <div
-                        class="week-header-row grid grid-cols-[24px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] border-b border-slate-200/80 bg-gradient-to-r from-blue-50/50 via-slate-50/40 to-teal-50/50 text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 py-2.5">
-                        <div class="text-blue-600/80 border-r border-slate-200/70 flex items-center justify-center">Wk
+                        class="week-header-row grid grid-cols-[24px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] border-b border-slate-200/90 bg-slate-50/50 text-center text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 py-2.5">
+                        <div class="text-slate-400 border-r border-slate-200/80 flex items-center justify-center">Wk
                         </div>
                         <div><span class="hidden sm:inline">Mon</span><span class="sm:hidden">M</span></div>
                         <div><span class="hidden sm:inline">Tue</span><span class="sm:hidden">T</span></div>
                         <div><span class="hidden sm:inline">Wed</span><span class="sm:hidden">W</span></div>
                         <div><span class="hidden sm:inline">Thu</span><span class="sm:hidden">T</span></div>
                         <div><span class="hidden sm:inline">Fri</span><span class="sm:hidden">F</span></div>
-                        <div class="text-teal-700"><span class="hidden sm:inline">Sat</span><span
+                        <div class="text-slate-400"><span class="hidden sm:inline">Sat</span><span
                                 class="sm:hidden">S</span></div>
-                        <div class="text-teal-700"><span class="hidden sm:inline">Sun</span><span
+                        <div class="text-slate-400"><span class="hidden sm:inline">Sun</span><span
                                 class="sm:hidden">S</span></div>
                     </div>
 
@@ -413,17 +412,17 @@
             <aside class="no-print lg:col-span-4 flex flex-col gap-4 lg:sticky lg:top-20">
 
                 <!-- 1. AI Assistant Quick-Command Card -->
-                <section class="bg-white rounded-2xl border border-indigo-200/80 shadow-xs p-4">
+                <section class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4">
                     <div class="flex items-center justify-between mb-2.5">
                         <div class="flex items-center gap-2">
                             <span
-                                class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs shadow-2xs">
+                                class="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center text-xs">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                             </span>
                             <h3 class="text-xs font-bold text-slate-900">AI Schedule Assistant</h3>
                         </div>
                         <button type="button" id="ai-undo-btn"
-                            class="hidden items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition"
+                            class="hidden items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition"
                             title="Undo last AI change">
                             <i class="fa-solid fa-rotate-left text-[10px]"></i>
                             <span>Undo</span>
@@ -432,18 +431,18 @@
 
                     <form id="ai-command-form" class="space-y-2">
                         <div
-                            class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition">
+                            class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus-within:bg-white focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/10 transition">
                             <input type="text" id="ai-command-input" placeholder="Type..."
-                                class="flex-1 min-w-0 bg-transparent text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none py-1">
+                                class="flex-1 min-w-0 bg-transparent text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none py-1">
                             <button type="button" id="ai-voice-btn"
-                                class="w-8 h-8 rounded-lg bg-white hover:bg-blue-50 active:scale-95 text-slate-500 hover:text-blue-600 border border-slate-200/80 flex items-center justify-center transition flex-shrink-0"
+                                class="w-8 h-8 rounded-lg bg-white hover:bg-slate-100 active:scale-95 text-slate-600 hover:text-slate-900 border border-slate-200/90 flex items-center justify-center transition flex-shrink-0"
                                 title="Speak your command">
                                 <i id="ai-voice-icon" class="fa-solid fa-microphone text-xs"></i>
                             </button>
                             <button type="button" id="ai-live-call-btn"
-                                class="h-8 px-2.5 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 active:scale-95 text-indigo-700 border border-indigo-200/80 inline-flex items-center gap-1.5 text-[11px] font-bold transition flex-shrink-0 shadow-2xs"
+                                class="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200/80 active:scale-95 text-slate-800 border border-slate-200/90 inline-flex items-center gap-1.5 text-[11px] font-semibold transition flex-shrink-0"
                                 title="Start real-time two-way AI voice conversation">
-                                <svg class="w-3.5 h-3.5 text-indigo-600" viewBox="0 0 24 24" fill="none"
+                                <svg class="w-3.5 h-3.5 text-slate-700" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
                                     stroke-linejoin="round" aria-hidden="true">
                                     <path d="M12 3v18" />
@@ -455,7 +454,7 @@
                                 <span>Voice</span>
                             </button>
                             <button type="submit" id="ai-submit-btn"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 active:scale-95 text-white transition flex-shrink-0">
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 active:scale-95 text-white transition flex-shrink-0">
                                 <span id="ai-submit-label">Run</span>
                                 <i id="ai-submit-icon" class="fa-solid fa-arrow-right text-[10px]"></i>
                             </button>
@@ -464,31 +463,30 @@
 
                     <!-- Real-Time Live Voice Call Panel -->
                     <div id="live-call-panel" class="hidden mt-3 pt-3 border-t border-slate-100">
-                        <div
-                            class="bg-gradient-to-r from-blue-600 via-indigo-600 to-teal-600 text-white rounded-xl p-3 shadow-sm">
+                        <div class="bg-slate-900 text-white rounded-xl p-3">
                             <div class="flex items-center justify-between gap-2">
                                 <div class="flex items-center gap-2.5 min-w-0">
                                     <span id="live-call-pulse"
-                                        class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 animate-pulse">
+                                        class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 animate-pulse">
                                         <i class="fa-solid fa-tower-broadcast text-xs"></i>
                                     </span>
                                     <div class="min-w-0">
                                         <div class="flex items-center gap-1.5">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-teal-200 animate-ping"></span>
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                                             <p class="text-xs font-bold tracking-tight">Gemini Live Voice</p>
                                         </div>
-                                        <p id="live-call-status" class="text-[11px] text-blue-100 truncate">
+                                        <p id="live-call-status" class="text-[11px] text-slate-300 truncate">
                                             Connecting...</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1.5 flex-shrink-0">
                                     <button type="button" id="live-call-mute-btn"
-                                        class="w-8 h-8 rounded-lg bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition"
+                                        class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition"
                                         title="Mute / Unmute Microphone">
                                         <i id="live-call-mute-icon" class="fa-solid fa-microphone text-xs"></i>
                                     </button>
                                     <button type="button" id="live-call-end-btn"
-                                        class="px-3 h-8 rounded-lg bg-white/20 hover:bg-white/30 active:scale-95 text-white border border-white/25 backdrop-blur-xs text-[11px] font-semibold inline-flex items-center gap-1.5 transition"
+                                        class="px-3 h-8 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-white border border-white/20 text-[11px] font-semibold inline-flex items-center gap-1.5 transition"
                                         title="Stop AI Voice Session">
                                         <span class="w-2 h-2 rounded-[2px] bg-white inline-block"></span>
                                         <span>Stop</span>
@@ -504,7 +502,7 @@
                             <span
                                 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Conversation</span>
                             <button type="button" id="ai-transcript-clear-btn"
-                                class="text-[10px] font-semibold text-slate-400 hover:text-slate-600 transition">
+                                class="text-[10px] font-semibold text-slate-400 hover:text-slate-700 transition">
                                 Clear
                             </button>
                         </div>
@@ -519,12 +517,12 @@
                     <div class="flex items-center justify-between gap-2 mb-3">
                         <div class="flex items-center gap-2 min-w-0">
                             <span
-                                class="w-7 h-7 rounded-lg bg-teal-50 text-teal-700 border border-teal-200/70 flex items-center justify-center text-xs flex-shrink-0">
+                                class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center text-xs flex-shrink-0">
                                 <i class="fa-regular fa-calendar"></i>
                             </span>
                             <div class="min-w-0">
                                 <span
-                                    class="block text-[10px] font-bold uppercase tracking-wider text-teal-700">Selected
+                                    class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Selected
                                     Day</span>
                                 <h3 id="selected-day-title"
                                     class="text-xs sm:text-sm font-bold text-slate-900 truncate">Monday, 23 Nov 2026
@@ -532,7 +530,7 @@
                             </div>
                         </div>
                         <button type="button" id="selected-day-add-btn"
-                            class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/70 transition flex-shrink-0">
+                            class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition flex-shrink-0">
                             <i class="fa-solid fa-plus text-[10px]"></i>
                             <span>Add</span>
                         </button>
@@ -548,41 +546,42 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span
-                                class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs">
+                                class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center text-xs">
                                 <i class="fa-solid fa-list-check"></i>
                             </span>
                             <h3 class="text-xs font-bold text-slate-900">Schedule Briefing</h3>
                         </div>
                         <div class="flex items-center gap-1">
                             <button type="button" id="ai-briefing-refresh-btn"
-                                class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-blue-600 flex items-center justify-center transition"
+                                class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition"
                                 title="Refresh Briefing">
                                 <i class="fa-solid fa-rotate text-[11px]"></i>
                             </button>
                             <button type="button" id="ai-briefing-toggle-btn"
-                                class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition"
+                                class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition"
                                 title="Collapse / Expand Briefing">
                                 <i id="ai-briefing-toggle-icon" class="fa-solid fa-chevron-up text-[10px]"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div id="ai-briefing-body" class="mt-3 space-y-2.5">
-                        <div class="p-2.5 rounded-xl bg-blue-50/70 border border-blue-200/60">
+                    <div id="ai-briefing-body" class="mt-3 space-y-2">
+                        <div class="p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80">
                             <span
-                                class="block text-[10px] font-bold uppercase tracking-wider text-blue-700 mb-0.5">Today</span>
-                            <p id="ai-briefing-today" class="text-xs text-slate-700 leading-relaxed">Loading...</p>
+                                class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Today</span>
+                            <p id="ai-briefing-today" class="text-xs text-slate-800 leading-relaxed">Loading...</p>
                         </div>
-                        <div class="p-2.5 rounded-xl bg-teal-50/70 border border-teal-200/60">
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-teal-700 mb-0.5">This
-                                Week</span>
-                            <p id="ai-briefing-this-week" class="text-xs text-slate-700 leading-relaxed">Loading...</p>
-                        </div>
-                        <div class="p-2.5 rounded-xl bg-indigo-50/70 border border-indigo-200/60">
+                        <div class="p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80">
                             <span
-                                class="block text-[10px] font-bold uppercase tracking-wider text-indigo-700 mb-0.5">Next
+                                class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">This
                                 Week</span>
-                            <p id="ai-briefing-next-week" class="text-xs text-slate-700 leading-relaxed">Loading...</p>
+                            <p id="ai-briefing-this-week" class="text-xs text-slate-800 leading-relaxed">Loading...</p>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80">
+                            <span
+                                class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Next
+                                Week</span>
+                            <p id="ai-briefing-next-week" class="text-xs text-slate-800 leading-relaxed">Loading...</p>
                         </div>
                     </div>
                 </section>
@@ -594,7 +593,7 @@
     <!-- Status Toast Notification -->
     <div id="status-toast"
         class="no-print hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-full shadow-xl border border-slate-700/80 flex items-center gap-2 transition-opacity duration-300">
-        <i id="status-toast-icon" class="fa-solid fa-circle-check text-teal-400"></i>
+        <i id="status-toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
         <span id="status-toast-msg">Saved</span>
     </div>
 
@@ -607,7 +606,8 @@
             <div
                 class="px-6 py-4 bg-white border-b border-slate-100 flex justify-between items-center sticky top-0 z-10">
                 <div class="flex items-center gap-2.5">
-                    <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+                    <span
+                        class="w-8 h-8 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center text-sm">
                         <i class="fa-regular fa-calendar-plus"></i>
                     </span>
                     <h3 id="modal-title" class="font-bold text-slate-900 text-base">Add All-Day Event</h3>
@@ -630,7 +630,7 @@
                         Event Title
                     </label>
                     <input type="text" id="event-title" required placeholder="e.g. Annual Strategy Retreat"
-                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition">
+                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                 </div>
 
                 <!-- Date Range Inputs -->
@@ -641,7 +641,7 @@
                             Start Date
                         </label>
                         <input type="date" id="event-start-date" required
-                            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition">
+                            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                     </div>
                     <div>
                         <label for="event-end-date"
@@ -649,7 +649,7 @@
                             End Date
                         </label>
                         <input type="date" id="event-end-date" required
-                            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition">
+                            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                     </div>
                 </div>
 
@@ -660,7 +660,7 @@
                         Repeat Schedule
                     </label>
                     <select id="event-recurrence"
-                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition">
+                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                         <option value="none">Does not repeat</option>
                         <option value="daily">Daily</option>
                         <option value="weekly">Every Week</option>
@@ -676,18 +676,18 @@
                         <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                             Category Color
                         </label>
-                        <span id="selected-color-name" class="text-[11px] font-semibold text-blue-600">Cobalt
-                            Blue</span>
+                        <span id="selected-color-name" class="text-[11px] font-semibold text-slate-700">Royal
+                            Cobalt</span>
                     </div>
-                    <div id="color-picker-options" class="grid grid-cols-6 gap-2.5">
-                        <!-- Color swatches injected dynamically -->
+                    <div id="color-picker-options" class="grid grid-cols-5 gap-3 justify-items-center py-1">
+                        <!-- 10 circular color swatches injected dynamically -->
                     </div>
                 </div>
 
                 <!-- Modal Actions -->
                 <div class="flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-slate-100">
                     <button type="button" id="delete-event-btn"
-                        class="hidden text-rose-600 hover:text-rose-700 text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl hover:bg-rose-50 transition">
+                        class="hidden text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl hover:bg-red-50 transition">
                         <i class="fa-regular fa-trash-can mr-1"></i> Delete
                     </button>
                     <div class="flex gap-2 ml-auto">
@@ -696,7 +696,7 @@
                             Cancel
                         </button>
                         <button type="submit"
-                            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition shadow-sm shadow-blue-600/20">
+                            class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs sm:text-sm font-semibold transition">
                             Save Event
                         </button>
                     </div>
@@ -711,7 +711,7 @@
         <div
             class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm overflow-hidden p-6 text-center">
             <div
-                class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
+                class="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-trash-can"></i>
             </div>
             <h3 class="font-bold text-slate-900 text-base mb-1.5">Delete Repeating Event</h3>
@@ -720,19 +720,19 @@
 
             <div class="space-y-2">
                 <button id="delete-single-btn"
-                    class="w-full py-3 px-4 bg-slate-50 hover:bg-blue-50 text-slate-800 hover:text-blue-700 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                    class="w-full py-3 px-4 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
                     <span>Only this event</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
                 </button>
                 <button id="delete-following-btn"
-                    class="w-full py-3 px-4 bg-slate-50 hover:bg-blue-50 text-slate-800 hover:text-blue-700 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                    class="w-full py-3 px-4 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
                     <span>This and following events</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
                 </button>
                 <button id="delete-all-btn"
-                    class="w-full py-3 px-4 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold transition text-left flex items-center justify-between shadow-sm">
+                    class="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold transition text-left flex items-center justify-between shadow-sm">
                     <span>All events in series</span>
-                    <i class="fa-solid fa-chevron-right text-[10px] text-rose-200"></i>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-red-200"></i>
                 </button>
             </div>
 
@@ -750,7 +750,7 @@
             class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto p-6">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center">
                         <i class="fa-solid fa-gear"></i>
                     </div>
                     <h3 class="font-bold text-slate-900 text-base">Planner Settings</h3>
@@ -771,7 +771,7 @@
                     <div class="flex items-center gap-2">
                         <div class="relative flex-1 min-w-0">
                             <select id="ai-voice-select"
-                                class="w-full appearance-none pl-3.5 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition cursor-pointer">
+                                class="w-full appearance-none pl-3.5 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition cursor-pointer">
                                 <option value="Aoede">Aoede — Warm & Conversational</option>
                                 <option value="Kore">Kore — Firm & Articulate</option>
                                 <option value="Leda">Leda — Youthful & Bright</option>
@@ -785,7 +785,7 @@
                                 class="fa-solid fa-chevron-down text-xs text-slate-400 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2"></i>
                         </div>
                         <button type="button" id="preview-ai-voice-btn"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200/80 rounded-xl text-xs font-semibold transition flex-shrink-0"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200/80 text-slate-800 border border-slate-200 rounded-xl text-xs font-semibold transition flex-shrink-0"
                             title="Listen to selected voice">
                             <i id="preview-ai-voice-icon" class="fa-solid fa-volume-high text-xs"></i>
                             <span id="preview-ai-voice-label">Preview</span>
@@ -801,12 +801,12 @@
                             Gemini API Key
                         </label>
                         <button type="button" id="clear-ai-key-btn"
-                            class="text-[11px] font-semibold text-rose-600 hover:text-rose-700">
+                            class="text-[11px] font-semibold text-red-600 hover:text-red-700">
                             Remove Key
                         </button>
                     </div>
                     <input type="password" id="ai-api-key-input" placeholder="AIzaSy..."
-                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition">
+                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                     <p class="text-[11px] text-slate-500 leading-relaxed">
                         Stored inside your locked Firebase database and synced across your devices.
                     </p>
@@ -819,13 +819,13 @@
                     </span>
                     <div class="grid grid-cols-2 gap-2.5">
                         <button type="button" id="save-backup-btn"
-                            class="inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs transition">
-                            <i class="fa-solid fa-download text-xs text-blue-600"></i>
+                            class="inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs transition">
+                            <i class="fa-solid fa-download text-xs text-slate-500"></i>
                             <span>Export JSON</span>
                         </button>
                         <label for="restore-file-input" id="restore-backup-btn"
-                            class="cursor-pointer inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs transition relative overflow-hidden">
-                            <i class="fa-solid fa-upload text-xs text-blue-600"></i>
+                            class="cursor-pointer inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs transition relative overflow-hidden">
+                            <i class="fa-solid fa-upload text-xs text-slate-500"></i>
                             <span>Import JSON</span>
                             <input type="file" id="restore-file-input" accept=".json,application/json,text/plain"
                                 class="sr-only">
@@ -840,7 +840,7 @@
                         Cancel
                     </button>
                     <button type="submit"
-                        class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold transition shadow-sm shadow-blue-600/20">
+                        class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition">
                         Save Settings
                     </button>
                 </div>
@@ -885,40 +885,64 @@
 
         const COLOR_PALETTE = {
             cobalt: {
-                name: "Cobalt Blue",
-                pill: "bg-blue-50 text-blue-950 border-blue-200/90 border-l-blue-600",
+                name: "Royal Cobalt",
+                pill: "bg-blue-600 text-white border-blue-700 border-l-blue-950 shadow-2xs",
                 swatch: "bg-blue-600",
                 dot: "bg-blue-600"
             },
             emerald: {
-                name: "Forest Green",
-                pill: "bg-emerald-50 text-emerald-950 border-emerald-200/90 border-l-emerald-600",
+                name: "Forest Emerald",
+                pill: "bg-emerald-600 text-white border-emerald-700 border-l-emerald-950 shadow-2xs",
                 swatch: "bg-emerald-600",
                 dot: "bg-emerald-600"
             },
             amber: {
-                name: "Amber Gold",
-                pill: "bg-amber-50 text-amber-950 border-amber-200/90 border-l-amber-500",
-                swatch: "bg-amber-500",
-                dot: "bg-amber-500"
+                name: "Sunshine Gold",
+                pill: "bg-amber-400 text-slate-950 border-amber-500 border-l-amber-800 shadow-2xs",
+                swatch: "bg-amber-400",
+                dot: "bg-amber-400"
             },
             rose: {
-                name: "Crimson Rose",
-                pill: "bg-rose-50 text-rose-950 border-rose-200/90 border-l-rose-600",
-                swatch: "bg-rose-600",
-                dot: "bg-rose-600"
+                name: "Scarlet Red",
+                pill: "bg-red-600 text-white border-red-700 border-l-red-950 shadow-2xs",
+                swatch: "bg-red-600",
+                dot: "bg-red-600"
             },
             indigo: {
-                name: "Royal Indigo",
-                pill: "bg-indigo-50 text-indigo-950 border-indigo-200/90 border-l-indigo-600",
-                swatch: "bg-indigo-600",
-                dot: "bg-indigo-600"
+                name: "Tangerine Orange",
+                pill: "bg-orange-500 text-white border-orange-600 border-l-orange-900 shadow-2xs",
+                swatch: "bg-orange-500",
+                dot: "bg-orange-500"
             },
             teal: {
-                name: "Ocean Teal",
-                pill: "bg-teal-50 text-teal-950 border-teal-200/90 border-l-teal-600",
-                swatch: "bg-teal-600",
-                dot: "bg-teal-600"
+                name: "Electric Lime",
+                pill: "bg-lime-400 text-slate-950 border-lime-500 border-l-lime-800 shadow-2xs",
+                swatch: "bg-lime-400",
+                dot: "bg-lime-500"
+            },
+            violet: {
+                name: "Royal Purple",
+                pill: "bg-purple-600 text-white border-purple-700 border-l-purple-950 shadow-2xs",
+                swatch: "bg-purple-600",
+                dot: "bg-purple-600"
+            },
+            fuchsia: {
+                name: "Bubblegum Pink",
+                pill: "bg-pink-500 text-white border-pink-600 border-l-pink-900 shadow-2xs",
+                swatch: "bg-pink-500",
+                dot: "bg-pink-500"
+            },
+            sky: {
+                name: "Ice Cyan",
+                pill: "bg-cyan-300 text-cyan-950 border-cyan-400 border-l-cyan-800 shadow-2xs",
+                swatch: "bg-cyan-300",
+                dot: "bg-cyan-400"
+            },
+            slate: {
+                name: "Obsidian Charcoal",
+                pill: "bg-slate-800 text-white border-slate-900 border-l-black shadow-2xs",
+                swatch: "bg-slate-800",
+                dot: "bg-slate-800"
             }
         };
 
@@ -972,11 +996,26 @@
         }
 
         function getISOWeekNumber(dateObj) {
-            const temp = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
-            const dayNum = temp.getUTCDay() || 7;
-            temp.setUTCDate(temp.getUTCDate() + 4 - dayNum);
-            const yearStart = new Date(Date.UTC(temp.getUTCFullYear(), 0, 1));
-            return Math.ceil((((temp - yearStart) / 86400000) + 1) / 7);
+            // Retail / Fiscal week number starting Week 1 on the first week of April
+            const target = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+            const dayNum = (target.getDay() + 6) % 7; // Monday = 0 ... Sunday = 6
+            const targetMonday = addDays(target, -dayNum);
+            const targetThursday = addDays(targetMonday, 3); // Thursday determines which month/year owns the week
+
+            const fiscalYear = targetThursday.getMonth() >= 3
+                ? targetThursday.getFullYear()
+                : targetThursday.getFullYear() - 1;
+
+            // Find the first week of April whose Thursday falls in April
+            const april1 = new Date(fiscalYear, 3, 1);
+            const april1DayNum = (april1.getDay() + 6) % 7;
+            let week1Monday = addDays(april1, -april1DayNum);
+            if (addDays(week1Monday, 3).getMonth() < 3) {
+                week1Monday = addDays(week1Monday, 7);
+            }
+
+            const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+            return Math.round((targetMonday - week1Monday) / msPerWeek) + 1;
         }
 
         function formatHumanDate(dateStr) {
@@ -1002,8 +1041,8 @@
             const msg = $("status-toast-msg");
             msg.textContent = message;
             icon.className = isError
-                ? "fa-solid fa-circle-exclamation text-rose-400"
-                : "fa-solid fa-circle-check text-teal-400";
+                ? "fa-solid fa-circle-exclamation text-red-400"
+                : "fa-solid fa-circle-check text-emerald-400";
             toast.classList.remove("hidden");
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => {
@@ -1041,11 +1080,11 @@
             if (tooltip) pill.title = tooltip;
 
             if (state === "synced") {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-teal-500";
+                dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
             } else if (state === "syncing") {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse";
+                dot.className = "w-1.5 h-1.5 rounded-full bg-slate-700 animate-pulse";
             } else if (state === "error") {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-rose-500";
+                dot.className = "w-1.5 h-1.5 rounded-full bg-red-500";
             } else {
                 dot.className = "w-1.5 h-1.5 rounded-full bg-slate-400";
             }
@@ -1225,8 +1264,8 @@
                 dBtn.type = "button";
                 dBtn.textContent = year;
                 dBtn.className = isActive
-                    ? "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-white text-blue-700 shadow-2xs transition"
-                    : "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition";
+                    ? "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-2xs transition"
+                    : "px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-900 transition";
                 dBtn.addEventListener("click", () => {
                     activeYear = year;
                     renderCalendar();
@@ -1237,8 +1276,8 @@
                 mBtn.type = "button";
                 mBtn.textContent = year;
                 mBtn.className = isActive
-                    ? "flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-blue-700 shadow-2xs transition"
-                    : "flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800 transition";
+                    ? "flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-2xs transition"
+                    : "flex-1 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-800 transition";
                 mBtn.addEventListener("click", () => {
                     activeYear = year;
                     renderCalendar();
@@ -1258,8 +1297,8 @@
                 btn.textContent = shortName;
                 btn.dataset.monthIndex = idx;
                 btn.className = isActive
-                    ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-2xs transition flex-shrink-0"
-                    : "px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-white hover:text-blue-700 transition flex-shrink-0";
+                    ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white transition flex-shrink-0"
+                    : "px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-white hover:text-slate-900 transition flex-shrink-0";
                 btn.addEventListener("click", () => {
                     activeMonthIndex = idx;
                     renderCalendar();
@@ -1318,7 +1357,7 @@
                 // ISO Week Cell
                 const wkCell = document.createElement("div");
                 wkCell.className =
-                    "week-num-cell bg-slate-50/70 border-r border-b border-slate-200/70 text-[10px] sm:text-xs font-bold text-blue-600/75 flex items-start justify-center pt-2 select-none";
+                    "week-num-cell bg-slate-50/50 border-r border-b border-slate-200/70 text-[10px] sm:text-xs font-medium text-slate-400 flex items-start justify-center pt-2 select-none";
                 wkCell.textContent = weekNum;
                 grid.appendChild(wkCell);
 
@@ -1333,13 +1372,13 @@
                     const cell = document.createElement("div");
                     cell.dataset.date = cellDateKey;
                     cell.className = [
-                        "day-cell min-h-[104px] sm:min-h-[122px] p-1 sm:p-1.5 border-r border-b border-slate-200/70 flex flex-col transition cursor-pointer relative",
+                        "day-cell min-h-[104px] sm:min-h-[122px] p-1 sm:p-1.5 border-r border-b border-slate-200/80 flex flex-col transition cursor-pointer relative",
                         isCurrentMonth
                             ? isWeekend
-                                ? "bg-teal-50/20 hover:bg-blue-50/30"
-                                : "bg-white hover:bg-blue-50/30"
-                            : "bg-slate-50/60 text-slate-400 hover:bg-slate-100/60",
-                        isSelected ? "ring-2 ring-inset ring-teal-500/80 bg-teal-50/25" : ""
+                                ? "bg-slate-50/45 hover:bg-slate-50"
+                                : "bg-white hover:bg-slate-50/70"
+                            : "bg-slate-50/80 text-slate-400 hover:bg-slate-100/60",
+                        isSelected ? "ring-2 ring-inset ring-slate-900 bg-slate-50/60" : ""
                     ].join(" ");
 
                     // Top Date Number Row
@@ -1349,9 +1388,9 @@
                     const dateBadge = document.createElement("span");
                     dateBadge.textContent = cellDate.getDate();
                     dateBadge.className = isToday
-                        ? "is-today-badge w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-teal-600 text-white text-[10px] sm:text-xs font-bold flex items-center justify-center shadow-2xs"
+                        ? "is-today-badge w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-900 text-white text-[10px] sm:text-xs font-bold flex items-center justify-center"
                         : isCurrentMonth
-                            ? "text-[11px] sm:text-xs font-bold text-slate-700"
+                            ? "text-[11px] sm:text-xs font-semibold text-slate-800"
                             : "text-[10px] sm:text-xs font-medium text-slate-400";
 
                     headerRow.appendChild(dateBadge);
@@ -1472,7 +1511,7 @@
                 const palette = COLOR_PALETTE[ev.color] || COLOR_PALETTE.cobalt;
                 const row = document.createElement("div");
                 row.className =
-                    "flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50/90 hover:bg-blue-50/50 border border-slate-200/80 transition group";
+                    "flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/80 transition group";
 
                 const left = document.createElement("button");
                 left.type = "button";
@@ -1497,7 +1536,7 @@
                     upBtn.type = "button";
                     upBtn.disabled = idx === 0;
                     upBtn.className =
-                        "w-6 h-6 rounded-md bg-white border border-slate-200 text-slate-500 hover:text-blue-600 disabled:opacity-30 flex items-center justify-center text-[10px]";
+                        "w-6 h-6 rounded-md bg-white border border-slate-200 text-slate-500 hover:text-slate-900 disabled:opacity-30 flex items-center justify-center text-[10px]";
                     upBtn.innerHTML = `<i class="fa-solid fa-arrow-up"></i>`;
                     upBtn.addEventListener("click", (e) => {
                         e.stopPropagation();
@@ -1508,7 +1547,7 @@
                     downBtn.type = "button";
                     downBtn.disabled = idx === dayEvents.length - 1;
                     downBtn.className =
-                        "w-6 h-6 rounded-md bg-white border border-slate-200 text-slate-500 hover:text-blue-600 disabled:opacity-30 flex items-center justify-center text-[10px]";
+                        "w-6 h-6 rounded-md bg-white border border-slate-200 text-slate-500 hover:text-slate-900 disabled:opacity-30 flex items-center justify-center text-[10px]";
                     downBtn.innerHTML = `<i class="fa-solid fa-arrow-down"></i>`;
                     downBtn.addEventListener("click", (e) => {
                         e.stopPropagation();
@@ -1545,10 +1584,14 @@
 
             Object.entries(COLOR_PALETTE).forEach(([key, info]) => {
                 const isSelected = key === chosen;
+                const isLightSwatch = key === "amber" || key === "sky" || key === "teal";
                 const btn = document.createElement("button");
                 btn.type = "button";
                 btn.title = info.name;
-                btn.className = `h-9 rounded-xl ${info.swatch} flex items-center justify-center text-white transition ${isSelected ? "ring-2 ring-offset-2 ring-slate-900 scale-105" : "opacity-80 hover:opacity-100"
+                btn.className = `w-9 h-9 rounded-full ${info.swatch} flex items-center justify-center ${isLightSwatch ? "text-slate-950" : "text-white"
+                    } shadow-xs transition ${isSelected
+                        ? "ring-2 ring-offset-2 ring-slate-900 scale-110"
+                        : "opacity-85 hover:opacity-100 hover:scale-105"
                     }`;
                 btn.innerHTML = isSelected ? `<i class="fa-solid fa-check text-xs"></i>` : "";
                 btn.addEventListener("click", () => renderColorSwatches(key));
@@ -1947,7 +1990,7 @@
             const bubble = document.createElement("div");
             bubble.className =
                 role === "user"
-                    ? "transcript-bubble max-w-[85%] px-3 py-1.5 rounded-2xl rounded-br-xs bg-blue-600 text-white text-xs leading-relaxed shadow-2xs"
+                    ? "transcript-bubble max-w-[85%] px-3 py-1.5 rounded-2xl rounded-br-xs bg-slate-900 text-white text-xs leading-relaxed"
                     : "transcript-bubble max-w-[85%] px-3 py-1.5 rounded-2xl rounded-bl-xs bg-slate-100 text-slate-800 border border-slate-200/70 text-xs leading-relaxed";
             bubble.textContent = cleaned;
 
@@ -2043,7 +2086,7 @@ Return ONLY valid JSON with this exact shape:
 {
   "reply": "Short helpful answer or confirmation sentence using European dates",
   "operations": [
-    { "action": "add", "title": "...", "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "cobalt|emerald|amber|rose|indigo|teal", "recurrence": "none|daily|weekly|biweekly|monthly|yearly" },
+    { "action": "add", "title": "...", "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "cobalt|emerald|amber|rose|indigo|teal|violet|fuchsia|sky|slate", "recurrence": "none|daily|weekly|biweekly|monthly|yearly" },
     { "action": "update", "id": "existing_event_id", "title": "...", "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "..." },
     { "action": "delete", "id": "existing_event_id" }
   ]
@@ -2288,7 +2331,7 @@ Return ONLY valid JSON with this exact shape:
                                                                 title: { type: "STRING" },
                                                                 startDate: { type: "STRING", description: "YYYY-MM-DD" },
                                                                 endDate: { type: "STRING", description: "YYYY-MM-DD" },
-                                                                color: { type: "STRING", description: "cobalt, emerald, amber, rose, indigo, or teal" },
+                                                                color: { type: "STRING", description: "cobalt, emerald, amber, rose, indigo, teal, violet, fuchsia, sky, or slate" },
                                                                 recurrence: { type: "STRING", description: "none, daily, weekly, biweekly, monthly, or yearly" }
                                                             },
                                                             required: ["action"]
