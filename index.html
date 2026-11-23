@@ -5,59 +5,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UGG Knightsbridge Planner</title>
-    <!-- Browser Tab Favicon (Calendar Icon) -->
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='12' width='52' height='46' rx='10' fill='%232563eb'/%3E%3Cpath d='M6 22c0-5.523 4.477-10 10-10h32c5.523 0 10 4.477 10 10v4H6v-4z' fill='%231d4ed8'/%3E%3Crect x='18' y='6' width='5' height='11' rx='2.5' fill='%2393c5fd'/%3E%3Crect x='41' y='6' width='5' height='11' rx='2.5' fill='%2393c5fd'/%3E%3Crect x='14' y='31' width='8' height='8' rx='2' fill='%23ffffff'/%3E%3Crect x='28' y='31' width='8' height='8' rx='2' fill='%23ffffff'/%3E%3Crect x='42' y='31' width='8' height='8' rx='2' fill='%23ffffff'/%3E%3Crect x='14' y='43' width='8' height='8' rx='2' fill='%23ffffff'/%3E%3Crect x='28' y='43' width='8' height='8' rx='2' fill='%2393c5fd'/%3E%3C/svg%3E">
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                        }
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Custom print styling for A4 Page Optimization */
+        /* Custom print styling for Full-Page A4 Landscape Optimization */
         @media print {
             @page {
                 size: A4 landscape;
-                margin: 6mm;
+                margin: 4mm;
             }
 
             html,
             body {
+                width: 100% !important;
                 height: 100% !important;
-                max-height: 100vh !important;
+                margin: 0 !important;
+                padding: 0 !important;
                 overflow: hidden !important;
-                background: white !important;
-                color: black !important;
+                background: #ffffff !important;
+                color: #0f172a !important;
                 font-size: 9pt;
             }
 
             .no-print {
                 display: none !important;
-            }
-
-            .print-only {
-                display: block !important;
             }
 
             .page-container {
@@ -66,35 +54,67 @@
                 max-width: none !important;
                 width: 100% !important;
                 height: 100vh !important;
-                box-shadow: none !important;
                 display: flex !important;
                 flex-direction: column !important;
             }
 
-            .page-container>div {
+            .workspace-grid {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
                 height: 100% !important;
+                gap: 0 !important;
+            }
+
+            .calendar-primary-col {
+                width: 100% !important;
+                height: 100% !important;
+                flex: 1 1 auto !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 0 !important;
+            }
+
+            .calendar-shell {
+                width: 100% !important;
+                height: 100% !important;
+                min-height: 0 !important;
                 display: flex !important;
                 flex-direction: column !important;
                 border-radius: 0 !important;
-                border: 1px solid #cbd5e1 !important;
+                border: 1px solid #94a3b8 !important;
+                box-shadow: none !important;
+            }
+
+            .calendar-top-bar {
+                padding: 6px 10px !important;
+                flex-shrink: 0 !important;
+            }
+
+            .week-header-row {
+                grid-template-columns: 30px repeat(7, minmax(0, 1fr)) !important;
+                padding: 4px 0 !important;
+                flex-shrink: 0 !important;
+                background-color: #eff6ff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
             .calendar-grid {
                 border-top: 1px solid #cbd5e1 !important;
                 flex: 1 1 auto !important;
+                min-height: 0 !important;
                 display: grid !important;
-                grid-template-columns: 28px repeat(7, minmax(0, 1fr)) !important;
+                grid-template-columns: 30px repeat(7, minmax(0, 1fr)) !important;
+                grid-auto-rows: minmax(0, 1fr) !important;
                 height: 100% !important;
             }
 
-            .week-header-row {
-                grid-template-columns: 28px repeat(7, minmax(0, 1fr)) !important;
-            }
-
             .week-num-cell {
-                border-color: #e2e8f0 !important;
-                border-width: 1px !important;
-                font-size: 7pt !important;
+                border-color: #cbd5e1 !important;
+                border-width: 0 1px 1px 0 !important;
+                font-size: 7.5pt !important;
+                padding-top: 4px !important;
                 background-color: #f8fafc !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -103,31 +123,31 @@
             .day-cell {
                 min-height: 0 !important;
                 height: 100% !important;
-                border-color: #e2e8f0 !important;
-                border-width: 1px !important;
+                border-color: #cbd5e1 !important;
+                border-width: 0 1px 1px 0 !important;
                 page-break-inside: avoid;
-                padding: 3px !important;
+                padding: 3px 4px !important;
                 overflow: hidden !important;
+                background: #ffffff !important;
             }
 
-            /* High-contrast print style for current day badge */
             .is-today-badge {
                 background-color: transparent !important;
-                color: #1e293b !important;
-                font-weight: bold !important;
+                color: #1e3a8a !important;
+                font-weight: 800 !important;
                 border: none !important;
                 box-shadow: none !important;
-                -webkit-print-color-adjust: unset !important;
-                print-color-adjust: unset !important;
+                width: auto !important;
+                height: auto !important;
             }
 
             .event-pill {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
                 font-size: 7.5pt !important;
-                padding: 1px 3px !important;
+                padding: 1px 4px !important;
                 margin-bottom: 1px !important;
-                line-height: 1.1 !important;
+                line-height: 1.15 !important;
                 white-space: nowrap !important;
                 overflow: hidden !important;
                 text-overflow: ellipsis !important;
@@ -135,27 +155,26 @@
             }
         }
 
-        /* Screen-specific utility scrollbars */
-        .month-tabs-scroll::-webkit-scrollbar {
-            height: 6px;
+        /* Clean custom scrollbars */
+        .clean-scroll::-webkit-scrollbar {
+            height: 5px;
+            width: 5px;
         }
 
-        .month-tabs-scroll::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
+        .clean-scroll::-webkit-scrollbar-track {
+            background: transparent;
         }
 
-        .month-tabs-scroll::-webkit-scrollbar-thumb {
+        .clean-scroll::-webkit-scrollbar-thumb {
             background: #cbd5e1;
-            border-radius: 4px;
+            border-radius: 9999px;
         }
 
-        .month-tabs-scroll::-webkit-scrollbar-thumb:hover {
+        .clean-scroll::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
 
-        /* Smooth mobile horizontal scrolling without clipping */
-        .month-tabs-scroll {
+        .clean-scroll {
             -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
         }
@@ -191,272 +210,402 @@
     </style>
 </head>
 
-<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col overflow-x-hidden">
+<body
+    class="bg-[#F4F7FB] font-sans text-slate-800 min-h-screen flex flex-col overflow-x-hidden antialiased selection:bg-blue-100 selection:text-blue-900">
 
     <!-- Password Lock Screen Overlay -->
-    <div id="lock-screen" class="no-print fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm p-6 sm:p-7 text-center">
+    <div id="lock-screen"
+        class="no-print fixed inset-0 z-[100] bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl border border-blue-100 w-full max-w-sm p-7 sm:p-8 text-center">
             <div
-                class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
-                <i class="fa-solid fa-lock text-xl"></i>
+                class="bg-blue-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-600/25">
+                <i class="fa-solid fa-calendar-check text-2xl"></i>
             </div>
-            <h2 class="text-lg sm:text-xl font-bold text-slate-900">UGG Knightsbridge Planner</h2>
-            <p class="text-xs text-slate-500 mt-1 mb-5">Enter the password to unlock your schedule.</p>
+            <span
+                class="inline-block text-[10px] font-bold uppercase tracking-widest text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full mb-2">Knightsbridge
+                Flagship</span>
+            <h2 class="text-xl font-bold text-slate-900 tracking-tight">UGG Store Planner</h2>
+            <p class="text-xs text-slate-500 mt-1.5 mb-6">Enter your password to unlock the schedule.</p>
 
-            <form id="unlock-form" class="space-y-3 text-left">
+            <form id="unlock-form" class="space-y-3.5 text-left">
                 <div class="relative">
                     <input type="password" id="unlock-password-input" required autocomplete="current-password"
                         placeholder="Enter password..."
-                        class="w-full px-3.5 py-2.5 pr-10 border border-slate-300 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        class="w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition">
                     <button type="button" id="toggle-password-visibility"
-                        class="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-slate-600 flex items-center justify-center"
+                        class="absolute inset-y-0 right-0 px-3.5 text-slate-400 hover:text-blue-600 flex items-center justify-center transition"
                         title="Show/Hide Password">
                         <i id="toggle-password-icon" class="fa-regular fa-eye text-sm"></i>
                     </button>
                 </div>
-                <p id="unlock-error-msg" class="hidden text-xs font-medium text-red-600 text-center">Incorrect password.
-                    Please try again.</p>
+                <p id="unlock-error-msg"
+                    class="hidden text-xs font-medium text-rose-600 text-center bg-rose-50 py-2 px-3 rounded-lg border border-rose-100">
+                    Incorrect password. Please try again.</p>
                 <button type="submit" id="unlock-submit-btn"
-                    class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-semibold rounded-xl text-sm shadow-sm transition">
+                    class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-semibold rounded-xl text-sm shadow-md shadow-blue-600/20 transition">
                     Unlock Planner
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Top Navigation / Action Bar (Hidden when Printing or Locked) -->
-    <header id="app-header" class="hidden no-print bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
-                <!-- Branding / Title -->
-                <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+    <!-- Clean White & Blue Top Header (Hidden when Printing or Locked) -->
+    <header id="app-header"
+        class="hidden no-print bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30">
+        <div class="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14 sm:h-16 gap-3">
+                <!-- Brand Identity -->
+                <div class="flex items-center gap-3 min-w-0">
                     <div
-                        class="bg-blue-600 text-white w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl shadow-md flex-shrink-0">
-                        <i class="fa-solid font-bold fa-calendar-days text-base sm:text-xl leading-none"></i>
+                        class="bg-blue-600 text-white w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl shadow-sm shadow-blue-600/20 flex-shrink-0">
+                        <i class="fa-solid fa-calendar-days text-base sm:text-lg"></i>
                     </div>
-                    <div class="truncate">
-                        <h1 class="font-bold text-sm sm:text-lg text-slate-900 leading-tight truncate">UGG Knightsbridge
-                            Planner</h1>
+                    <div class="min-w-0">
+                        <h1 class="font-bold text-sm sm:text-base text-slate-900 tracking-tight truncate">UGG
+                            Knightsbridge</h1>
+                        <p class="hidden sm:block text-[11px] text-slate-400 font-medium">Retail Operations &amp; Event
+                            Calendar</p>
                     </div>
                 </div>
 
-                <!-- Main Action Buttons -->
-                <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
-                    <!-- Subtle Cloud Sync Status Pill (Tap/Hover for details or manual sync) -->
+                <!-- Center Year Switcher (Desktop) -->
+                <div id="year-tabs-desktop"
+                    class="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/60">
+                    <!-- Year buttons injected dynamically -->
+                </div>
+
+                <!-- Right Global Controls -->
+                <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                    <!-- Cloud Sync Pill -->
                     <button id="cloud-sync-pill" type="button" title="Click to sync now"
-                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition cursor-pointer">
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-blue-50/70 text-blue-700 border border-blue-100 hover:bg-blue-100/70 transition cursor-pointer">
                         <span id="cloud-sync-dot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                         <span id="cloud-sync-text">Local</span>
                     </button>
 
+                    <!-- Primary Add Event CTA -->
                     <button id="add-event-btn"
-                        class="flex items-center gap-1.5 sm:gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg transition-all shadow-sm hover:shadow active:scale-95 text-xs sm:text-sm min-h-[40px]">
+                        class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3.5 sm:px-4 py-2 rounded-xl transition shadow-sm shadow-blue-600/20 active:scale-95 text-xs sm:text-sm min-h-[38px]">
                         <i class="fa-solid fa-plus text-xs"></i>
-                        <span>Add<span class="hidden xs:inline"> Event</span></span>
+                        <span>New Event</span>
                     </button>
 
+                    <!-- Print / PDF -->
                     <button onclick="window.print()"
-                        class="flex items-center gap-1.5 sm:gap-2 bg-slate-800 hover:bg-slate-900 text-white font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg transition-all shadow-sm hover:shadow active:scale-95 text-xs sm:text-sm min-h-[40px]"
-                        title="Save as PDF">
-                        <i class="fa-solid fa-file-pdf text-xs"></i>
-                        <span class="hidden sm:inline">Save as PDF</span>
+                        class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[38px]"
+                        title="Export / Save as PDF">
+                        <i class="fa-solid fa-print text-xs text-blue-600"></i>
+                        <span class="hidden lg:inline">PDF</span>
                     </button>
 
+                    <!-- AI Key Settings -->
+                    <button id="ai-settings-btn" type="button"
+                        class="inline-flex items-center justify-center bg-white hover:bg-blue-50 text-blue-600 font-medium px-2.5 sm:px-3 py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[38px]"
+                        title="Configure AI Key">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                    </button>
+
+                    <!-- Lock Button -->
                     <button id="lock-planner-btn" type="button"
-                        class="flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-2.5 sm:px-3 py-2.5 sm:py-2 rounded-lg border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[40px]"
+                        class="inline-flex items-center justify-center bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-800 font-medium px-2.5 sm:px-3 py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[38px]"
                         title="Lock Planner">
                         <i class="fa-solid fa-lock text-xs"></i>
                     </button>
                 </div>
             </div>
-        </div>
 
-        <!-- Month Navigation Tabs Horizontal Scroll bar -->
-        <div class="bg-slate-50 border-t border-b border-slate-200 py-2 px-3 sm:px-4 no-print">
-            <div class="max-w-7xl mx-auto flex flex-col gap-2">
-                <!-- Year Selector Tabs + Prev/Today/Next Quick Nav -->
-                <div class="flex flex-wrap items-center justify-center gap-2">
-                    <!-- Year Tabs (2026 - 2030) -->
-                    <div id="year-tabs" class="flex items-center gap-1 bg-slate-200/70 p-1 rounded-xl">
-                        <!-- Year buttons injected dynamically -->
-                    </div>
-
-                    <!-- Prev/Today/Next Quick Nav -->
-                    <div class="flex items-center justify-center gap-1 flex-shrink-0">
-                        <button id="prev-month-btn"
-                            class="p-2 sm:p-1.5 text-slate-600 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-sm transition min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
-                            title="Previous Month">
-                            <i class="fa-solid fa-chevron-left"></i>
-                        </button>
-                        <button id="today-btn"
-                            class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-slate-700 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-xs font-semibold transition min-h-[38px] sm:min-h-0">
-                            Today
-                        </button>
-                        <button id="next-month-btn"
-                            class="p-2 sm:p-1.5 text-slate-600 hover:bg-slate-200 active:bg-slate-300 rounded-lg text-sm transition min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
-                            title="Next Month">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Horizontal Month Tabs for Active Year -->
-                <div id="month-tabs"
-                    class="month-tabs-scroll flex items-center gap-1 overflow-x-auto py-0.5 w-full justify-start sm:justify-center px-1">
-                    <!-- Tabs injected dynamically -->
+            <!-- Mobile Year Bar -->
+            <div class="md:hidden pb-2 flex items-center justify-center">
+                <div id="year-tabs-mobile"
+                    class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full justify-between">
+                    <!-- Year buttons injected dynamically -->
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Printable Calendar Area (Hidden until Unlocked) -->
-    <main id="app-main" class="hidden flex-1 max-w-7xl w-full mx-auto p-1.5 sm:p-6 lg:p-8 page-container">
-        <div id="calendar-touch-area"
-            class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[580px] sm:min-h-[750px]">
-            <!-- Calendar Month Title & Year Header -->
-            <div
-                class="p-3.5 sm:p-6 border-b border-slate-200 flex flex-row justify-between items-center bg-slate-50/50 gap-2">
-                <div>
-                    <h2 id="current-month-display" class="text-xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                        November 2026
-                    </h2>
-                    <p class="text-xs text-slate-500 font-medium">UGG Knightsbridge</p>
+    <!-- Main Restructured Two-Column Workspace -->
+    <main id="app-main"
+        class="hidden flex-1 max-w-[1440px] w-full mx-auto px-2 sm:px-6 lg:px-8 py-3 sm:py-6 page-container">
+        <div class="workspace-grid grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
+
+            <!-- LEFT / PRIMARY COLUMN (8 cols on desktop): Month Ribbon + Calendar Grid -->
+            <div class="calendar-primary-col lg:col-span-8 flex flex-col gap-3 min-w-0">
+                <div id="calendar-touch-area"
+                    class="calendar-shell bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden flex flex-col min-h-[560px] sm:min-h-[760px]">
+
+                    <!-- Calendar Header & Quick Controls -->
+                    <div
+                        class="calendar-top-bar px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-white">
+                        <div class="flex items-center gap-3">
+                            <div>
+                                <h2 id="current-month-display"
+                                    class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">
+                                    November 2026
+                                </h2>
+                                <p class="text-[11px] text-slate-400 font-medium mt-1">Fiscal Week (Apr 1 Start) &bull;
+                                    All-Day Schedule</p>
+                            </div>
+                        </div>
+
+                        <div class="no-print flex items-center gap-1.5">
+                            <button id="prev-month-btn"
+                                class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-blue-50 hover:border-blue-200 text-slate-600 hover:text-blue-600 flex items-center justify-center transition"
+                                title="Previous Month">
+                                <i class="fa-solid fa-chevron-left text-xs"></i>
+                            </button>
+                            <button id="today-btn"
+                                class="px-3 h-8 rounded-lg border border-blue-200 bg-blue-50/70 hover:bg-blue-100 text-blue-700 text-xs font-semibold transition">
+                                Today
+                            </button>
+                            <button id="next-month-btn"
+                                class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-blue-50 hover:border-blue-200 text-slate-600 hover:text-blue-600 flex items-center justify-center transition"
+                                title="Next Month">
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sleek Month Ribbon -->
+                    <div class="no-print px-3 sm:px-5 py-2 bg-slate-50/70 border-b border-slate-200/80">
+                        <div id="month-tabs"
+                            class="clean-scroll flex items-center gap-1 overflow-x-auto justify-start sm:justify-between">
+                            <!-- Month buttons injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Days of Week Header -->
+                    <div
+                        class="week-header-row grid grid-cols-[28px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] border-b border-slate-200/80 bg-blue-50/40 text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 py-2.5">
+                        <div class="text-blue-600/70 border-r border-slate-200/70 flex items-center justify-center">Wk
+                        </div>
+                        <div><span class="hidden sm:inline">Mon</span><span class="sm:hidden">M</span></div>
+                        <div><span class="hidden sm:inline">Tue</span><span class="sm:hidden">T</span></div>
+                        <div><span class="hidden sm:inline">Wed</span><span class="sm:hidden">W</span></div>
+                        <div><span class="hidden sm:inline">Thu</span><span class="sm:hidden">T</span></div>
+                        <div><span class="hidden sm:inline">Fri</span><span class="sm:hidden">F</span></div>
+                        <div class="text-blue-700/80"><span class="hidden sm:inline">Sat</span><span
+                                class="sm:hidden">S</span></div>
+                        <div class="text-blue-700/80"><span class="hidden sm:inline">Sun</span><span
+                                class="sm:hidden">S</span></div>
+                    </div>
+
+                    <!-- Calendar Days Grid -->
+                    <div id="calendar-days-grid"
+                        class="calendar-grid grid grid-cols-[28px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] flex-1">
+                        <!-- Week number + Day cells injected dynamically -->
+                    </div>
                 </div>
-                <span class="no-print sm:hidden text-[11px] text-slate-400 flex items-center gap-1">
-                    <i class="fa-solid fa-hand-pointer text-[10px]"></i> Swipe months
-                </span>
             </div>
 
-            <!-- Days of Week Header -->
-            <div
-                class="week-header-row grid grid-cols-[26px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] border-b border-slate-200 bg-slate-100/70 text-center text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-600 py-2 sm:py-2.5">
-                <div class="text-slate-400 border-r border-slate-200/80 flex items-center justify-center">Wk</div>
-                <div><span class="hidden sm:inline">Mon</span><span class="sm:hidden">M</span></div>
-                <div><span class="hidden sm:inline">Tue</span><span class="sm:hidden">T</span></div>
-                <div><span class="hidden sm:inline">Wed</span><span class="sm:hidden">W</span></div>
-                <div><span class="hidden sm:inline">Thu</span><span class="sm:hidden">T</span></div>
-                <div><span class="hidden sm:inline">Fri</span><span class="sm:hidden">F</span></div>
-                <div><span class="hidden sm:inline">Sat</span><span class="sm:hidden">S</span></div>
-                <div><span class="hidden sm:inline">Sun</span><span class="sm:hidden">S</span></div>
-            </div>
+            <!-- RIGHT / SECONDARY COLUMN (4 cols on desktop): AI Command, Selected Day Inspector, AI Briefing, Backup -->
+            <aside class="no-print lg:col-span-4 flex flex-col gap-4 lg:sticky lg:top-20">
 
-            <!-- Calendar Days Grid -->
-            <div id="calendar-days-grid"
-                class="calendar-grid grid grid-cols-[26px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] flex-1">
-                <!-- Week number + Day cells injected dynamically -->
-            </div>
-        </div>
+                <!-- 1. AI Assistant Quick-Command Card -->
+                <section class="bg-white rounded-2xl border border-blue-200/80 shadow-xs p-4">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs shadow-2xs">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            </span>
+                            <div>
+                                <h3 class="text-xs font-bold text-slate-900">AI Schedule Assistant</h3>
+                                <p class="text-[10px] text-slate-400">Type or speak to add, move &amp; edit events</p>
+                            </div>
+                        </div>
+                        <button type="button" id="ai-undo-btn"
+                            class="hidden items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition"
+                            title="Undo last AI change">
+                            <i class="fa-solid fa-rotate-left text-[10px]"></i>
+                            <span>Undo</span>
+                        </button>
+                    </div>
 
-        <!-- Mobile Selected-Day Agenda Drawer (Shows full details of tapped day while keeping text in grid) -->
-        <section id="mobile-day-agenda"
-            class="no-print sm:hidden mt-3 bg-white rounded-xl border border-slate-200 shadow-sm p-3.5">
-            <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
-                <div>
-                    <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Selected Date</p>
-                    <h3 id="mobile-agenda-date-title" class="text-sm font-bold text-slate-900">Thursday, 19 Nov 2026
-                    </h3>
+                    <form id="ai-command-form" class="space-y-2">
+                        <div
+                            class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition">
+                            <input type="text" id="ai-command-input" placeholder='e.g. "Add Delivery every Tue in Dec"'
+                                class="flex-1 min-w-0 bg-transparent text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none py-1">
+                            <button type="button" id="ai-voice-btn"
+                                class="w-8 h-8 rounded-lg bg-white hover:bg-blue-50 active:scale-95 text-slate-500 hover:text-blue-600 border border-slate-200/80 flex items-center justify-center transition flex-shrink-0"
+                                title="Speak your command">
+                                <i id="ai-voice-icon" class="fa-solid fa-microphone text-xs"></i>
+                            </button>
+                            <button type="submit" id="ai-submit-btn"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 active:scale-95 text-white transition flex-shrink-0">
+                                <span id="ai-submit-label">Run</span>
+                                <i id="ai-submit-icon" class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- 2. Selected Day Inspector (Works on both Desktop & Mobile!) -->
+                <section id="selected-day-panel" class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4">
+                    <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                        <div class="min-w-0">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">Selected
+                                Day</span>
+                            <h3 id="selected-day-title" class="text-sm font-bold text-slate-900 truncate mt-0.5">Monday,
+                                23 Nov 2026</h3>
+                        </div>
+                        <button id="selected-day-add-btn" type="button"
+                            class="inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition flex-shrink-0">
+                            <i class="fa-solid fa-plus text-[10px]"></i>
+                            <span>Add</span>
+                        </button>
+                    </div>
+                    <div id="selected-day-list" class="mt-3 space-y-2 max-h-[260px] overflow-y-auto clean-scroll">
+                        <!-- Selected day events injected dynamically -->
+                    </div>
+                </section>
+
+                <!-- 3. AI Daily & Weekly Briefing Card -->
+                <section id="ai-briefing-card" class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div
+                                class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-bolt text-xs"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="text-xs font-bold text-slate-900 truncate">Schedule Briefing</h3>
+                                <p id="ai-briefing-subtitle" class="text-[10px] text-slate-400 truncate">Today, This
+                                    Week &amp; Next Week</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 flex-shrink-0">
+                            <button type="button" id="ai-briefing-refresh-btn"
+                                class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold bg-slate-50 hover:bg-blue-50 text-slate-600 hover:text-blue-700 border border-slate-200/80 transition"
+                                title="Regenerate briefing">
+                                <i id="ai-briefing-refresh-icon" class="fa-solid fa-rotate text-[10px]"></i>
+                            </button>
+                            <button type="button" id="ai-briefing-toggle-btn"
+                                class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-500 border border-slate-200/80 flex items-center justify-center transition"
+                                title="Collapse/Expand briefing">
+                                <i id="ai-briefing-toggle-icon" class="fa-solid fa-chevron-up text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="ai-briefing-body" class="mt-3 pt-3 border-t border-slate-100 space-y-2.5 text-xs">
+                        <div class="bg-blue-50/50 rounded-xl p-2.5 border border-blue-100/80">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-blue-700 mb-0.5">Today</p>
+                            <p id="ai-briefing-today" class="text-slate-700 leading-relaxed">Loading today...</p>
+                        </div>
+                        <div class="bg-slate-50/80 rounded-xl p-2.5 border border-slate-200/70">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-0.5">This Week
+                            </p>
+                            <p id="ai-briefing-this-week" class="text-slate-700 leading-relaxed">Loading this week...
+                            </p>
+                        </div>
+                        <div class="bg-slate-50/80 rounded-xl p-2.5 border border-slate-200/70">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-0.5">Next Week
+                            </p>
+                            <p id="ai-briefing-next-week" class="text-slate-700 leading-relaxed">Loading next week...
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. Compact Backup & Restore Utility -->
+                <div
+                    class="bg-white rounded-2xl border border-slate-200/90 shadow-xs px-4 py-3 flex items-center justify-between gap-2 text-xs">
+                    <span class="text-slate-500 font-medium flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-blue-600 text-xs"></i>
+                        <span>JSON Backup</span>
+                    </span>
+                    <div class="flex items-center gap-1.5">
+                        <button id="save-backup-btn"
+                            class="inline-flex items-center gap-1.5 bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-semibold px-3 py-1.5 rounded-lg border border-slate-200 transition">
+                            <i class="fa-solid fa-download text-[10px] text-blue-600"></i>
+                            <span>Export</span>
+                        </button>
+                        <label for="restore-file-input" id="restore-backup-btn"
+                            class="cursor-pointer inline-flex items-center gap-1.5 bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-semibold px-3 py-1.5 rounded-lg border border-slate-200 transition relative overflow-hidden">
+                            <i class="fa-solid fa-upload text-[10px] text-blue-600"></i>
+                            <span>Import</span>
+                            <input type="file" id="restore-file-input" accept=".json,application/json,text/plain"
+                                class="sr-only">
+                        </label>
+                    </div>
                 </div>
-                <button id="mobile-agenda-add-btn" type="button"
-                    class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-xs transition min-h-[36px]">
-                    <i class="fa-solid fa-plus text-[10px]"></i>
-                    <span>Add Here</span>
-                </button>
-            </div>
-            <div id="mobile-agenda-list" class="mt-2.5 space-y-2">
-                <!-- Selected day events injected dynamically -->
-            </div>
-        </section>
 
-        <!-- Backup & Restore Actions Footer (Hidden when printing) -->
-        <div
-            class="no-print mt-4 sm:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 p-3.5 sm:p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
-            <div
-                class="flex items-center justify-center sm:justify-start gap-2 text-slate-600 text-xs sm:text-sm font-medium">
-                <i class="fa-solid fa-database text-blue-600"></i>
-                <span>Data & Backup Management</span>
-            </div>
-            <div class="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-3">
-                <button id="save-backup-btn"
-                    class="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm border border-slate-300 transition active:scale-95 min-h-[42px]">
-                    <i class="fa-solid fa-download text-xs text-blue-600"></i>
-                    <span>Save Backup</span>
-                </button>
-                <label for="restore-file-input" id="restore-backup-btn"
-                    class="cursor-pointer flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-medium px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm border border-slate-300 transition active:scale-95 min-h-[42px] relative overflow-hidden">
-                    <i class="fa-solid fa-upload text-xs text-blue-600"></i>
-                    <span>Restore Backup</span>
-                    <input type="file" id="restore-file-input" accept=".json,application/json,text/plain"
-                        class="sr-only">
-                </label>
-            </div>
+            </aside>
         </div>
     </main>
 
     <!-- Status Toast Notification -->
     <div id="status-toast"
-        class="no-print hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 transition-opacity duration-300">
-        <i id="status-toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
-        <span id="status-toast-msg">Backup restored</span>
+        class="no-print hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2 transition-opacity duration-300">
+        <i id="status-toast-icon" class="fa-solid fa-circle-check text-blue-400"></i>
+        <span id="status-toast-msg">Saved</span>
     </div>
 
     <!-- Add / Edit Event Modal -->
     <div id="event-modal"
-        class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div
-            class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto transform transition-all">
+            class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto transform transition-all">
             <!-- Modal Header -->
             <div
-                class="px-5 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center sticky top-0 z-10">
-                <h3 id="modal-title" class="font-bold text-slate-900 text-base sm:text-lg">Add All-Day Event</h3>
+                class="px-6 py-4 bg-white border-b border-slate-100 flex justify-between items-center sticky top-0 z-10">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+                        <i class="fa-regular fa-calendar-plus"></i>
+                    </span>
+                    <h3 id="modal-title" class="font-bold text-slate-900 text-base">Add All-Day Event</h3>
+                </div>
                 <button id="close-modal-btn"
-                    class="text-slate-400 hover:text-slate-600 transition p-2 min-w-[40px] min-h-[40px] flex items-center justify-center">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                    class="text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition w-9 h-9 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-base"></i>
                 </button>
             </div>
 
             <!-- Event Form -->
-            <form id="event-form" class="p-5 sm:p-6 space-y-4">
+            <form id="event-form" class="p-6 space-y-4">
                 <input type="hidden" id="event-id">
                 <input type="hidden" id="event-color" value="cobalt">
 
                 <!-- Title -->
                 <div>
                     <label for="event-title"
-                        class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                        class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                         Event Title
                     </label>
                     <input type="text" id="event-title" required placeholder="e.g. Annual Strategy Retreat"
-                        class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition">
                 </div>
 
                 <!-- Date Range Inputs -->
                 <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3">
                     <div>
                         <label for="event-start-date"
-                            class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                            class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                             Start Date
                         </label>
                         <input type="date" id="event-start-date" required
-                            class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition">
                     </div>
                     <div>
                         <label for="event-end-date"
-                            class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                            class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                             End Date
                         </label>
                         <input type="date" id="event-end-date" required
-                            class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition">
                     </div>
                 </div>
 
                 <!-- Recurrence Options -->
                 <div>
                     <label for="event-recurrence"
-                        class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                        Repeat Event
+                        class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                        Repeat Schedule
                     </label>
                     <select id="event-recurrence"
-                        class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-slate-800 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white">
+                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition">
                         <option value="none">Does not repeat</option>
                         <option value="daily">Daily</option>
                         <option value="weekly">Every Week</option>
@@ -469,10 +618,11 @@
                 <!-- Color Palette Options -->
                 <div>
                     <div class="flex items-center justify-between mb-2">
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                            Color Tag
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                            Category Color
                         </label>
-                        <span id="selected-color-name" class="text-[11px] font-medium text-slate-500">Cobalt Blue</span>
+                        <span id="selected-color-name" class="text-[11px] font-semibold text-blue-600">Cobalt
+                            Blue</span>
                     </div>
                     <div id="color-picker-options" class="grid grid-cols-6 gap-2.5">
                         <!-- Color swatches injected dynamically -->
@@ -482,16 +632,16 @@
                 <!-- Modal Actions -->
                 <div class="flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-slate-100">
                     <button type="button" id="delete-event-btn"
-                        class="hidden text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold px-3 py-2.5 rounded-lg hover:bg-red-50 transition min-h-[42px]">
+                        class="hidden text-rose-600 hover:text-rose-700 text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl hover:bg-rose-50 transition">
                         <i class="fa-regular fa-trash-can mr-1"></i> Delete
                     </button>
                     <div class="flex gap-2 ml-auto">
                         <button type="button" id="cancel-modal-btn"
-                            class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition min-h-[42px]">
+                            class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs sm:text-sm font-semibold hover:bg-slate-50 transition">
                             Cancel
                         </button>
                         <button type="submit"
-                            class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition shadow-sm min-h-[42px]">
+                            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition shadow-sm shadow-blue-600/20">
                             Save Event
                         </button>
                     </div>
@@ -502,39 +652,94 @@
 
     <!-- Recurring Delete Prompt Modal -->
     <div id="delete-recurring-modal"
-        class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div
-            class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-200 w-full max-w-sm overflow-hidden p-5 sm:p-6 text-center">
+            class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm overflow-hidden p-6 text-center">
             <div
-                class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+                class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-trash-can"></i>
             </div>
-            <h3 class="font-bold text-slate-900 text-lg mb-2">Delete Repeating Event</h3>
-            <p class="text-xs text-slate-500 mb-6">This event is part of a recurring series. Which events would you like
-                to delete?</p>
+            <h3 class="font-bold text-slate-900 text-base mb-1.5">Delete Repeating Event</h3>
+            <p class="text-xs text-slate-500 mb-5">This event belongs to a recurring series. Choose which occurrences to
+                remove:</p>
 
-            <div class="space-y-2.5">
+            <div class="space-y-2">
                 <button id="delete-single-btn"
-                    class="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 rounded-lg text-sm font-medium transition text-left flex items-center justify-between min-h-[44px]">
+                    class="w-full py-3 px-4 bg-slate-50 hover:bg-blue-50 text-slate-800 hover:text-blue-700 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
                     <span>Only this event</span>
-                    <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
                 </button>
                 <button id="delete-following-btn"
-                    class="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 rounded-lg text-sm font-medium transition text-left flex items-center justify-between min-h-[44px]">
+                    class="w-full py-3 px-4 bg-slate-50 hover:bg-blue-50 text-slate-800 hover:text-blue-700 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
                     <span>This and following events</span>
-                    <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
                 </button>
                 <button id="delete-all-btn"
-                    class="w-full py-3 px-4 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-lg text-sm font-medium transition text-left flex items-center justify-between shadow-xs min-h-[44px]">
+                    class="w-full py-3 px-4 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold transition text-left flex items-center justify-between shadow-sm">
                     <span>All events in series</span>
-                    <i class="fa-solid fa-chevron-right text-xs text-red-200"></i>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-rose-200"></i>
                 </button>
             </div>
 
             <button id="cancel-delete-modal-btn"
-                class="mt-4 py-2 px-4 text-xs font-semibold text-slate-500 hover:text-slate-800 transition min-h-[40px]">
+                class="mt-4 py-2 px-4 text-xs font-semibold text-slate-400 hover:text-slate-700 transition">
                 Cancel
             </button>
+        </div>
+    </div>
+
+    <!-- AI API Key Configuration Modal -->
+    <div id="ai-key-modal"
+        class="hidden no-print fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden p-6">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-base">AI Assistant Setup</h3>
+                        <p class="text-[11px] text-slate-400">Google AI Studio (Gemini Free Tier)</p>
+                    </div>
+                </div>
+                <button type="button" id="close-ai-key-modal-btn" class="text-slate-400 hover:text-slate-700 p-2">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                Enter your free <strong>Google AI Studio</strong> API key so you can add, move, edit, and summarise
+                events naturally. Your key is stored inside your locked Firebase database.
+            </p>
+
+            <form id="ai-key-form" class="space-y-4">
+                <div>
+                    <label for="ai-api-key-input"
+                        class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                        Gemini API Key
+                    </label>
+                    <input type="password" id="ai-api-key-input" placeholder="AIzaSy..."
+                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 transition">
+                </div>
+
+                <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <button type="button" id="clear-ai-key-btn"
+                        class="text-xs font-semibold text-rose-600 hover:text-rose-700 px-2 py-2">
+                        Remove Key
+                    </button>
+                    <div class="flex gap-2">
+                        <button type="button" id="cancel-ai-key-btn"
+                            class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold transition shadow-sm">
+                            Save Key
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -546,9 +751,6 @@
 
         // =========================================================================
         // FIREBASE CONFIGURATION (PASTE YOUR firebaseConfig OBJECT BELOW)
-        // Zero passwords are stored in this file — authentication is verified
-        // securely on Firebase servers. Create a user in Firebase Console ->
-        // Authentication -> Users with the email below and your chosen password.
         // =========================================================================
         const PLANNER_AUTH_EMAIL = "planner@uggknightsbridge.local";
         const firebaseConfig = {
@@ -562,6 +764,7 @@
         // =========================================================================
 
         const STORAGE_KEY = "ugg_knightsbridge_planner_events_v1";
+        const AI_KEY_STORAGE_KEY = "ugg_knightsbridge_gemini_api_key_v1";
         const SERIES_END_LIMIT = "2030-12-31";
         const FIRESTORE_DOC_PATH = ["ugg_planner", "knightsbridge_main"];
 
@@ -585,21 +788,20 @@
 
         // 12 maximally distinct, non-overlapping hues across the spectrum
         const COLORS = [
-            { id: "crimson", name: "Crimson Red", bg: "bg-red-100", text: "text-red-900", border: "border-red-300", dot: "bg-red-600" },
-            { id: "tangerine", name: "Tangerine", bg: "bg-orange-100", text: "text-orange-900", border: "border-orange-300", dot: "bg-orange-500" },
-            { id: "gold", name: "Marigold Gold", bg: "bg-amber-100", text: "text-amber-900", border: "border-amber-300", dot: "bg-amber-400" },
-            { id: "lime", name: "Fresh Lime", bg: "bg-lime-100", text: "text-lime-900", border: "border-lime-300", dot: "bg-lime-500" },
-            { id: "forest", name: "Forest Green", bg: "bg-emerald-100", text: "text-emerald-900", border: "border-emerald-300", dot: "bg-emerald-600" },
-            { id: "teal", name: "Ocean Teal", bg: "bg-teal-100", text: "text-teal-900", border: "border-teal-300", dot: "bg-teal-600" },
-            { id: "sky", name: "Sky Cyan", bg: "bg-sky-100", text: "text-sky-900", border: "border-sky-300", dot: "bg-sky-500" },
-            { id: "cobalt", name: "Cobalt Blue", bg: "bg-blue-100", text: "text-blue-900", border: "border-blue-300", dot: "bg-blue-600" },
-            { id: "plum", name: "Royal Plum", bg: "bg-purple-100", text: "text-purple-900", border: "border-purple-300", dot: "bg-purple-600" },
-            { id: "magenta", name: "Magenta Pink", bg: "bg-pink-100", text: "text-pink-900", border: "border-pink-300", dot: "bg-pink-600" },
-            { id: "chestnut", name: "UGG Chestnut", bg: "bg-stone-200", text: "text-stone-900", border: "border-stone-400", dot: "bg-amber-800" },
-            { id: "charcoal", name: "Charcoal Slate", bg: "bg-slate-200", text: "text-slate-900", border: "border-slate-400", dot: "bg-slate-700" }
+            { id: "crimson", name: "Crimson Red", bg: "bg-red-50", text: "text-red-900", border: "border-red-200", dot: "bg-red-600" },
+            { id: "tangerine", name: "Tangerine", bg: "bg-orange-50", text: "text-orange-900", border: "border-orange-200", dot: "bg-orange-500" },
+            { id: "gold", name: "Marigold Gold", bg: "bg-amber-50", text: "text-amber-900", border: "border-amber-200", dot: "bg-amber-400" },
+            { id: "lime", name: "Fresh Lime", bg: "bg-lime-50", text: "text-lime-900", border: "border-lime-200", dot: "bg-lime-500" },
+            { id: "forest", name: "Forest Green", bg: "bg-emerald-50", text: "text-emerald-900", border: "border-emerald-200", dot: "bg-emerald-600" },
+            { id: "teal", name: "Ocean Teal", bg: "bg-teal-50", text: "text-teal-900", border: "border-teal-200", dot: "bg-teal-600" },
+            { id: "sky", name: "Sky Cyan", bg: "bg-sky-50", text: "text-sky-900", border: "border-sky-200", dot: "bg-sky-500" },
+            { id: "cobalt", name: "Cobalt Blue", bg: "bg-blue-50", text: "text-blue-900", border: "border-blue-200", dot: "bg-blue-600" },
+            { id: "plum", name: "Royal Plum", bg: "bg-purple-50", text: "text-purple-900", border: "border-purple-200", dot: "bg-purple-600" },
+            { id: "magenta", name: "Magenta Pink", bg: "bg-pink-50", text: "text-pink-900", border: "border-pink-200", dot: "bg-pink-600" },
+            { id: "chestnut", name: "UGG Chestnut", bg: "bg-stone-100", text: "text-stone-900", border: "border-stone-300", dot: "bg-amber-800" },
+            { id: "charcoal", name: "Charcoal Slate", bg: "bg-slate-100", text: "text-slate-900", border: "border-slate-300", dot: "bg-slate-700" }
         ];
 
-        // Map legacy color IDs from earlier saved events to the new distinct palette
         const LEGACY_COLOR_MAP = {
             blue: "cobalt",
             emerald: "forest",
@@ -622,6 +824,8 @@
         let activeMonthIndex = 0;
         let selectedDateKey = null;
         let events = [];
+        let geminiApiKey = localStorage.getItem(AI_KEY_STORAGE_KEY) || "";
+        let lastEventsSnapshotBeforeAI = null;
         let pendingDeleteEvent = null;
         let firebaseApp = null;
         let auth = null;
@@ -632,6 +836,9 @@
         let draggedEventId = null;
         let draggedDateKey = null;
         let mobileTouchDragId = null;
+        let lastBriefingHash = "";
+        let isBriefingLoading = false;
+        let isBriefingCollapsed = false;
 
         const $ = (id) => document.getElementById(id);
 
@@ -763,12 +970,12 @@
             msg.textContent = message;
             icon.className = isError
                 ? "fa-solid fa-circle-exclamation text-rose-400"
-                : "fa-solid fa-circle-check text-emerald-400";
+                : "fa-solid fa-circle-check text-blue-400";
             toast.classList.remove("hidden");
             clearTimeout(toast._hideTimer);
             toast._hideTimer = setTimeout(() => {
                 toast.classList.add("hidden");
-            }, 2600);
+            }, 3400);
         }
 
         function updateSyncStatus(state, label, errorDetail = "") {
@@ -779,7 +986,7 @@
 
             dot.className = "w-1.5 h-1.5 rounded-full";
             if (state === "synced") {
-                dot.classList.add("bg-emerald-500");
+                dot.classList.add("bg-blue-600");
             } else if (state === "syncing") {
                 dot.classList.add("bg-amber-400", "animate-pulse");
             } else if (state === "error") {
@@ -854,17 +1061,22 @@
                 docRef,
                 (snap) => {
                     cloudReady = true;
-                    updateSyncStatus("synced", "Cloud Sync");
+                    updateSyncStatus("synced", "Synced");
                     if (snap.exists()) {
                         const data = snap.data();
+                        if (typeof data.geminiApiKey === "string" && data.geminiApiKey.trim()) {
+                            geminiApiKey = data.geminiApiKey.trim();
+                            localStorage.setItem(AI_KEY_STORAGE_KEY, geminiApiKey);
+                        }
                         if (Array.isArray(data.events)) {
                             events = data.events;
                             saveLocalEvents(events);
                             renderCalendar();
                         }
-                    } else if (events.length > 0) {
+                    } else if (events.length > 0 || geminiApiKey) {
                         pushEventsToCloud();
                     }
+                    generateAiScheduleBriefing(false);
                 },
                 (err) => {
                     console.error("Firestore listener error:", err);
@@ -881,9 +1093,10 @@
                 const docRef = doc(db, FIRESTORE_DOC_PATH[0], FIRESTORE_DOC_PATH[1]);
                 await setDoc(docRef, {
                     events,
+                    geminiApiKey: geminiApiKey || "",
                     updatedAt: new Date().toISOString()
                 });
-                updateSyncStatus("synced", "Cloud Sync");
+                updateSyncStatus("synced", "Synced");
             } catch (err) {
                 console.error("Failed to push events to Firestore:", err);
                 updateSyncStatus("error", "Sync Failed", err.message);
@@ -945,7 +1158,7 @@
                 const btn = document.createElement("button");
                 btn.type = "button";
                 btn.title = c.name;
-                btn.className = `w-9 h-9 rounded-full flex items-center justify-center border-2 transition ${c.bg} ${isSelected ? "border-slate-900 scale-110 shadow-xs" : "border-transparent hover:scale-105"
+                btn.className = `w-9 h-9 rounded-full flex items-center justify-center border-2 transition ${c.bg} ${isSelected ? "border-blue-600 scale-110 shadow-xs" : "border-transparent hover:scale-105"
                     }`;
                 btn.innerHTML = `<span class="w-4 h-4 rounded-full ${c.dot}"></span>`;
                 btn.addEventListener("click", () => {
@@ -957,26 +1170,28 @@
         }
 
         function renderYearTabs() {
-            const container = $("year-tabs");
+            const containers = [$("year-tabs-desktop"), $("year-tabs-mobile")].filter(Boolean);
             const activeYear = MONTHS[activeMonthIndex].year;
-            container.innerHTML = "";
 
-            YEARS.forEach((yr) => {
-                const isActive = yr === activeYear;
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.textContent = yr;
-                btn.className = isActive
-                    ? "px-3 py-1 rounded-lg text-xs font-bold bg-white text-blue-600 shadow-2xs transition"
-                    : "px-3 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition";
-                btn.addEventListener("click", () => {
-                    const currentMonthNum = MONTHS[activeMonthIndex].month;
-                    const targetIdx = MONTHS.findIndex((m) => m.year === yr && m.month === currentMonthNum);
-                    if (targetIdx !== -1) {
-                        setActiveMonth(targetIdx);
-                    }
+            containers.forEach((container) => {
+                container.innerHTML = "";
+                YEARS.forEach((yr) => {
+                    const isActive = yr === activeYear;
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.textContent = yr;
+                    btn.className = isActive
+                        ? "px-3.5 py-1 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-2xs transition flex-1 md:flex-initial"
+                        : "px-3.5 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-blue-600 transition flex-1 md:flex-initial";
+                    btn.addEventListener("click", () => {
+                        const currentMonthNum = MONTHS[activeMonthIndex].month;
+                        const targetIdx = MONTHS.findIndex((m) => m.year === yr && m.month === currentMonthNum);
+                        if (targetIdx !== -1) {
+                            setActiveMonth(targetIdx);
+                        }
+                    });
+                    container.appendChild(btn);
                 });
-                container.appendChild(btn);
             });
         }
 
@@ -992,8 +1207,8 @@
                 btn.type = "button";
                 btn.textContent = m.shortLabel;
                 btn.className = isActive
-                    ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-xs whitespace-nowrap transition flex-shrink-0"
-                    : "px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/70 whitespace-nowrap transition flex-shrink-0";
+                    ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-2xs whitespace-nowrap transition flex-shrink-0"
+                    : "px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-700 whitespace-nowrap transition flex-shrink-0";
                 btn.addEventListener("click", () => setActiveMonth(idx));
                 container.appendChild(btn);
             });
@@ -1016,9 +1231,9 @@
             renderCalendar();
         }
 
-        function renderMobileAgenda() {
-            const titleEl = $("mobile-agenda-date-title");
-            const listEl = $("mobile-agenda-list");
+        function renderSelectedDayPanel() {
+            const titleEl = $("selected-day-title");
+            const listEl = $("selected-day-list");
             if (!titleEl || !listEl || !selectedDateKey) return;
 
             titleEl.textContent = formatReadableDate(selectedDateKey);
@@ -1031,7 +1246,11 @@
             listEl.innerHTML = "";
 
             if (dayEvents.length === 0) {
-                listEl.innerHTML = `<p class="text-xs text-slate-400 py-2 text-center">No events scheduled for this day.</p>`;
+                listEl.innerHTML = `
+                    <div class="text-center py-5 px-3 bg-slate-50/70 rounded-xl border border-dashed border-slate-200">
+                        <p class="text-xs text-slate-400">No events scheduled for this day.</p>
+                    </div>
+                `;
                 return;
             }
 
@@ -1043,7 +1262,7 @@
 
                 if (dayEvents.length > 1) {
                     const grip = document.createElement("div");
-                    grip.className = "mobile-drag-handle px-1.5 py-2 -ml-1 text-slate-500/80 active:text-slate-900 touch-none cursor-grab flex items-center justify-center flex-shrink-0";
+                    grip.className = "mobile-drag-handle px-1.5 py-2 -ml-1 text-slate-400 hover:text-slate-700 active:text-slate-900 touch-none cursor-grab flex items-center justify-center flex-shrink-0";
                     grip.title = "Drag to reorder";
                     grip.innerHTML = '<i class="fa-solid fa-grip-vertical text-xs"></i>';
 
@@ -1106,17 +1325,21 @@
                     card.appendChild(grip);
                 }
 
+                const dot = document.createElement("span");
+                dot.className = `w-2 h-2 rounded-full flex-shrink-0 ${c.dot}`;
+                card.appendChild(dot);
+
                 const info = document.createElement("div");
                 info.className = "min-w-0 flex-1";
                 const isMulti = evt.endDate && evt.endDate > evt.startDate;
                 info.innerHTML = `
                     <p class="text-xs font-bold leading-snug break-words">${evt.title}</p>
-                    <p class="text-[10px] opacity-80 mt-0.5">${isMulti ? `${evt.startDate} → ${evt.endDate}` : "All-day event"}</p>
+                    <p class="text-[10px] opacity-75 mt-0.5">${isMulti ? `${evt.startDate} → ${evt.endDate}` : "All-day event"}</p>
                 `;
 
                 const editBtn = document.createElement("button");
                 editBtn.type = "button";
-                editBtn.className = "px-2.5 py-1.5 rounded-lg bg-white/80 hover:bg-white text-slate-800 text-xs font-semibold shadow-2xs flex-shrink-0";
+                editBtn.className = "px-2.5 py-1 rounded-lg bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200/70 text-[11px] font-semibold transition flex-shrink-0";
                 editBtn.textContent = "Edit";
                 editBtn.addEventListener("click", () => openEditModal(evt));
 
@@ -1152,7 +1375,7 @@
                     const rowDate = new Date(year, month, 1 - startOffset + slot);
                     const wkNum = getFiscalAprilWeekNumber(rowDate);
                     const wkCell = document.createElement("div");
-                    wkCell.className = "week-num-cell border-b border-r border-slate-200 bg-slate-50/90 text-slate-400 font-semibold text-[10px] sm:text-xs flex items-start justify-center pt-2 select-none";
+                    wkCell.className = "week-num-cell border-b border-r border-slate-100 bg-slate-50/70 text-blue-600/60 font-bold text-[10px] sm:text-[11px] flex items-start justify-center pt-2.5 select-none";
                     wkCell.textContent = `W${wkNum}`;
                     grid.appendChild(wkCell);
                 }
@@ -1161,7 +1384,7 @@
                 const cell = document.createElement("div");
 
                 if (dayNumber < 1 || dayNumber > daysInMonth) {
-                    cell.className = "day-cell border-b border-r border-slate-200 bg-slate-50/40 min-h-[96px] sm:min-h-[120px]";
+                    cell.className = "day-cell border-b border-r border-slate-100 bg-slate-50/40 min-h-[96px] sm:min-h-[124px]";
                     grid.appendChild(cell);
                     continue;
                 }
@@ -1170,20 +1393,25 @@
                 const isToday = dateKey === todayKey;
                 const isSelected = dateKey === selectedDateKey;
 
-                cell.className = "day-cell border-b border-r border-slate-200 p-1 sm:p-1.5 min-h-[96px] sm:min-h-[120px] flex flex-col gap-1 transition hover:bg-slate-50/80 cursor-pointer min-w-0";
+                cell.className = "day-cell border-b border-r border-slate-100 p-1.5 sm:p-2 min-h-[96px] sm:min-h-[124px] flex flex-col gap-1 transition hover:bg-blue-50/30 cursor-pointer min-w-0";
                 if (isSelected) {
-                    cell.classList.add("bg-blue-50/40");
+                    cell.classList.add("bg-blue-50/50");
                 }
 
                 cell.addEventListener("click", (e) => {
                     const isMobile = window.innerWidth < 640;
                     if (isMobile) {
-                        // On mobile, tapping any cell only selects that date so edits/adds happen in the panel below
                         selectedDateKey = dateKey;
                         renderCalendar();
                         return;
                     }
                     if (e.target.closest(".event-pill")) return;
+                    selectedDateKey = dateKey;
+                    renderCalendar();
+                });
+
+                cell.addEventListener("dblclick", (e) => {
+                    if (window.innerWidth < 640 || e.target.closest(".event-pill")) return;
                     openAddModal(dateKey);
                 });
 
@@ -1193,13 +1421,14 @@
                 const dayBadge = document.createElement("span");
                 dayBadge.textContent = dayNumber;
                 dayBadge.className = isToday
-                    ? "is-today-badge inline-flex items-center justify-center min-w-[1.5rem] px-1.5 py-0.5 rounded-full bg-blue-600 text-white text-xs sm:text-sm font-bold leading-none"
-                    : "inline-flex items-center justify-center min-w-[1.5rem] px-1.5 py-0.5 text-xs sm:text-sm font-semibold text-slate-700 leading-none";
+                    ? "is-today-badge inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold leading-none shadow-2xs"
+                    : isSelected
+                        ? "inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs font-bold leading-none"
+                        : "inline-flex items-center justify-center w-6 h-6 text-xs font-semibold text-slate-700 leading-none";
 
                 headerRow.appendChild(dayBadge);
                 cell.appendChild(headerRow);
 
-                // Filter and sort events (respecting custom per-day order first, then multi-day span)
                 const dayEvents = sortDayEvents(
                     events.filter((evt) => dateKey >= evt.startDate && dateKey <= (evt.endDate || evt.startDate)),
                     dateKey
@@ -1222,12 +1451,11 @@
                     pill.type = "button";
                     pill.lang = "en";
                     pill.draggable = window.innerWidth >= 640 && dayEvents.length > 1;
-                    pill.className = `event-pill mobile-two-line-pill w-full text-left px-1 sm:px-1.5 py-0.5 rounded border text-[10px] sm:text-xs font-medium leading-tight transition hover:opacity-90 ${dayEvents.length > 1 ? "sm:cursor-grab sm:active:cursor-grabbing" : ""
+                    pill.className = `event-pill mobile-two-line-pill w-full text-left px-1.5 py-0.5 rounded-md border text-[10px] sm:text-[11px] font-semibold leading-tight transition hover:brightness-95 ${dayEvents.length > 1 ? "sm:cursor-grab sm:active:cursor-grabbing" : ""
                         } ${c.bg} ${c.text} ${c.border} sm:truncate`;
                     pill.textContent = `${prefix}${evt.title}`;
                     pill.title = dayEvents.length > 1 ? `${evt.title} (Drag to reorder within day)` : evt.title;
 
-                    // Same-day drag-and-drop reordering on desktop
                     pill.addEventListener("dragstart", (e) => {
                         if (window.innerWidth < 640) {
                             e.preventDefault();
@@ -1276,10 +1504,10 @@
                     pill.addEventListener("click", (e) => {
                         const isMobile = window.innerWidth < 640;
                         if (isMobile) {
-                            // On mobile, tapping a cell or event selects that date so user edits via section below
                             return;
                         }
                         e.stopPropagation();
+                        selectedDateKey = dateKey;
                         openEditModal(evt);
                     });
 
@@ -1290,7 +1518,7 @@
                 grid.appendChild(cell);
             }
 
-            renderMobileAgenda();
+            renderSelectedDayPanel();
         }
 
         function openAddModal(defaultDate = null) {
@@ -1404,7 +1632,6 @@
             if (target.seriesId) {
                 return item.seriesId === target.seriesId;
             }
-            // Fallback match for legacy recurring events that lack a seriesId
             return (
                 item.recurrence &&
                 item.recurrence !== "none" &&
@@ -1475,7 +1702,7 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showToast("Backup downloaded");
+            showToast("Backup exported");
         }
 
         function handleRestoreBackup(e) {
@@ -1537,9 +1764,651 @@
             }, { passive: true });
         }
 
+        function getWeekWindowRanges() {
+            const now = new Date();
+            const todayStr = formatDateKey(now.getFullYear(), now.getMonth(), now.getDate());
+            const dayIdx = (now.getDay() + 6) % 7; // Monday = 0
+            const thisMonStr = addDays(todayStr, -dayIdx);
+            const thisSunStr = addDays(thisMonStr, 6);
+            const nextMonStr = addDays(thisMonStr, 7);
+            const nextSunStr = addDays(thisMonStr, 13);
+
+            const filterInRange = (rangeStart, rangeEnd) =>
+                events
+                    .filter((ev) => {
+                        const evEnd = ev.endDate || ev.startDate;
+                        return ev.startDate <= rangeEnd && evEnd >= rangeStart;
+                    })
+                    .map((ev) => ({
+                        title: ev.title,
+                        startDate: ev.startDate,
+                        endDate: ev.endDate || ev.startDate
+                    }));
+
+            return {
+                todayStr,
+                todayWeekday: now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "short" }),
+                thisMonStr,
+                thisSunStr,
+                nextMonStr,
+                nextSunStr,
+                todayEvents: filterInRange(todayStr, todayStr),
+                thisWeekEvents: filterInRange(thisMonStr, thisSunStr),
+                nextWeekEvents: filterInRange(nextMonStr, nextSunStr)
+            };
+        }
+
+        function setBriefingTexts(todayText, thisWeekText, nextWeekText) {
+            $("ai-briefing-today").textContent = todayText;
+            $("ai-briefing-this-week").textContent = thisWeekText;
+            $("ai-briefing-next-week").textContent = nextWeekText;
+        }
+
+        async function generateAiScheduleBriefing(forceRefresh = false) {
+            if (isBriefingLoading) return;
+
+            const windowData = getWeekWindowRanges();
+            $("ai-briefing-subtitle").textContent = `${windowData.todayWeekday} • Wk of ${windowData.thisMonStr}`;
+
+            const currentHash = JSON.stringify({
+                keyPresent: Boolean(geminiApiKey),
+                todayStr: windowData.todayStr,
+                todayEvents: windowData.todayEvents,
+                thisWeekEvents: windowData.thisWeekEvents,
+                nextWeekEvents: windowData.nextWeekEvents
+            });
+
+            if (!forceRefresh && currentHash === lastBriefingHash) return;
+
+            if (!geminiApiKey) {
+                lastBriefingHash = currentHash;
+                const formatFallback = (list, emptyMsg) =>
+                    list.length === 0 ? emptyMsg : list.map((e) => `• ${e.title}`).join(" ");
+                setBriefingTexts(
+                    formatFallback(windowData.todayEvents, "Nothing scheduled today."),
+                    formatFallback(windowData.thisWeekEvents, "No events scheduled this week."),
+                    formatFallback(windowData.nextWeekEvents, "No events scheduled next week.")
+                );
+                return;
+            }
+
+            isBriefingLoading = true;
+            const refreshIcon = $("ai-briefing-refresh-icon");
+            const refreshBtn = $("ai-briefing-refresh-btn");
+            refreshBtn.disabled = true;
+            refreshIcon.className = "fa-solid fa-spinner fa-spin text-[10px]";
+            setBriefingTexts("Summarising today...", "Summarising this week...", "Summarising next week...");
+
+            try {
+                const systemInstruction = `You are a concise executive assistant for "UGG Knightsbridge Planner".
+Summarise the user's upcoming schedule clearly and naturally in plain text (no markdown bullets or asterisks, 1-2 short sentences per section).
+Today is ${windowData.todayStr} (${windowData.todayWeekday}).
+This week (Mon-Sun): ${windowData.thisMonStr} to ${windowData.thisSunStr}.
+Next week (Mon-Sun): ${windowData.nextMonStr} to ${windowData.nextSunStr}.
+If a period has no events, state clearly that the schedule is clear.`;
+
+                const userPrompt = `Here are the events for each timeframe:
+TODAY (${windowData.todayStr}): ${JSON.stringify(windowData.todayEvents)}
+THIS WEEK (${windowData.thisMonStr} to ${windowData.thisSunStr}): ${JSON.stringify(windowData.thisWeekEvents)}
+NEXT WEEK (${windowData.nextMonStr} to ${windowData.nextSunStr}): ${JSON.stringify(windowData.nextWeekEvents)}`;
+
+                const briefingSchema = {
+                    type: "OBJECT",
+                    properties: {
+                        todaySummary: { type: "STRING" },
+                        thisWeekSummary: { type: "STRING" },
+                        nextWeekSummary: { type: "STRING" }
+                    },
+                    required: ["todaySummary", "thisWeekSummary", "nextWeekSummary"],
+                    propertyOrdering: ["todaySummary", "thisWeekSummary", "nextWeekSummary"]
+                };
+
+                const rawText = await callGeminiWithFallback(geminiApiKey, systemInstruction, userPrompt, briefingSchema);
+                const cleaned = rawText.replace(/^```json\s*/i, "").replace(/```$/i, "").trim();
+                const parsed = JSON.parse(cleaned);
+
+                lastBriefingHash = currentHash;
+                setBriefingTexts(
+                    parsed.todaySummary || "Nothing scheduled today.",
+                    parsed.thisWeekSummary || "No events scheduled this week.",
+                    parsed.nextWeekSummary || "No events scheduled next week."
+                );
+            } catch (err) {
+                console.error("AI briefing error:", err);
+                setBriefingTexts(
+                    windowData.todayEvents.length ? windowData.todayEvents.map((e) => e.title).join(", ") : "Nothing scheduled today.",
+                    windowData.thisWeekEvents.length ? windowData.thisWeekEvents.map((e) => e.title).join(", ") : "Clear this week.",
+                    windowData.nextWeekEvents.length ? windowData.nextWeekEvents.map((e) => e.title).join(", ") : "Clear next week."
+                );
+            } finally {
+                isBriefingLoading = false;
+                refreshBtn.disabled = false;
+                refreshIcon.className = "fa-solid fa-rotate text-[10px]";
+            }
+        }
+
+        function openAiKeyModal() {
+            $("ai-api-key-input").value = geminiApiKey || "";
+            $("ai-key-modal").classList.remove("hidden");
+            setTimeout(() => $("ai-api-key-input").focus(), 50);
+        }
+
+        function closeAiKeyModal() {
+            $("ai-key-modal").classList.add("hidden");
+        }
+
+        async function fetchWithTimeout(url, options, timeoutMs = 15000) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                return await fetch(url, { ...options, signal: controller.signal });
+            } catch (err) {
+                if (err.name === "AbortError") {
+                    throw new Error("Request timed out — please try again");
+                }
+                throw err;
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        async function callGeminiWithFallback(apiKey, systemInstruction, userPrompt, responseSchema) {
+            const modelsToTry = ["gemini-3.5-flash-lite", "gemini-2.5-flash"];
+            let lastError = null;
+
+            for (const modelName of modelsToTry) {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`;
+                const payload = {
+                    systemInstruction: {
+                        parts: [{ text: systemInstruction }]
+                    },
+                    contents: [
+                        {
+                            role: "user",
+                            parts: [{ text: userPrompt }]
+                        }
+                    ],
+                    generationConfig: {
+                        temperature: 0.1,
+                        responseMimeType: "application/json",
+                        responseSchema
+                    }
+                };
+
+                try {
+                    const response = await fetchWithTimeout(
+                        apiUrl,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(payload)
+                        },
+                        15000
+                    );
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const text = extractInteractionText(data);
+                        if (text) {
+                            return text;
+                        }
+                        lastError = new Error(`Empty response from ${modelName}`);
+                        continue;
+                    }
+
+                    let apiMessage = `HTTP ${response.status}`;
+                    try {
+                        const errJson = await response.json();
+                        if (errJson?.error?.message) {
+                            apiMessage = errJson.error.message;
+                        }
+                    } catch (_) { }
+
+                    lastError = new Error(apiMessage);
+                    if (response.status === 400 || response.status === 401 || response.status === 403) {
+                        throw lastError;
+                    }
+                } catch (err) {
+                    lastError = err;
+                    if (err.message && (err.message.includes("API key") || err.message.includes("timed out"))) {
+                        throw err;
+                    }
+                }
+            }
+
+            throw lastError || new Error("Unable to reach Gemini API");
+        }
+
+        function extractInteractionText(data) {
+            if (!data) return "";
+            if (typeof data === "string") return data.trim();
+
+            const parts = data?.candidates?.[0]?.content?.parts;
+            if (Array.isArray(parts)) {
+                const combined = parts
+                    .map((p) => (typeof p?.text === "string" ? p.text : ""))
+                    .join("")
+                    .trim();
+                if (combined) return combined;
+            }
+
+            if (typeof data.output_text === "string" && data.output_text.trim()) {
+                return data.output_text.trim();
+            }
+            return "";
+        }
+
+        function buildCompactEventsContext() {
+            const seriesGroups = new Map();
+            const standalone = [];
+
+            events.forEach((ev) => {
+                if (ev.seriesId) {
+                    if (!seriesGroups.has(ev.seriesId)) {
+                        seriesGroups.set(ev.seriesId, {
+                            seriesId: ev.seriesId,
+                            title: ev.title,
+                            firstDate: ev.startDate,
+                            lastDate: ev.endDate || ev.startDate,
+                            color: ev.color,
+                            recurrence: ev.recurrence || "weekly",
+                            count: 1,
+                            sampleIds: [ev.id]
+                        });
+                    } else {
+                        const grp = seriesGroups.get(ev.seriesId);
+                        grp.count++;
+                        if (ev.startDate < grp.firstDate) grp.firstDate = ev.startDate;
+                        if ((ev.endDate || ev.startDate) > grp.lastDate) grp.lastDate = ev.endDate || ev.startDate;
+                        if (grp.sampleIds.length < 3) grp.sampleIds.push(ev.id);
+                    }
+                } else {
+                    standalone.push({
+                        id: ev.id,
+                        title: ev.title,
+                        startDate: ev.startDate,
+                        endDate: ev.endDate || ev.startDate,
+                        color: ev.color
+                    });
+                }
+            });
+
+            return {
+                singleEvents: standalone.slice(-120),
+                recurringSeries: Array.from(seriesGroups.values())
+            };
+        }
+
+        function applyAiOperations(operations) {
+            if (!Array.isArray(operations) || operations.length === 0) return 0;
+
+            lastEventsSnapshotBeforeAI = JSON.parse(JSON.stringify(events));
+            let focusDate = null;
+            let appliedCount = 0;
+
+            operations.forEach((op) => {
+                const action = (op.action || "").toLowerCase();
+                const validColor = COLORS.some((c) => c.id === op.color) ? op.color : "cobalt";
+                const rawStart = (op.startDate || op.start_date || "").trim();
+                const rawEnd = (op.endDate || op.end_date || "").trim();
+                const rawTitle = (op.title || op.name || "").trim();
+
+                if (action === "add") {
+                    const startDate = rawStart || selectedDateKey;
+                    if (!startDate) return;
+                    const endDate = rawEnd && rawEnd >= startDate ? rawEnd : startDate;
+                    const recurrence = ["none", "daily", "weekly", "biweekly", "monthly", "yearly"].includes(op.recurrence)
+                        ? op.recurrence
+                        : "none";
+                    const title = rawTitle || "Untitled Event";
+
+                    if (recurrence !== "none") {
+                        const generated = generateRecurringSeries({
+                            title,
+                            startDate,
+                            endDate,
+                            color: validColor,
+                            recurrence
+                        });
+                        events.push(...generated);
+                        appliedCount += generated.length;
+                    } else {
+                        events.push({
+                            id: generateId(),
+                            title,
+                            startDate,
+                            endDate,
+                            color: validColor,
+                            recurrence: "none"
+                        });
+                        appliedCount++;
+                    }
+                    focusDate = startDate;
+                } else if (action === "update") {
+                    const targetIds = Array.isArray(op.targetIds) ? op.targetIds : [];
+                    const matchTitle = (op.matchTitle || op.match_title || "").trim().toLowerCase();
+                    const matchDate = (op.matchDate || op.match_date || "").trim();
+
+                    events = events.map((evt) => {
+                        const idMatch = targetIds.includes(evt.id) || (evt.seriesId && targetIds.includes(evt.seriesId));
+                        const titleDateMatch =
+                            !idMatch &&
+                            matchTitle &&
+                            evt.title.toLowerCase().includes(matchTitle) &&
+                            (!matchDate || evt.startDate === matchDate);
+
+                        if (!idMatch && !titleDateMatch) return evt;
+
+                        const nextStart = rawStart || evt.startDate;
+                        let nextEnd = rawEnd || evt.endDate || nextStart;
+                        if (nextEnd < nextStart) nextEnd = nextStart;
+                        focusDate = nextStart;
+                        appliedCount++;
+                        return {
+                            ...evt,
+                            title: rawTitle || evt.title,
+                            startDate: nextStart,
+                            endDate: nextEnd,
+                            color: op.color && COLORS.some((c) => c.id === op.color) ? op.color : evt.color
+                        };
+                    });
+                } else if (action === "delete") {
+                    const targetIds = Array.isArray(op.targetIds) ? op.targetIds : [];
+                    const matchTitle = (op.matchTitle || op.match_title || "").trim().toLowerCase();
+                    const matchDate = (op.matchDate || op.match_date || "").trim();
+
+                    const beforeLen = events.length;
+                    events = events.filter((evt) => {
+                        const idMatch = targetIds.includes(evt.id) || (evt.seriesId && targetIds.includes(evt.seriesId));
+                        const titleDateMatch =
+                            !idMatch &&
+                            matchTitle &&
+                            evt.title.toLowerCase().includes(matchTitle) &&
+                            (!matchDate || evt.startDate.startsWith(matchDate));
+                        return !(idMatch || titleDateMatch);
+                    });
+                    appliedCount += Math.max(0, beforeLen - events.length);
+                }
+            });
+
+            if (appliedCount === 0) {
+                lastEventsSnapshotBeforeAI = null;
+                return 0;
+            }
+
+            saveEvents();
+            if (focusDate) {
+                const dt = parseDateKey(focusDate);
+                const mIdx = MONTHS.findIndex((m) => m.year === dt.getFullYear() && m.month === dt.getMonth());
+                selectedDateKey = focusDate;
+                if (mIdx !== -1 && mIdx !== activeMonthIndex) {
+                    setActiveMonth(mIdx);
+                } else {
+                    renderCalendar();
+                }
+            } else {
+                renderCalendar();
+            }
+
+            const undoBtn = $("ai-undo-btn");
+            undoBtn.classList.remove("hidden");
+            undoBtn.classList.add("inline-flex");
+            return appliedCount;
+        }
+
+        // =========================================================================
+        // VOICE RECOGNITION FOR AI COMMAND BAR
+        // =========================================================================
+        const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let voiceRecognition = null;
+        let isVoiceListening = false;
+
+        function setVoiceListeningUI(listening) {
+            isVoiceListening = listening;
+            const voiceBtn = $("ai-voice-btn");
+            const voiceIcon = $("ai-voice-icon");
+            const input = $("ai-command-input");
+            if (!voiceBtn || !voiceIcon) return;
+
+            if (listening) {
+                voiceBtn.className = "w-8 h-8 rounded-lg bg-rose-600 text-white flex items-center justify-center transition flex-shrink-0 animate-pulse shadow-xs";
+                voiceIcon.className = "fa-solid fa-stop text-xs";
+                voiceBtn.title = "Stop listening";
+                input.placeholder = "Listening... speak your change";
+            } else {
+                voiceBtn.className = "w-8 h-8 rounded-lg bg-white hover:bg-blue-50 active:scale-95 text-slate-500 hover:text-blue-600 border border-slate-200/80 flex items-center justify-center transition flex-shrink-0";
+                voiceIcon.className = "fa-solid fa-microphone text-xs";
+                voiceBtn.title = "Speak your command";
+                input.placeholder = 'e.g. "Add Delivery every Tue in Dec"';
+            }
+        }
+
+        if (SpeechRecognitionAPI) {
+            voiceRecognition = new SpeechRecognitionAPI();
+            voiceRecognition.lang = "en-GB";
+            voiceRecognition.interimResults = true;
+            voiceRecognition.continuous = false;
+
+            let finalTranscript = "";
+
+            voiceRecognition.onstart = () => {
+                finalTranscript = "";
+                setVoiceListeningUI(true);
+            };
+
+            voiceRecognition.onresult = (event) => {
+                let interimTranscript = "";
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                $("ai-command-input").value = (finalTranscript || interimTranscript).trim();
+            };
+
+            voiceRecognition.onerror = (event) => {
+                setVoiceListeningUI(false);
+                if (event.error === "not-allowed") {
+                    showToast("Microphone permission denied", true);
+                } else if (event.error !== "aborted" && event.error !== "no-speech") {
+                    showToast(`Voice error: ${event.error}`, true);
+                }
+            };
+
+            voiceRecognition.onend = () => {
+                const spokenText = $("ai-command-input").value.trim();
+                const wasListening = isVoiceListening;
+                setVoiceListeningUI(false);
+                if (wasListening && spokenText) {
+                    $("ai-command-form").requestSubmit();
+                }
+            };
+        }
+
+        $("ai-voice-btn").addEventListener("click", () => {
+            if (!voiceRecognition) {
+                showToast("Voice input not supported in this browser", true);
+                return;
+            }
+            if (isVoiceListening) {
+                voiceRecognition.stop();
+            } else {
+                try {
+                    voiceRecognition.start();
+                } catch (err) {
+                    console.error("Voice start error:", err);
+                }
+            }
+        });
+
+        async function handleAiCommandSubmit(e) {
+            e.preventDefault();
+            const input = $("ai-command-input");
+            const promptText = input.value.trim();
+            if (!promptText) return;
+
+            if (!geminiApiKey) {
+                openAiKeyModal();
+                showToast("Enter your Gemini API key first", true);
+                return;
+            }
+
+            const submitBtn = $("ai-submit-btn");
+            const submitLabel = $("ai-submit-label");
+            const submitIcon = $("ai-submit-icon");
+
+            submitBtn.disabled = true;
+            input.disabled = true;
+            submitLabel.textContent = "Working";
+            submitIcon.className = "fa-solid fa-spinner fa-spin text-[10px]";
+
+            try {
+                const today = new Date();
+                const todayStr = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+                const activeMonthObj = MONTHS[activeMonthIndex];
+                const compactContext = buildCompactEventsContext();
+
+                const systemInstruction = `You are the fast scheduling assistant for "UGG Knightsbridge Planner".
+Today: ${todayStr} (${today.toLocaleDateString("en-GB", { weekday: "long" })}).
+Viewing month: ${activeMonthObj.full}. Selected date: ${selectedDateKey || todayStr}.
+Valid colors: crimson, tangerine, gold, lime, forest, teal, sky, cobalt, plum, magenta, chestnut, charcoal.
+Valid recurrence: none, daily, weekly, biweekly, monthly, yearly.
+Valid dates: 2026-01-01 to 2030-12-31.
+
+Existing events summary:
+${JSON.stringify(compactContext)}
+
+Return ONLY valid JSON matching the schema with a short "summary" and "operations" array:
+- add: { action: "add", title, startDate: "YYYY-MM-DD", endDate: "YYYY-MM-DD", color, recurrence }
+- update: { action: "update", targetIds: [...], matchTitle, matchDate, title, startDate, endDate, color }
+- delete: { action: "delete", targetIds: [...], matchTitle, matchDate }`;
+
+                const responseSchema = {
+                    type: "OBJECT",
+                    properties: {
+                        summary: { type: "STRING" },
+                        operations: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    action: { type: "STRING", enum: ["add", "update", "delete"] },
+                                    title: { type: "STRING" },
+                                    startDate: { type: "STRING" },
+                                    endDate: { type: "STRING" },
+                                    color: { type: "STRING" },
+                                    recurrence: {
+                                        type: "STRING",
+                                        enum: ["none", "daily", "weekly", "biweekly", "monthly", "yearly"]
+                                    },
+                                    targetIds: { type: "ARRAY", items: { type: "STRING" } },
+                                    matchTitle: { type: "STRING" },
+                                    matchDate: { type: "STRING" }
+                                },
+                                required: ["action", "title", "startDate", "endDate", "color", "recurrence"],
+                                propertyOrdering: [
+                                    "action",
+                                    "title",
+                                    "startDate",
+                                    "endDate",
+                                    "color",
+                                    "recurrence",
+                                    "targetIds",
+                                    "matchTitle",
+                                    "matchDate"
+                                ]
+                            }
+                        }
+                    },
+                    required: ["summary", "operations"],
+                    propertyOrdering: ["summary", "operations"]
+                };
+
+                const rawResponseText = await callGeminiWithFallback(geminiApiKey, systemInstruction, promptText, responseSchema);
+                const rawJson = rawResponseText
+                    .replace(/^```json\s*/i, "")
+                    .replace(/```$/i, "")
+                    .trim();
+                if (!rawJson) {
+                    throw new Error("AI returned empty output");
+                }
+
+                const parsed = JSON.parse(rawJson);
+                if (!parsed.operations || parsed.operations.length === 0) {
+                    showToast(parsed.summary || "No matching events changed", true);
+                } else {
+                    const changedCount = applyAiOperations(parsed.operations);
+                    if (changedCount > 0) {
+                        input.value = "";
+                        showToast(parsed.summary || "Calendar updated by AI");
+                        generateAiScheduleBriefing(false);
+                    } else {
+                        showToast("AI couldn't match dates/events — try specifying exact dates", true);
+                    }
+                }
+            } catch (err) {
+                console.error("AI command failed:", err);
+                showToast(err.message || "AI request failed", true);
+            } finally {
+                submitBtn.disabled = false;
+                input.disabled = false;
+                submitLabel.textContent = "Run";
+                submitIcon.className = "fa-solid fa-arrow-right text-[10px]";
+                input.focus();
+            }
+        }
+
         // Wire up UI event listeners
         $("add-event-btn").addEventListener("click", () => openAddModal());
-        $("mobile-agenda-add-btn").addEventListener("click", () => openAddModal(selectedDateKey));
+        $("selected-day-add-btn").addEventListener("click", () => openAddModal(selectedDateKey));
+        $("ai-briefing-refresh-btn").addEventListener("click", () => generateAiScheduleBriefing(true));
+        $("ai-briefing-toggle-btn").addEventListener("click", () => {
+            isBriefingCollapsed = !isBriefingCollapsed;
+            $("ai-briefing-body").classList.toggle("hidden", isBriefingCollapsed);
+            $("ai-briefing-toggle-icon").className = isBriefingCollapsed
+                ? "fa-solid fa-chevron-down text-[10px]"
+                : "fa-solid fa-chevron-up text-[10px]";
+        });
+        $("ai-settings-btn").addEventListener("click", openAiKeyModal);
+        $("close-ai-key-modal-btn").addEventListener("click", closeAiKeyModal);
+        $("cancel-ai-key-btn").addEventListener("click", closeAiKeyModal);
+        $("ai-key-modal").addEventListener("click", (e) => {
+            if (e.target === $("ai-key-modal")) closeAiKeyModal();
+        });
+        $("ai-key-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            geminiApiKey = $("ai-api-key-input").value.trim();
+            localStorage.setItem(AI_KEY_STORAGE_KEY, geminiApiKey);
+            pushEventsToCloud();
+            closeAiKeyModal();
+            generateAiScheduleBriefing(true);
+            showToast(geminiApiKey ? "AI API key saved" : "AI API key cleared");
+        });
+        $("clear-ai-key-btn").addEventListener("click", () => {
+            geminiApiKey = "";
+            $("ai-api-key-input").value = "";
+            localStorage.removeItem(AI_KEY_STORAGE_KEY);
+            pushEventsToCloud();
+            closeAiKeyModal();
+            generateAiScheduleBriefing(true);
+            showToast("AI API key removed");
+        });
+        $("ai-command-form").addEventListener("submit", handleAiCommandSubmit);
+        $("ai-undo-btn").addEventListener("click", () => {
+            if (!lastEventsSnapshotBeforeAI) return;
+            events = lastEventsSnapshotBeforeAI;
+            lastEventsSnapshotBeforeAI = null;
+            saveEvents();
+            renderCalendar();
+            $("ai-undo-btn").classList.add("hidden");
+            $("ai-undo-btn").classList.remove("inline-flex");
+            showToast("Reverted last AI change");
+        });
         $("close-modal-btn").addEventListener("click", closeEventModal);
         $("cancel-modal-btn").addEventListener("click", closeEventModal);
         $("event-form").addEventListener("submit", handleFormSubmit);
@@ -1588,7 +2457,7 @@
             }
         });
 
-        // Firebase Password Lock Screen Logic (Requires password on every page load)
+        // Firebase Password Lock Screen Logic
         let appBooted = false;
 
         function showAuthError(message) {
@@ -1604,6 +2473,7 @@
                 jumpToToday();
                 setupSwipeNavigation();
             }
+            generateAiScheduleBriefing(false);
             startFirestoreListener();
         }
 
