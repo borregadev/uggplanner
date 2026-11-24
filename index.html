@@ -287,12 +287,6 @@
                     </div>
                 </div>
 
-                <!-- Center Year Switcher (Desktop) -->
-                <div id="year-tabs-desktop"
-                    class="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80">
-                    <!-- Year buttons injected dynamically -->
-                </div>
-
                 <!-- Right Global Controls -->
                 <div
                     class="flex items-center justify-end gap-1.5 sm:gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
@@ -334,14 +328,6 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Mobile Year Bar -->
-            <div class="md:hidden pb-2 flex items-center justify-center">
-                <div id="year-tabs-mobile"
-                    class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full justify-between">
-                    <!-- Year buttons injected dynamically -->
-                </div>
-            </div>
         </div>
     </header>
 
@@ -357,12 +343,45 @@
 
                     <!-- Calendar Header & Quick Controls -->
                     <div
-                        class="calendar-top-bar px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-200/80 flex flex-col sm:flex-row items-center justify-center sm:justify-between text-center sm:text-left gap-3 bg-white">
-                        <div class="flex items-center justify-center sm:justify-start gap-3">
-                            <h2 id="current-month-display"
-                                class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">
-                                November 2026
-                            </h2>
+                        class="calendar-top-bar px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-200/80 flex flex-col sm:flex-row items-center justify-center sm:justify-between text-center sm:text-left gap-3 bg-white relative">
+                        <div class="relative flex items-center justify-center sm:justify-start">
+                            <button type="button" id="month-year-picker-trigger"
+                                class="group inline-flex items-center gap-2 px-2.5 py-1.5 -ml-2 rounded-xl hover:bg-slate-100 active:scale-[0.99] transition cursor-pointer"
+                                title="Click to choose month and scroll years">
+                                <h2 id="current-month-display"
+                                    class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">
+                                    November 2026
+                                </h2>
+                                <i id="month-year-chevron"
+                                    class="no-print fa-solid fa-chevron-down text-xs text-slate-400 group-hover:text-slate-800 transition-transform duration-200"></i>
+                            </button>
+
+                            <!-- Native-Style Month & Scrollable Year Picker Popover -->
+                            <div id="month-year-popover"
+                                class="hidden no-print absolute left-1/2 sm:left-0 -translate-x-1/2 sm:translate-x-0 top-full mt-2 w-[300px] sm:w-[330px] bg-white rounded-2xl shadow-xl border border-slate-200/95 p-3.5 z-40 text-left">
+                                <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100">
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Select
+                                        Month & Year</span>
+                                    <button type="button" id="picker-jump-today-btn"
+                                        class="text-[11px] font-semibold text-slate-700 hover:text-slate-950 bg-slate-100 hover:bg-slate-200/80 px-2.5 py-1 rounded-lg transition">
+                                        Current
+                                    </button>
+                                </div>
+                                <div class="grid grid-cols-12 gap-2.5 items-stretch">
+                                    <!-- Months Grid -->
+                                    <div id="picker-months-grid"
+                                        class="col-span-7 grid grid-cols-3 gap-1 content-start">
+                                        <!-- 12 months injected dynamically -->
+                                    </div>
+                                    <!-- Scrollable Years List -->
+                                    <div class="col-span-5 border-l border-slate-100 pl-2 flex flex-col">
+                                        <div id="picker-years-scroll"
+                                            class="clean-scroll max-h-[188px] overflow-y-auto space-y-1 pr-1">
+                                            <!-- Scrollable years injected dynamically -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="no-print flex items-center justify-center gap-1.5">
@@ -380,14 +399,6 @@
                                 title="Next Month">
                                 <i class="fa-solid fa-chevron-right text-xs"></i>
                             </button>
-                        </div>
-                    </div>
-
-                    <!-- Sleek Month Ribbon -->
-                    <div class="no-print px-3 sm:px-5 py-2 bg-slate-50/70 border-b border-slate-200/80">
-                        <div id="month-tabs"
-                            class="no-scrollbar flex items-center gap-1 overflow-x-auto justify-start sm:justify-between">
-                            <!-- Month buttons injected dynamically -->
                         </div>
                     </div>
 
@@ -879,10 +890,11 @@
         const AI_KEY_STORAGE_KEY = "ugg_knightsbridge_gemini_api_key_v1";
         const AI_VOICE_STORAGE_KEY = "ugg_knightsbridge_gemini_voice_v1";
         const VALID_VOICES = ["Aoede", "Kore", "Leda", "Zephyr", "Puck", "Charon", "Fenrir", "Orus"];
-        const SERIES_END_LIMIT = "2030-12-31";
+        const SERIES_END_LIMIT = "2035-12-31";
         const FIRESTORE_DOC_PATH = ["ugg_planner", "knightsbridge_main"];
 
-        const YEARS = [2026, 2027, 2028, 2029, 2030];
+        const MIN_YEAR = 1970;
+        const MAX_YEAR = 2100;
         const MONTHS = [
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
@@ -1258,70 +1270,72 @@
         }
 
         // Navigation & Rendering
-        function renderYearTabs() {
-            const desktopContainer = $("year-tabs-desktop");
-            const mobileContainer = $("year-tabs-mobile");
-            desktopContainer.innerHTML = "";
-            mobileContainer.innerHTML = "";
+        let isMonthYearPopoverOpen = false;
 
-            YEARS.forEach((year) => {
-                const isActive = year === activeYear;
+        function toggleMonthYearPopover(forceState = null) {
+            isMonthYearPopoverOpen = forceState !== null ? forceState : !isMonthYearPopoverOpen;
+            const popover = $("month-year-popover");
+            const chevron = $("month-year-chevron");
+            popover.classList.toggle("hidden", !isMonthYearPopoverOpen);
+            chevron.classList.toggle("rotate-180", isMonthYearPopoverOpen);
 
-                const dBtn = document.createElement("button");
-                dBtn.type = "button";
-                dBtn.textContent = year;
-                dBtn.className = isActive
-                    ? "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-2xs transition"
-                    : "px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-900 transition";
-                dBtn.addEventListener("click", () => {
-                    activeYear = year;
-                    renderCalendar();
-                });
-                desktopContainer.appendChild(dBtn);
-
-                const mBtn = document.createElement("button");
-                mBtn.type = "button";
-                mBtn.textContent = year;
-                mBtn.className = isActive
-                    ? "flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-2xs transition"
-                    : "flex-1 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-800 transition";
-                mBtn.addEventListener("click", () => {
-                    activeYear = year;
-                    renderCalendar();
-                });
-                mobileContainer.appendChild(mBtn);
-            });
+            if (isMonthYearPopoverOpen) {
+                renderMonthYearPopover();
+            }
         }
 
-        function renderMonthTabs() {
-            const container = $("month-tabs");
-            container.innerHTML = "";
+        function renderMonthYearPopover() {
+            const monthsGrid = $("picker-months-grid");
+            const yearsScroll = $("picker-years-scroll");
+            monthsGrid.innerHTML = "";
+            yearsScroll.innerHTML = "";
 
             SHORT_MONTHS.forEach((shortName, idx) => {
                 const isActive = idx === activeMonthIndex;
                 const btn = document.createElement("button");
                 btn.type = "button";
                 btn.textContent = shortName;
-                btn.dataset.monthIndex = idx;
                 btn.className = isActive
-                    ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white transition flex-shrink-0"
-                    : "px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-white hover:text-slate-900 transition flex-shrink-0";
+                    ? "py-2 rounded-lg text-xs font-bold bg-slate-900 text-white transition"
+                    : "py-2 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition";
                 btn.addEventListener("click", () => {
                     activeMonthIndex = idx;
                     renderCalendar();
+                    toggleMonthYearPopover(false);
                 });
-                container.appendChild(btn);
+                monthsGrid.appendChild(btn);
             });
 
-            // Smoothly scroll active month pill into center on mobile
+            for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
+                const isActive = y === activeYear;
+                const yBtn = document.createElement("button");
+                yBtn.type = "button";
+                yBtn.textContent = y;
+                yBtn.dataset.pickerYear = y;
+                yBtn.className = isActive
+                    ? "w-full py-1.5 px-2 rounded-lg text-xs font-bold bg-slate-900 text-white text-center transition"
+                    : "w-full py-1.5 px-2 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 text-center transition";
+                yBtn.addEventListener("click", () => {
+                    activeYear = y;
+                    renderCalendar();
+                    renderMonthYearPopover();
+                });
+                yearsScroll.appendChild(yBtn);
+            }
+
             requestAnimationFrame(() => {
-                const activeBtn = container.querySelector(`[data-month-index="${activeMonthIndex}"]`);
-                if (activeBtn && container.scrollWidth > container.clientWidth) {
-                    const targetLeft =
-                        activeBtn.offsetLeft - container.clientWidth / 2 + activeBtn.offsetWidth / 2;
-                    container.scrollTo({ left: Math.max(0, targetLeft), behavior: "smooth" });
+                const activeYearBtn = yearsScroll.querySelector(`[data-picker-year="${activeYear}"]`);
+                if (activeYearBtn) {
+                    yearsScroll.scrollTop =
+                        activeYearBtn.offsetTop - yearsScroll.clientHeight / 2 + activeYearBtn.offsetHeight / 2;
                 }
             });
+        }
+
+        function renderMonthTabs() {
+            const container = $("month-tabs");
+            if (!container) return;
+            container.innerHTML = "";
         }
 
         function getEventsForDate(dateKey) {
@@ -1339,10 +1353,12 @@
         }
 
         function renderCalendar() {
-            renderYearTabs();
             renderMonthTabs();
 
             $("current-month-display").textContent = `${MONTHS[activeMonthIndex]} ${activeYear}`;
+            if (isMonthYearPopoverOpen) {
+                renderMonthYearPopover();
+            }
 
             const grid = $("calendar-days-grid");
             grid.innerHTML = "";
@@ -2558,9 +2574,8 @@ Return ONLY valid JSON with this exact shape:
 
         function goToPrevMonth() {
             if (activeMonthIndex === 0) {
-                const idx = YEARS.indexOf(activeYear);
-                if (idx > 0) {
-                    activeYear = YEARS[idx - 1];
+                if (activeYear > MIN_YEAR) {
+                    activeYear--;
                     activeMonthIndex = 11;
                 }
             } else {
@@ -2571,9 +2586,8 @@ Return ONLY valid JSON with this exact shape:
 
         function goToNextMonth() {
             if (activeMonthIndex === 11) {
-                const idx = YEARS.indexOf(activeYear);
-                if (idx < YEARS.length - 1) {
-                    activeYear = YEARS[idx + 1];
+                if (activeYear < MAX_YEAR) {
+                    activeYear++;
                     activeMonthIndex = 0;
                 }
             } else {
@@ -2584,8 +2598,7 @@ Return ONLY valid JSON with this exact shape:
 
         function goToToday() {
             const now = new Date();
-            const y = now.getFullYear();
-            activeYear = YEARS.includes(y) ? y : YEARS[0];
+            activeYear = now.getFullYear();
             activeMonthIndex = now.getMonth();
             selectedDateKey = formatDateKey(now);
             renderCalendar();
@@ -2595,32 +2608,31 @@ Return ONLY valid JSON with this exact shape:
         function initApp() {
             events = loadLocalEvents();
             const now = new Date();
-            if (YEARS.includes(now.getFullYear())) {
-                activeYear = now.getFullYear();
-                activeMonthIndex = now.getMonth();
-            }
+            activeYear = now.getFullYear();
+            activeMonthIndex = now.getMonth();
             selectedDateKey = formatDateKey(now);
 
             // Unlock / Lock Controls
             $("unlock-form").addEventListener("submit", handleUnlockSubmit);
-            $("toggle-password-visibility").addEventListener("click", () => {
-                const input = $("unlock-password-input");
-                const icon = $("toggle-password-icon");
-                const isHidden = input.type === "password";
-                input.type = isHidden ? "text" : "password";
-                icon.className = isHidden ? "fa-regular fa-eye-slash text-sm" : "fa-regular fa-eye text-sm";
+            // Calendar Navigation & Month/Year Popover
+            $("month-year-picker-trigger").addEventListener("click", (e) => {
+                e.stopPropagation();
+                toggleMonthYearPopover();
             });
-            $("lock-planner-btn").addEventListener("click", lockPlannerUI);
-            $("cloud-sync-pill").addEventListener("click", () => {
-                if (cloudReady) {
-                    pushEventsToCloud();
-                    showToast("Cloud sync triggered");
-                } else {
-                    showToast("Running in local browser storage mode");
+            $("picker-jump-today-btn").addEventListener("click", (e) => {
+                e.stopPropagation();
+                goToToday();
+                toggleMonthYearPopover(false);
+            });
+            document.addEventListener("click", (e) => {
+                if (
+                    isMonthYearPopoverOpen &&
+                    !$("month-year-popover").contains(e.target) &&
+                    !$("month-year-picker-trigger").contains(e.target)
+                ) {
+                    toggleMonthYearPopover(false);
                 }
             });
-
-            // Calendar Navigation
             $("prev-month-btn").addEventListener("click", goToPrevMonth);
             $("next-month-btn").addEventListener("click", goToNextMonth);
             $("today-btn").addEventListener("click", goToToday);
