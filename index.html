@@ -1,17 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UGG Knightsbridge Planner</title>
     <!-- Favicon & Flaticon UIcons -->
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Crect width='448' height='512' rx='96' fill='%23000000'/%3E%3Cpath fill='%23ffffff' d='M128 64c0-17.7-14.3-32-32-32S64 46.3 64 64v32H48C21.5 96 0 117.5 0 144v272c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V144c0-26.5-21.5-48-48-48h-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v32H128V64zM48 192h352v224H48V192zm281.4 63.4c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0L208 309.1l-47.4-47.4c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0l104.8-104.2z'/%3E%3C/svg%3E">
-    <link rel="stylesheet"
-        href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
-    <link rel="stylesheet"
-        href="https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-rounded/css/uicons-solid-rounded.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Crect width='448' height='512' rx='96' fill='%23000000'/%3E%3Cpath fill='%23ffffff' d='M128 64c0-17.7-14.3-32-32-32S64 46.3 64 64v32H48C21.5 96 0 117.5 0 144v272c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V144c0-26.5-21.5-48-48-48h-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v32H128V64zM48 192h352v224H48V192zm281.4 63.4c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0L208 309.1l-47.4-47.4c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0l104.8-104.2z'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-rounded/css/uicons-solid-rounded.css">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -38,9 +34,7 @@
                 size: A4 landscape;
                 margin: 4mm;
             }
-
-            html,
-            body {
+            html, body {
                 width: 100% !important;
                 height: 100% !important;
                 margin: 0 !important;
@@ -50,11 +44,9 @@
                 color: #0f172a !important;
                 font-size: 9pt;
             }
-
             .no-print {
                 display: none !important;
             }
-
             .page-container {
                 padding: 0 !important;
                 margin: 0 !important;
@@ -64,7 +56,6 @@
                 display: flex !important;
                 flex-direction: column !important;
             }
-
             .workspace-grid {
                 display: flex !important;
                 flex-direction: column !important;
@@ -72,7 +63,6 @@
                 height: 100% !important;
                 gap: 0 !important;
             }
-
             .calendar-primary-col {
                 width: 100% !important;
                 height: 100% !important;
@@ -81,7 +71,6 @@
                 flex-direction: column !important;
                 gap: 0 !important;
             }
-
             .calendar-shell {
                 width: 100% !important;
                 height: 100% !important;
@@ -92,12 +81,10 @@
                 border: 1px solid #94a3b8 !important;
                 box-shadow: none !important;
             }
-
             .calendar-top-bar {
                 padding: 6px 10px !important;
                 flex-shrink: 0 !important;
             }
-
             .week-header-row {
                 grid-template-columns: 30px repeat(7, minmax(0, 1fr)) !important;
                 padding: 4px 0 !important;
@@ -106,7 +93,6 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-
             .calendar-grid {
                 border-top: 1px solid #cbd5e1 !important;
                 flex: 1 1 auto !important;
@@ -116,7 +102,6 @@
                 grid-auto-rows: minmax(0, 1fr) !important;
                 height: 100% !important;
             }
-
             .week-num-cell {
                 border-color: #cbd5e1 !important;
                 border-width: 0 1px 1px 0 !important;
@@ -126,7 +111,6 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-
             .day-cell {
                 min-height: 0 !important;
                 height: 100% !important;
@@ -139,7 +123,6 @@
                 box-shadow: none !important;
                 outline: none !important;
             }
-
             .is-today-badge {
                 background-color: transparent !important;
                 color: #0f172a !important;
@@ -149,7 +132,6 @@
                 width: auto !important;
                 height: auto !important;
             }
-
             .event-pill {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -169,29 +151,23 @@
             height: 5px;
             width: 5px;
         }
-
         .clean-scroll::-webkit-scrollbar-track {
             background: transparent;
         }
-
         .clean-scroll::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 9999px;
         }
-
         .clean-scroll::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
-
         .clean-scroll {
             -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
         }
-
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
-
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
@@ -221,49 +197,35 @@
         .dragging-pill {
             opacity: 0.45 !important;
         }
-
         .drop-target-above {
             box-shadow: 0 -2px 0 0 #0f172a !important;
         }
-
         .drop-target-below {
             box-shadow: 0 2px 0 0 #0f172a !important;
         }
     </style>
 </head>
-
-<body
-    class="bg-[#F6F7F9] font-sans text-slate-900 min-h-screen flex flex-col overflow-x-hidden antialiased selection:bg-slate-200 selection:text-slate-900">
+<body class="bg-[#F6F7F9] font-sans text-slate-900 min-h-screen flex flex-col overflow-x-hidden antialiased selection:bg-slate-200 selection:text-slate-900">
 
     <!-- Password Lock Screen Overlay -->
     <div id="lock-screen" class="no-print fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl border border-slate-200/80 w-full max-w-sm p-7 sm:p-8 text-center">
-            <div
-                class="bg-black text-white w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-md">
+            <div class="bg-black text-white w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-md">
                 <i class="fa-regular fa-calendar-check text-2xl"></i>
             </div>
-            <span
-                class="inline-block text-[10px] font-bold uppercase tracking-widest text-slate-600 bg-slate-100 border border-slate-200/80 px-2.5 py-1 rounded-full mb-2">Knightsbridge
-                Flagship</span>
+            <span class="inline-block text-[10px] font-bold uppercase tracking-widest text-slate-600 bg-slate-100 border border-slate-200/80 px-2.5 py-1 rounded-full mb-2">Knightsbridge Flagship</span>
             <h2 class="text-xl font-bold text-slate-900 tracking-tight">UGG Store Planner</h2>
             <p class="text-xs text-slate-500 mt-1.5 mb-6">Enter your password to unlock the schedule.</p>
 
             <form id="unlock-form" class="space-y-3.5 text-left">
                 <div class="relative">
-                    <input type="password" id="unlock-password-input" required autocomplete="current-password"
-                        placeholder="Enter password..."
-                        class="w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
-                    <button type="button" id="toggle-password-visibility"
-                        class="absolute inset-y-0 right-0 px-3.5 text-slate-400 hover:text-slate-800 flex items-center justify-center transition"
-                        title="Show/Hide Password">
+                    <input type="password" id="unlock-password-input" required autocomplete="current-password" placeholder="Enter password..." class="w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
+                    <button type="button" id="toggle-password-visibility" class="absolute inset-y-0 right-0 px-3.5 text-slate-400 hover:text-slate-800 flex items-center justify-center transition" title="Show/Hide Password">
                         <i id="toggle-password-icon" class="fa-regular fa-eye text-sm"></i>
                     </button>
                 </div>
-                <p id="unlock-error-msg"
-                    class="hidden text-xs font-medium text-red-600 text-center bg-red-50 py-2 px-3 rounded-lg border border-red-100">
-                    Incorrect password. Please try again.</p>
-                <button type="submit" id="unlock-submit-btn"
-                    class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-semibold rounded-xl text-sm shadow-sm transition">
+                <p id="unlock-error-msg" class="hidden text-xs font-medium text-red-600 text-center bg-red-50 py-2 px-3 rounded-lg border border-red-100">Incorrect password. Please try again.</p>
+                <button type="submit" id="unlock-submit-btn" class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-semibold rounded-xl text-sm shadow-sm transition">
                     Unlock Planner
                 </button>
             </form>
@@ -271,59 +233,47 @@
     </div>
 
     <!-- Minimalist Monochrome Top Header (Hidden when Printing or Locked) -->
-    <header id="app-header"
-        class="hidden no-print bg-white/95 backdrop-blur-md border-b border-slate-200/90 sticky top-0 z-30">
+    <header id="app-header" class="hidden no-print bg-white/95 backdrop-blur-md border-b border-slate-200/90 sticky top-0 z-30">
         <div class="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8">
             <div class="flex flex-wrap sm:flex-nowrap items-center justify-between py-2 sm:py-0 sm:h-16 gap-2 sm:gap-3">
                 <!-- Brand Identity -->
                 <div class="flex items-center gap-2.5 sm:gap-3">
-                    <div
-                        class="bg-black text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl flex-shrink-0">
+                    <div class="bg-black text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl flex-shrink-0">
                         <i class="fa-regular fa-calendar-check text-sm sm:text-lg"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-[15px] sm:text-base text-slate-900 tracking-tight leading-tight">UGG
-                            Knightsbridge</h1>
+                        <h1 class="font-bold text-[15px] sm:text-base text-slate-900 tracking-tight leading-tight">UGG Knightsbridge</h1>
                     </div>
                 </div>
 
                 <!-- Right Global Controls -->
-                <div
-                    class="flex items-center justify-end gap-1.5 sm:gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                <div class="flex items-center justify-end gap-1.5 sm:gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                     <!-- Cloud Sync Pill -->
-                    <button id="cloud-sync-pill" type="button" title="Click to sync now"
-                        class="mr-auto sm:mr-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200/80 hover:bg-slate-200/60 transition cursor-pointer">
+                    <button id="cloud-sync-pill" type="button" title="Click to sync now" class="mr-auto sm:mr-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200/80 hover:bg-slate-200/60 transition cursor-pointer">
                         <span id="cloud-sync-dot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                         <span id="cloud-sync-text">Local</span>
                     </button>
 
                     <!-- Primary Add Event CTA -->
-                    <button id="add-event-btn"
-                        class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]">
+                    <button id="add-event-btn" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]">
                         <i class="fa-solid fa-plus text-xs"></i>
                         <span>New Event</span>
                     </button>
 
                     <!-- Print / PDF -->
-                    <button onclick="window.print()"
-                        class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]"
-                        title="Print / Save as PDF">
+                    <button onclick="window.print()" class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]" title="Print / Save as PDF">
                         <i class="fi fi-rr-print text-xs text-slate-500 leading-none"></i>
                         <span class="hidden lg:inline">Print</span>
                     </button>
 
                     <!-- Unified Settings (Voice, API Key & Backup) -->
-                    <button id="settings-btn" type="button"
-                        class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]"
-                        title="Settings: AI Voice, API Key & Backup">
+                    <button id="settings-btn" type="button" class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]" title="Settings: AI Voice, API Key & Backup">
                         <i class="fi fi-rr-settings text-xs text-slate-500 leading-none"></i>
                         <span class="hidden lg:inline">Settings</span>
                     </button>
 
                     <!-- Lock Button -->
-                    <button id="lock-planner-btn" type="button"
-                        class="inline-flex items-center justify-center bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]"
-                        title="Lock Planner">
+                    <button id="lock-planner-btn" type="button" class="inline-flex items-center justify-center bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]" title="Lock Planner">
                         <i class="fi fi-rr-lock text-xs text-slate-500 leading-none"></i>
                     </button>
                 </div>
@@ -332,51 +282,54 @@
     </header>
 
     <!-- Main Restructured Two-Column Workspace -->
-    <main id="app-main"
-        class="hidden flex-1 max-w-[1440px] w-full mx-auto px-2 sm:px-6 lg:px-8 py-3 sm:py-6 page-container">
+    <main id="app-main" class="hidden flex-1 max-w-[1440px] w-full mx-auto px-2 sm:px-6 lg:px-8 py-3 sm:py-6 page-container">
         <div class="workspace-grid grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
 
             <!-- LEFT / PRIMARY COLUMN (8 cols on desktop): Month Ribbon + Calendar Grid -->
             <div class="calendar-primary-col lg:col-span-8 flex flex-col gap-3 min-w-0">
-                <div id="calendar-touch-area"
-                    class="calendar-shell bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden flex flex-col min-h-[560px] sm:min-h-[760px]">
-
+                <div id="calendar-touch-area" class="calendar-shell bg-white rounded-2xl shadow-xs border border-slate-200/90 overflow-hidden flex flex-col min-h-[560px] sm:min-h-[760px]">
+                    
                     <!-- Calendar Header & Quick Controls -->
-                    <div
-                        class="calendar-top-bar px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-200/80 flex flex-col sm:flex-row items-center justify-center sm:justify-between text-center sm:text-left gap-3 bg-white relative">
+                    <div class="calendar-top-bar px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-200/80 flex flex-col sm:flex-row items-center justify-center sm:justify-between text-center sm:text-left gap-3 bg-white relative">
                         <div class="relative flex items-center justify-center sm:justify-start w-full sm:w-auto">
-                            <button type="button" id="month-year-picker-trigger"
+                            <button
+                                type="button"
+                                id="month-year-picker-trigger"
                                 class="group inline-flex items-center justify-center gap-2 px-3 py-1.5 sm:-ml-3 rounded-xl hover:bg-slate-100 active:scale-[0.99] transition cursor-pointer"
-                                title="Click to choose month and scroll years">
-                                <h2 id="current-month-display"
-                                    class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">
+                                title="Click to choose month and scroll years"
+                            >
+                                <h2 id="current-month-display" class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">
                                     November 2026
                                 </h2>
-                                <i id="month-year-chevron"
-                                    class="no-print fa-solid fa-chevron-down text-xs text-slate-400 group-hover:text-slate-800 transition-transform duration-200"></i>
+                                <i id="month-year-chevron" class="no-print fa-solid fa-chevron-down text-xs text-slate-400 group-hover:text-slate-800 transition-transform duration-200"></i>
                             </button>
 
                             <!-- Native-Style Month & Scrollable Year Picker Popover -->
-                            <div id="month-year-popover"
-                                class="hidden no-print absolute left-1/2 sm:left-0 -translate-x-1/2 sm:translate-x-0 top-full mt-2 w-[300px] sm:w-[330px] bg-white rounded-2xl shadow-xl border border-slate-200/95 p-3.5 z-40 text-left">
+                            <div
+                                id="month-year-popover"
+                                class="hidden no-print absolute left-1/2 sm:left-0 -translate-x-1/2 sm:translate-x-0 top-full mt-2 w-[300px] sm:w-[330px] bg-white rounded-2xl shadow-xl border border-slate-200/95 p-3.5 z-40 text-left"
+                            >
                                 <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100">
-                                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Select
-                                        Month & Year</span>
-                                    <button type="button" id="picker-jump-today-btn"
-                                        class="text-[11px] font-semibold text-slate-700 hover:text-slate-950 bg-slate-100 hover:bg-slate-200/80 px-2.5 py-1 rounded-lg transition">
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Select Month & Year</span>
+                                    <button
+                                        type="button"
+                                        id="picker-jump-today-btn"
+                                        class="text-[11px] font-semibold text-slate-700 hover:text-slate-950 bg-slate-100 hover:bg-slate-200/80 px-2.5 py-1 rounded-lg transition"
+                                    >
                                         Current
                                     </button>
                                 </div>
                                 <div class="grid grid-cols-12 gap-2.5 items-stretch">
                                     <!-- Months Grid -->
-                                    <div id="picker-months-grid"
-                                        class="col-span-7 grid grid-cols-3 gap-1 content-start">
+                                    <div id="picker-months-grid" class="col-span-7 grid grid-cols-3 gap-1 content-start">
                                         <!-- 12 months injected dynamically -->
                                     </div>
                                     <!-- Scrollable Years List -->
                                     <div class="col-span-5 border-l border-slate-100 pl-2 flex flex-col">
-                                        <div id="picker-years-scroll"
-                                            class="clean-scroll max-h-[188px] overflow-y-auto space-y-1 pr-1">
+                                        <div
+                                            id="picker-years-scroll"
+                                            class="clean-scroll max-h-[188px] overflow-y-auto space-y-1 pr-1"
+                                        >
                                             <!-- Scrollable years injected dynamically -->
                                         </div>
                                     </div>
@@ -385,42 +338,32 @@
                         </div>
 
                         <div class="no-print flex items-center justify-center gap-1.5">
-                            <button id="prev-month-btn"
-                                class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition"
-                                title="Previous Month">
+                            <button id="prev-month-btn" class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition" title="Previous Month">
                                 <i class="fa-solid fa-chevron-left text-xs"></i>
                             </button>
-                            <button id="today-btn"
-                                class="px-3 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold transition">
+                            <button id="today-btn" class="px-3 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold transition">
                                 Today
                             </button>
-                            <button id="next-month-btn"
-                                class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition"
-                                title="Next Month">
+                            <button id="next-month-btn" class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition" title="Next Month">
                                 <i class="fa-solid fa-chevron-right text-xs"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Days of Week Header -->
-                    <div
-                        class="week-header-row grid grid-cols-[24px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] border-b border-slate-200/90 bg-slate-50/50 text-center text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 py-2.5">
-                        <div class="text-slate-400 border-r border-slate-200/80 flex items-center justify-center">Wk
-                        </div>
+                    <div class="week-header-row grid grid-cols-[24px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] border-b border-slate-200/90 bg-slate-50/50 text-center text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 py-2.5">
+                        <div class="text-slate-400 border-r border-slate-200/80 flex items-center justify-center">Wk</div>
                         <div><span class="hidden sm:inline">Mon</span><span class="sm:hidden">M</span></div>
                         <div><span class="hidden sm:inline">Tue</span><span class="sm:hidden">T</span></div>
                         <div><span class="hidden sm:inline">Wed</span><span class="sm:hidden">W</span></div>
                         <div><span class="hidden sm:inline">Thu</span><span class="sm:hidden">T</span></div>
                         <div><span class="hidden sm:inline">Fri</span><span class="sm:hidden">F</span></div>
-                        <div class="text-slate-400"><span class="hidden sm:inline">Sat</span><span
-                                class="sm:hidden">S</span></div>
-                        <div class="text-slate-400"><span class="hidden sm:inline">Sun</span><span
-                                class="sm:hidden">S</span></div>
+                        <div class="text-slate-400"><span class="hidden sm:inline">Sat</span><span class="sm:hidden">S</span></div>
+                        <div class="text-slate-400"><span class="hidden sm:inline">Sun</span><span class="sm:hidden">S</span></div>
                     </div>
 
                     <!-- Calendar Days Grid -->
-                    <div id="calendar-days-grid"
-                        class="calendar-grid grid grid-cols-[24px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] flex-1 touch-pan-y will-change-transform">
+                    <div id="calendar-days-grid" class="calendar-grid grid grid-cols-[24px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] flex-1 touch-pan-y will-change-transform">
                         <!-- Week number + Day cells injected dynamically -->
                     </div>
                 </div>
@@ -433,46 +376,58 @@
                 <section class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4">
                     <div class="flex items-center justify-between mb-2.5">
                         <div class="flex items-center gap-2">
-                            <span
-                                class="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center text-xs">
+                            <span class="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center text-xs">
                                 <i class="fi fi-sr-sparkles leading-none"></i>
                             </span>
                             <h3 class="text-xs font-bold text-slate-900">AI Schedule Assistant</h3>
                         </div>
-                        <button type="button" id="ai-undo-btn"
+                        <button
+                            type="button"
+                            id="ai-undo-btn"
                             class="hidden items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition"
-                            title="Undo last AI change">
+                            title="Undo last AI change"
+                        >
                             <i class="fa-solid fa-rotate-left text-[10px]"></i>
                             <span>Undo</span>
                         </button>
                     </div>
 
                     <form id="ai-command-form" class="space-y-2">
-                        <div
-                            class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus-within:bg-white focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/10 transition">
-                            <input type="text" id="ai-command-input" placeholder="Type..."
-                                class="flex-1 min-w-0 bg-transparent text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none py-1">
-                            <button type="button" id="ai-voice-btn"
+                        <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus-within:bg-white focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/10 transition">
+                            <input
+                                type="text"
+                                id="ai-command-input"
+                                placeholder="Type..."
+                                class="flex-1 min-w-0 bg-transparent text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none py-1"
+                            >
+                            <button
+                                type="button"
+                                id="ai-voice-btn"
                                 class="w-8 h-8 rounded-lg bg-white hover:bg-slate-100 active:scale-95 text-slate-600 hover:text-slate-900 border border-slate-200/90 flex items-center justify-center transition flex-shrink-0"
-                                title="Speak your command">
+                                title="Speak your command"
+                            >
                                 <i id="ai-voice-icon" class="fa-solid fa-microphone text-xs"></i>
                             </button>
-                            <button type="button" id="ai-live-call-btn"
+                            <button
+                                type="button"
+                                id="ai-live-call-btn"
                                 class="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200/80 active:scale-95 text-slate-800 border border-slate-200/90 inline-flex items-center gap-1.5 text-[11px] font-semibold transition flex-shrink-0"
-                                title="Start real-time two-way AI voice conversation">
-                                <svg class="w-3.5 h-3.5 text-slate-700" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                                    stroke-linejoin="round" aria-hidden="true">
-                                    <path d="M12 3v18" />
-                                    <path d="M8 8v8" />
-                                    <path d="M16 8v8" />
-                                    <path d="M4 11v2" />
-                                    <path d="M20 11v2" />
+                                title="Start real-time two-way AI voice conversation"
+                            >
+                                <svg class="w-3.5 h-3.5 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12 3v18"/>
+                                    <path d="M8 8v8"/>
+                                    <path d="M16 8v8"/>
+                                    <path d="M4 11v2"/>
+                                    <path d="M20 11v2"/>
                                 </svg>
                                 <span>Voice</span>
                             </button>
-                            <button type="submit" id="ai-submit-btn"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 active:scale-95 text-white transition flex-shrink-0">
+                            <button
+                                type="submit"
+                                id="ai-submit-btn"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 active:scale-95 text-white transition flex-shrink-0"
+                            >
                                 <span id="ai-submit-label">Run</span>
                                 <i id="ai-submit-icon" class="fa-solid fa-arrow-right text-[10px]"></i>
                             </button>
@@ -484,8 +439,7 @@
                         <div class="bg-slate-900 text-white rounded-xl p-3">
                             <div class="flex items-center justify-between gap-2">
                                 <div class="flex items-center gap-2.5 min-w-0">
-                                    <span id="live-call-pulse"
-                                        class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 animate-pulse">
+                                    <span id="live-call-pulse" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 animate-pulse">
                                         <i class="fa-solid fa-tower-broadcast text-xs"></i>
                                     </span>
                                     <div class="min-w-0">
@@ -493,19 +447,24 @@
                                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                                             <p class="text-xs font-bold tracking-tight">Gemini Live Voice</p>
                                         </div>
-                                        <p id="live-call-status" class="text-[11px] text-slate-300 truncate">
-                                            Connecting...</p>
+                                        <p id="live-call-status" class="text-[11px] text-slate-300 truncate">Connecting...</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1.5 flex-shrink-0">
-                                    <button type="button" id="live-call-mute-btn"
+                                    <button
+                                        type="button"
+                                        id="live-call-mute-btn"
                                         class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition"
-                                        title="Mute / Unmute Microphone">
+                                        title="Mute / Unmute Microphone"
+                                    >
                                         <i id="live-call-mute-icon" class="fa-solid fa-microphone text-xs"></i>
                                     </button>
-                                    <button type="button" id="live-call-end-btn"
+                                    <button
+                                        type="button"
+                                        id="live-call-end-btn"
                                         class="px-3 h-8 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-white border border-white/20 text-[11px] font-semibold inline-flex items-center gap-1.5 transition"
-                                        title="Stop AI Voice Session">
+                                        title="Stop AI Voice Session"
+                                    >
                                         <span class="w-2 h-2 rounded-[2px] bg-white inline-block"></span>
                                         <span>Stop</span>
                                     </button>
@@ -517,10 +476,12 @@
                     <!-- Live On-Screen Transcript / Conversation Log -->
                     <div id="ai-transcript-wrapper" class="hidden mt-3 pt-3 border-t border-slate-100">
                         <div class="flex items-center justify-between mb-1.5">
-                            <span
-                                class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Conversation</span>
-                            <button type="button" id="ai-transcript-clear-btn"
-                                class="text-[10px] font-semibold text-slate-400 hover:text-slate-700 transition">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Conversation</span>
+                            <button
+                                type="button"
+                                id="ai-transcript-clear-btn"
+                                class="text-[10px] font-semibold text-slate-400 hover:text-slate-700 transition"
+                            >
                                 Clear
                             </button>
                         </div>
@@ -534,21 +495,19 @@
                 <section class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4">
                     <div class="flex items-center justify-between gap-2 mb-3">
                         <div class="flex items-center gap-2 min-w-0">
-                            <span
-                                class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center text-xs flex-shrink-0">
+                            <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center text-xs flex-shrink-0">
                                 <i class="fi fi-rr-calendar-day leading-none"></i>
                             </span>
                             <div class="min-w-0">
-                                <span
-                                    class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Selected
-                                    Day</span>
-                                <h3 id="selected-day-title"
-                                    class="text-xs sm:text-sm font-bold text-slate-900 truncate">Monday, 23 Nov 2026
-                                </h3>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Selected Day</span>
+                                <h3 id="selected-day-title" class="text-xs sm:text-sm font-bold text-slate-900 truncate">Monday, 23 Nov 2026</h3>
                             </div>
                         </div>
-                        <button type="button" id="selected-day-add-btn"
-                            class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition flex-shrink-0">
+                        <button
+                            type="button"
+                            id="selected-day-add-btn"
+                            class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition flex-shrink-0"
+                        >
                             <i class="fa-solid fa-plus text-[10px]"></i>
                             <span>Add</span>
                         </button>
@@ -563,21 +522,26 @@
                 <section class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <span
-                                class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center text-xs">
+                            <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center text-xs">
                                 <i class="fi fi-rr-list-check leading-none"></i>
                             </span>
                             <h3 class="text-xs font-bold text-slate-900">Schedule Briefing</h3>
                         </div>
                         <div class="flex items-center gap-1">
-                            <button type="button" id="ai-briefing-refresh-btn"
+                            <button
+                                type="button"
+                                id="ai-briefing-refresh-btn"
                                 class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition"
-                                title="Refresh Briefing">
+                                title="Refresh Briefing"
+                            >
                                 <i class="fa-solid fa-rotate text-[11px]"></i>
                             </button>
-                            <button type="button" id="ai-briefing-toggle-btn"
+                            <button
+                                type="button"
+                                id="ai-briefing-toggle-btn"
                                 class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition"
-                                title="Collapse / Expand Briefing">
+                                title="Collapse / Expand Briefing"
+                            >
                                 <i id="ai-briefing-toggle-icon" class="fa-solid fa-chevron-up text-[10px]"></i>
                             </button>
                         </div>
@@ -585,20 +549,15 @@
 
                     <div id="ai-briefing-body" class="mt-3 space-y-2">
                         <div class="p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80">
-                            <span
-                                class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Today</span>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Today</span>
                             <p id="ai-briefing-today" class="text-xs text-slate-800 leading-relaxed">Loading...</p>
                         </div>
                         <div class="p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80">
-                            <span
-                                class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">This
-                                Week</span>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">This Week</span>
                             <p id="ai-briefing-this-week" class="text-xs text-slate-800 leading-relaxed">Loading...</p>
                         </div>
                         <div class="p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80">
-                            <span
-                                class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Next
-                                Week</span>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Next Week</span>
                             <p id="ai-briefing-next-week" class="text-xs text-slate-800 leading-relaxed">Loading...</p>
                         </div>
                     </div>
@@ -609,29 +568,23 @@
     </main>
 
     <!-- Status Toast Notification -->
-    <div id="status-toast"
-        class="no-print hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-full shadow-xl border border-slate-700/80 flex items-center gap-2 transition-opacity duration-300">
+    <div id="status-toast" class="no-print hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-full shadow-xl border border-slate-700/80 flex items-center gap-2 transition-opacity duration-300">
         <i id="status-toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
         <span id="status-toast-msg">Saved</span>
     </div>
 
     <!-- Add / Edit Event Modal -->
-    <div id="event-modal"
-        class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div
-            class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto transform transition-all">
+    <div id="event-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto transform transition-all">
             <!-- Modal Header -->
-            <div
-                class="px-6 py-4 bg-white border-b border-slate-100 flex justify-between items-center sticky top-0 z-10">
+            <div class="px-6 py-4 bg-white border-b border-slate-100 flex justify-between items-center sticky top-0 z-10">
                 <div class="flex items-center gap-2.5">
-                    <span
-                        class="w-8 h-8 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center text-sm">
+                    <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center text-sm">
                         <i class="fa-regular fa-calendar-plus"></i>
                     </span>
                     <h3 id="modal-title" class="font-bold text-slate-900 text-base">Add All-Day Event</h3>
                 </div>
-                <button id="close-modal-btn"
-                    class="text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition w-9 h-9 flex items-center justify-center">
+                <button id="close-modal-btn" class="text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition w-9 h-9 flex items-center justify-center">
                     <i class="fa-solid fa-xmark text-base"></i>
                 </button>
             </div>
@@ -639,46 +592,38 @@
             <!-- Event Form -->
             <form id="event-form" class="p-6 space-y-4">
                 <input type="hidden" id="event-id">
-                <input type="hidden" id="event-color" value="cobalt">
+                <input type="hidden" id="event-color" value="blue">
 
                 <!-- Title -->
                 <div>
-                    <label for="event-title"
-                        class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                    <label for="event-title" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                         Event Title
                     </label>
-                    <input type="text" id="event-title" required placeholder="e.g. Annual Strategy Retreat"
-                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
+                    <input type="text" id="event-title" required placeholder="e.g. Annual Strategy Retreat" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                 </div>
 
                 <!-- Date Range Inputs -->
                 <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3">
                     <div>
-                        <label for="event-start-date"
-                            class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                        <label for="event-start-date" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                             Start Date
                         </label>
-                        <input type="date" id="event-start-date" required
-                            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
+                        <input type="date" id="event-start-date" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                     </div>
                     <div>
-                        <label for="event-end-date"
-                            class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                        <label for="event-end-date" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                             End Date
                         </label>
-                        <input type="date" id="event-end-date" required
-                            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
+                        <input type="date" id="event-end-date" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                     </div>
                 </div>
 
                 <!-- Recurrence Options -->
                 <div>
-                    <label for="event-recurrence"
-                        class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                    <label for="event-recurrence" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                         Repeat Schedule
                     </label>
-                    <select id="event-recurrence"
-                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
+                    <select id="event-recurrence" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
                         <option value="none">Does not repeat</option>
                         <option value="daily">Daily</option>
                         <option value="weekly">Every Week</option>
@@ -694,27 +639,23 @@
                         <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                             Category Color
                         </label>
-                        <span id="selected-color-name" class="text-[11px] font-semibold text-slate-700">Royal
-                            Cobalt</span>
+                        <span id="selected-color-name" class="text-[11px] font-semibold text-slate-700">Blue</span>
                     </div>
                     <div id="color-picker-options" class="grid grid-cols-5 gap-3 justify-items-center py-1">
                         <!-- 10 circular color swatches injected dynamically -->
                     </div>
                 </div>
 
-                <!-- Modal Actions -->
+                    <!-- Modal Actions -->
                 <div class="flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-slate-100">
-                    <button type="button" id="delete-event-btn"
-                        class="hidden text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl hover:bg-red-50 transition">
+                    <button type="button" id="delete-event-btn" class="hidden text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl hover:bg-red-50 transition">
                         <i class="fa-regular fa-trash-can mr-1"></i> Delete
                     </button>
                     <div class="flex gap-2 ml-auto">
-                        <button type="button" id="cancel-modal-btn"
-                            class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs sm:text-sm font-semibold hover:bg-slate-50 transition">
+                        <button type="button" id="cancel-modal-btn" class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs sm:text-sm font-semibold hover:bg-slate-50 transition">
                             Cancel
                         </button>
-                        <button type="submit"
-                            class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs sm:text-sm font-semibold transition">
+                        <button type="submit" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs sm:text-sm font-semibold transition">
                             Save Event
                         </button>
                     </div>
@@ -724,48 +665,38 @@
     </div>
 
     <!-- Recurring Delete Prompt Modal -->
-    <div id="delete-recurring-modal"
-        class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div
-            class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm overflow-hidden p-6 text-center">
-            <div
-                class="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
+    <div id="delete-recurring-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm overflow-hidden p-6 text-center">
+            <div class="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-trash-can"></i>
             </div>
             <h3 class="font-bold text-slate-900 text-base mb-1.5">Delete Repeating Event</h3>
-            <p class="text-xs text-slate-500 mb-5">This event belongs to a recurring series. Choose which occurrences to
-                remove:</p>
-
+            <p class="text-xs text-slate-500 mb-5">This event belongs to a recurring series. Choose which occurrences to remove:</p>
+            
             <div class="space-y-2">
-                <button id="delete-single-btn"
-                    class="w-full py-3 px-4 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                <button id="delete-single-btn" class="w-full py-3 px-4 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
                     <span>Only this event</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
                 </button>
-                <button id="delete-following-btn"
-                    class="w-full py-3 px-4 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                <button id="delete-following-btn" class="w-full py-3 px-4 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
                     <span>This and following events</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
                 </button>
-                <button id="delete-all-btn"
-                    class="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold transition text-left flex items-center justify-between shadow-sm">
+                <button id="delete-all-btn" class="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold transition text-left flex items-center justify-between shadow-sm">
                     <span>All events in series</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-red-200"></i>
                 </button>
             </div>
 
-            <button id="cancel-delete-modal-btn"
-                class="mt-4 py-2 px-4 text-xs font-semibold text-slate-400 hover:text-slate-700 transition">
+            <button id="cancel-delete-modal-btn" class="mt-4 py-2 px-4 text-xs font-semibold text-slate-400 hover:text-slate-700 transition">
                 Cancel
             </button>
         </div>
     </div>
 
     <!-- Unified Settings Modal (AI Voice, API Key & Backup) -->
-    <div id="settings-modal"
-        class="hidden no-print fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div
-            class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto p-6">
+    <div id="settings-modal" class="hidden no-print fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md max-h-[92vh] overflow-y-auto p-6">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center">
@@ -773,8 +704,7 @@
                     </div>
                     <h3 class="font-bold text-slate-900 text-base">Planner Settings</h3>
                 </div>
-                <button type="button" id="close-settings-modal-btn"
-                    class="text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition w-9 h-9 flex items-center justify-center">
+                <button type="button" id="close-settings-modal-btn" class="text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition w-9 h-9 flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -782,14 +712,15 @@
             <form id="settings-form" class="mt-5 space-y-5">
                 <!-- 1. AI Voice Selection & Live Preview -->
                 <div class="space-y-2">
-                    <label for="ai-voice-select"
-                        class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <label for="ai-voice-select" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                         AI Assistant Voice
                     </label>
                     <div class="flex items-center gap-2">
                         <div class="relative flex-1 min-w-0">
-                            <select id="ai-voice-select"
-                                class="w-full appearance-none pl-3.5 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition cursor-pointer">
+                            <select
+                                id="ai-voice-select"
+                                class="w-full appearance-none pl-3.5 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition cursor-pointer"
+                            >
                                 <option value="Aoede">Aoede — Warm & Conversational</option>
                                 <option value="Kore">Kore — Firm & Articulate</option>
                                 <option value="Leda">Leda — Youthful & Bright</option>
@@ -799,12 +730,14 @@
                                 <option value="Fenrir">Fenrir — Dynamic & Engaging</option>
                                 <option value="Orus">Orus — Grounded & Steady</option>
                             </select>
-                            <i
-                                class="fa-solid fa-chevron-down text-xs text-slate-400 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2"></i>
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2"></i>
                         </div>
-                        <button type="button" id="preview-ai-voice-btn"
+                        <button
+                            type="button"
+                            id="preview-ai-voice-btn"
                             class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200/80 text-slate-800 border border-slate-200 rounded-xl text-xs font-semibold transition flex-shrink-0"
-                            title="Listen to selected voice">
+                            title="Listen to selected voice"
+                        >
                             <i id="preview-ai-voice-icon" class="fa-solid fa-volume-high text-xs"></i>
                             <span id="preview-ai-voice-label">Preview</span>
                         </button>
@@ -814,17 +747,19 @@
                 <!-- 2. Gemini API Key -->
                 <div class="pt-4 border-t border-slate-100 space-y-2">
                     <div class="flex items-center justify-between">
-                        <label for="ai-api-key-input"
-                            class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                        <label for="ai-api-key-input" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                             Gemini API Key
                         </label>
-                        <button type="button" id="clear-ai-key-btn"
-                            class="text-[11px] font-semibold text-red-600 hover:text-red-700">
+                        <button type="button" id="clear-ai-key-btn" class="text-[11px] font-semibold text-red-600 hover:text-red-700">
                             Remove Key
                         </button>
                     </div>
-                    <input type="password" id="ai-api-key-input" placeholder="AIzaSy..."
-                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition">
+                    <input
+                        type="password"
+                        id="ai-api-key-input"
+                        placeholder="AIzaSy..."
+                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-900 transition"
+                    >
                     <p class="text-[11px] text-slate-500 leading-relaxed">
                         Stored inside your locked Firebase database and synced across your devices.
                     </p>
@@ -836,29 +771,24 @@
                         Schedule Backup
                     </span>
                     <div class="grid grid-cols-2 gap-2.5">
-                        <button type="button" id="save-backup-btn"
-                            class="inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs transition">
+                        <button type="button" id="save-backup-btn" class="inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs transition">
                             <i class="fa-solid fa-download text-xs text-slate-500"></i>
                             <span>Export JSON</span>
                         </button>
-                        <label for="restore-file-input" id="restore-backup-btn"
-                            class="cursor-pointer inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs transition relative overflow-hidden">
+                        <label for="restore-file-input" id="restore-backup-btn" class="cursor-pointer inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs transition relative overflow-hidden">
                             <i class="fa-solid fa-upload text-xs text-slate-500"></i>
                             <span>Import JSON</span>
-                            <input type="file" id="restore-file-input" accept=".json,application/json,text/plain"
-                                class="sr-only">
+                            <input type="file" id="restore-file-input" accept=".json,application/json,text/plain" class="sr-only">
                         </label>
                     </div>
                 </div>
 
                 <!-- Modal Footer -->
                 <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
-                    <button type="button" id="cancel-settings-btn"
-                        class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition">
+                    <button type="button" id="cancel-settings-btn" class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition">
                         Cancel
                     </button>
-                    <button type="submit"
-                        class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition">
+                    <button type="submit" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition">
                         Save Settings
                     </button>
                 </div>
@@ -876,14 +806,14 @@
         // FIREBASE CONFIGURATION (PASTE YOUR firebaseConfig OBJECT BELOW)
         // =========================================================================
         const PLANNER_AUTH_EMAIL = "planner@uggknightsbridge.local";
-        const firebaseConfig = {
-            apiKey: "AIzaSyByj3GVxWv678OZpa6BOvETTc2mOYDZN2A",
-            authDomain: "uggplanner.firebaseapp.com",
-            projectId: "uggplanner",
-            storageBucket: "uggplanner.firebasestorage.app",
-            messagingSenderId: "461693599454",
-            appId: "1:461693599454:web:198fb89db4c34699abcc4f"
-        };
+const firebaseConfig = {
+  apiKey: "AIzaSyByj3GVxWv678OZpa6BOvETTc2mOYDZN2A",
+  authDomain: "uggplanner.firebaseapp.com",
+  projectId: "uggplanner",
+  storageBucket: "uggplanner.firebasestorage.app",
+  messagingSenderId: "461693599454",
+  appId: "1:461693599454:web:198fb89db4c34699abcc4f"
+};
         // =========================================================================
 
         const STORAGE_KEY = "ugg_knightsbridge_planner_events_v1";
@@ -903,67 +833,91 @@
         const WEEKDAYS_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
         const COLOR_PALETTE = {
-            cobalt: {
-                name: "Royal Cobalt",
+            blue: {
+                name: "Blue",
                 pill: "bg-blue-600 text-white border-blue-700 border-l-blue-950 shadow-2xs",
                 swatch: "bg-blue-600",
                 dot: "bg-blue-600"
             },
-            emerald: {
-                name: "Forest Emerald",
+            green: {
+                name: "Green",
                 pill: "bg-emerald-600 text-white border-emerald-700 border-l-emerald-950 shadow-2xs",
                 swatch: "bg-emerald-600",
                 dot: "bg-emerald-600"
             },
-            amber: {
-                name: "Sunshine Gold",
+            yellow: {
+                name: "Yellow",
                 pill: "bg-amber-400 text-slate-950 border-amber-500 border-l-amber-800 shadow-2xs",
                 swatch: "bg-amber-400",
                 dot: "bg-amber-400"
             },
-            rose: {
-                name: "Scarlet Red",
+            red: {
+                name: "Red",
                 pill: "bg-red-600 text-white border-red-700 border-l-red-950 shadow-2xs",
                 swatch: "bg-red-600",
                 dot: "bg-red-600"
             },
-            indigo: {
-                name: "Tangerine Orange",
+            orange: {
+                name: "Orange",
                 pill: "bg-orange-500 text-white border-orange-600 border-l-orange-900 shadow-2xs",
                 swatch: "bg-orange-500",
                 dot: "bg-orange-500"
             },
-            teal: {
-                name: "Electric Lime",
+            lime: {
+                name: "Lime",
                 pill: "bg-lime-400 text-slate-950 border-lime-500 border-l-lime-800 shadow-2xs",
                 swatch: "bg-lime-400",
                 dot: "bg-lime-500"
             },
-            violet: {
-                name: "Royal Purple",
+            purple: {
+                name: "Purple",
                 pill: "bg-purple-600 text-white border-purple-700 border-l-purple-950 shadow-2xs",
                 swatch: "bg-purple-600",
                 dot: "bg-purple-600"
             },
-            fuchsia: {
-                name: "Bubblegum Pink",
+            pink: {
+                name: "Pink",
                 pill: "bg-pink-500 text-white border-pink-600 border-l-pink-900 shadow-2xs",
                 swatch: "bg-pink-500",
                 dot: "bg-pink-500"
             },
-            sky: {
-                name: "Ice Cyan",
+            cyan: {
+                name: "Cyan",
                 pill: "bg-cyan-300 text-cyan-950 border-cyan-400 border-l-cyan-800 shadow-2xs",
                 swatch: "bg-cyan-300",
                 dot: "bg-cyan-400"
             },
-            slate: {
-                name: "Obsidian Charcoal",
+            black: {
+                name: "Black",
                 pill: "bg-slate-800 text-white border-slate-900 border-l-black shadow-2xs",
                 swatch: "bg-slate-800",
                 dot: "bg-slate-800"
             }
         };
+
+        const LEGACY_COLOR_ALIASES = {
+            cobalt: "blue",
+            emerald: "green",
+            amber: "yellow",
+            gold: "yellow",
+            rose: "red",
+            indigo: "orange",
+            teal: "lime",
+            violet: "purple",
+            fuchsia: "pink",
+            sky: "cyan",
+            slate: "black",
+            charcoal: "black",
+            grey: "black",
+            gray: "black"
+        };
+
+        function normalizeColorKey(rawColor) {
+            const key = String(rawColor || "").trim().toLowerCase();
+            if (COLOR_PALETTE[key]) return key;
+            if (LEGACY_COLOR_ALIASES[key]) return LEGACY_COLOR_ALIASES[key];
+            return "blue";
+        }
 
         // Application State
         let activeYear = 2026;
@@ -1414,15 +1368,15 @@
 
                     // Top Date Number Row
                     const headerRow = document.createElement("div");
-                    headerRow.className = "flex items-center justify-between mb-1 px-0.5";
+                    headerRow.className = "flex items-center justify-between h-5 sm:h-6 mb-1 px-0.5 flex-shrink-0";
 
                     const dateBadge = document.createElement("span");
                     dateBadge.textContent = cellDate.getDate();
                     dateBadge.className = isToday
-                        ? "is-today-badge w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-900 text-white text-[10px] sm:text-xs font-bold flex items-center justify-center"
+                        ? "is-today-badge w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-900 text-white text-[10px] sm:text-xs font-bold flex items-center justify-center leading-none"
                         : isCurrentMonth
-                            ? "text-[11px] sm:text-xs font-semibold text-slate-800"
-                            : "text-[10px] sm:text-xs font-medium text-slate-400";
+                        ? "h-5 sm:h-6 inline-flex items-center text-[11px] sm:text-xs font-semibold text-slate-800 leading-none"
+                        : "h-5 sm:h-6 inline-flex items-center text-[10px] sm:text-xs font-medium text-slate-400 leading-none";
 
                     headerRow.appendChild(dateBadge);
                     cell.appendChild(headerRow);
@@ -1433,7 +1387,7 @@
 
                     const dayEvents = getEventsForDate(cellDateKey);
                     dayEvents.forEach((ev) => {
-                        const palette = COLOR_PALETTE[ev.color] || COLOR_PALETTE.cobalt;
+                        const palette = COLOR_PALETTE[normalizeColorKey(ev.color)];
                         const pill = document.createElement("div");
                         pill.draggable = true;
                         pill.dataset.eventId = ev.id;
@@ -1544,7 +1498,7 @@
             }
 
             dayEvents.forEach((ev, idx) => {
-                const palette = COLOR_PALETTE[ev.color] || COLOR_PALETTE.cobalt;
+                const palette = COLOR_PALETTE[normalizeColorKey(ev.color)];
                 const row = document.createElement("div");
                 row.className =
                     "flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/80 transition group";
@@ -1556,10 +1510,11 @@
                     <span class="w-2.5 h-2.5 rounded-full ${palette.dot} flex-shrink-0"></span>
                     <div class="min-w-0">
                         <p class="text-xs font-semibold text-slate-900 truncate">${escapeHtml(ev.title)}</p>
-                        <p class="text-[10px] text-slate-500">${ev.startDate === ev.endDate
-                        ? "All day"
-                        : `${formatEuropeanFullDate(ev.startDate)} → ${formatEuropeanFullDate(ev.endDate)}`
-                    }</p>
+                        <p class="text-[10px] text-slate-500">${
+                            ev.startDate === ev.endDate
+                                ? "All day"
+                                : `${formatEuropeanFullDate(ev.startDate)} → ${formatEuropeanFullDate(ev.endDate)}`
+                        }</p>
                     </div>
                 `;
                 left.addEventListener("click", () => openEditEventModal(ev.id));
@@ -1614,21 +1569,23 @@
         function renderColorSwatches(selectedColor) {
             const container = $("color-picker-options");
             container.innerHTML = "";
-            const chosen = COLOR_PALETTE[selectedColor] ? selectedColor : "cobalt";
+            const chosen = normalizeColorKey(selectedColor);
             $("event-color").value = chosen;
             $("selected-color-name").textContent = COLOR_PALETTE[chosen].name;
 
             Object.entries(COLOR_PALETTE).forEach(([key, info]) => {
                 const isSelected = key === chosen;
-                const isLightSwatch = key === "amber" || key === "sky" || key === "teal";
+                const isLightSwatch = key === "yellow" || key === "cyan" || key === "lime";
                 const btn = document.createElement("button");
                 btn.type = "button";
                 btn.title = info.name;
-                btn.className = `w-9 h-9 rounded-full ${info.swatch} flex items-center justify-center ${isLightSwatch ? "text-slate-950" : "text-white"
-                    } shadow-xs transition ${isSelected
+                btn.className = `w-9 h-9 rounded-full ${info.swatch} flex items-center justify-center ${
+                    isLightSwatch ? "text-slate-950" : "text-white"
+                } shadow-xs transition ${
+                    isSelected
                         ? "ring-2 ring-offset-2 ring-slate-900 scale-110"
                         : "opacity-85 hover:opacity-100 hover:scale-105"
-                    }`;
+                }`;
                 btn.innerHTML = isSelected ? `<i class="fa-solid fa-check text-xs"></i>` : "";
                 btn.addEventListener("click", () => renderColorSwatches(key));
                 container.appendChild(btn);
@@ -1646,7 +1603,7 @@
             $("event-recurrence").value = "none";
             $("event-recurrence").disabled = false;
             $("delete-event-btn").classList.add("hidden");
-            renderColorSwatches("cobalt");
+            renderColorSwatches("blue");
             $("event-modal").classList.remove("hidden");
             setTimeout(() => $("event-title").focus(), 50);
         }
@@ -1663,7 +1620,7 @@
             $("event-recurrence").value = ev.recurrence || "none";
             $("event-recurrence").disabled = Boolean(ev.seriesId);
             $("delete-event-btn").classList.remove("hidden");
-            renderColorSwatches(ev.color || "cobalt");
+            renderColorSwatches(normalizeColorKey(ev.color));
             $("event-modal").classList.remove("hidden");
         }
 
@@ -1724,10 +1681,10 @@
             e.preventDefault();
             const id = $("event-id").value;
             const title = $("event-title").value.trim();
-            let startDate = $("event-start-date").value;
+            const startDate = $("event-start-date").value;
             let endDate = $("event-end-date").value;
             const recurrence = $("event-recurrence").value;
-            const color = $("event-color").value || "cobalt";
+            const color = normalizeColorKey($("event-color").value);
 
             if (!title || !startDate || !endDate) return;
             if (endDate < startDate) endDate = startDate;
@@ -1874,7 +1831,7 @@
                     try {
                         const errData = await response.json();
                         if (errData?.error?.message) msg = errData.error.message;
-                    } catch (_) { }
+                    } catch (_) {}
                     throw new Error(msg);
                 }
 
@@ -1979,28 +1936,76 @@
             $("ai-briefing-this-week").textContent =
                 thisWeekEvents.length > 0
                     ? `${thisWeekEvents.length} item${thisWeekEvents.length > 1 ? "s" : ""}: ` +
-                    thisWeekEvents
-                        .slice(0, 5)
-                        .map((e) => `${e.title} (${formatEuropeanShortDate(e.startDate)})`)
-                        .join(", ")
+                      thisWeekEvents
+                          .slice(0, 5)
+                          .map((e) => `${e.title} (${formatEuropeanShortDate(e.startDate)})`)
+                          .join(", ")
                     : "Clear week ahead.";
 
             $("ai-briefing-next-week").textContent =
                 nextWeekEvents.length > 0
                     ? `${nextWeekEvents.length} item${nextWeekEvents.length > 1 ? "s" : ""}: ` +
-                    nextWeekEvents
-                        .slice(0, 5)
-                        .map((e) => `${e.title} (${formatEuropeanShortDate(e.startDate)})`)
-                        .join(", ")
+                      nextWeekEvents
+                          .slice(0, 5)
+                          .map((e) => `${e.title} (${formatEuropeanShortDate(e.startDate)})`)
+                          .join(", ")
                     : "Nothing scheduled next week yet.";
 
             if (forceToast) showToast("Schedule briefing refreshed");
         }
 
         // Apply AI Calendar Operations
+        function normalizeTranscriptEuropeanDates(text) {
+            let result = String(text || "");
+            const monthLookup = {
+                january: "01", jan: "01",
+                february: "02", feb: "02",
+                march: "03", mar: "03",
+                april: "04", apr: "04",
+                may: "05",
+                june: "06", jun: "06",
+                july: "07", jul: "07",
+                august: "08", aug: "08",
+                september: "09", sep: "09", sept: "09",
+                october: "10", oct: "10",
+                november: "11", nov: "11",
+                december: "12", dec: "12"
+            };
+
+            // 1. Convert ISO dates YYYY-MM-DD -> DD/MM/YYYY
+            result = result.replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g, (_, y, m, d) => `${d}/${m}/${y}`);
+
+            // 2. Convert US numeric dates MM/DD/YYYY (where first number <= 12 and second > 12) -> DD/MM/YYYY
+            result = result.replace(/\b(0?[1-9]|1[0-2])\/(1[3-9]|2\d|3[01])\/(\d{4})\b/g, (_, m, d, y) => {
+                return `${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}/${y}`;
+            });
+
+            // 3. Convert US written dates "Month DD(th), YYYY" -> DD/MM/YYYY
+            result = result.replace(
+                /\b(January|Jan|February|Feb|March|Mar|April|Apr|May|June|Jun|July|Jul|August|Aug|September|Sept|Sep|October|Oct|November|Nov|December|Dec)\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(\d{4}))\b/gi,
+                (_, mon, day, year) => {
+                    const mm = monthLookup[mon.toLowerCase()];
+                    const dd = String(day).padStart(2, "0");
+                    return `${dd}/${mm}/${year}`;
+                }
+            );
+
+            // 4. Convert UK written dates "DD(th) (of) Month YYYY" -> DD/MM/YYYY
+            result = result.replace(
+                /\b(\d{1,2})(?:st|nd|rd|th)?\s+(?:of\s+)?(January|Jan|February|Feb|March|Mar|April|Apr|May|June|Jun|July|Jul|August|Aug|September|Sept|Sep|October|Oct|November|Nov|December|Dec)\.?,?\s+(\d{4})\b/gi,
+                (_, day, mon, year) => {
+                    const mm = monthLookup[mon.toLowerCase()];
+                    const dd = String(day).padStart(2, "0");
+                    return `${dd}/${mm}/${year}`;
+                }
+            );
+
+            return result;
+        }
+
         function appendTranscriptMessage(role, text, isStreaming = false) {
-            const cleaned = String(text || "").trim();
-            if (!cleaned) return;
+            const rawText = String(text || "");
+            if (!rawText.trim()) return;
 
             const wrapper = $("ai-transcript-wrapper");
             const list = $("ai-transcript-list");
@@ -2009,7 +2014,9 @@
             const lastEl = list.lastElementChild;
             if (isStreaming && lastEl && lastEl.dataset.role === role && lastEl.dataset.streaming === "true") {
                 const bubble = lastEl.querySelector(".transcript-bubble");
-                bubble.textContent = (bubble.textContent + " " + cleaned).replace(/\s+/g, " ").trim();
+                // Gemini Live streams sub-word/token fragments with leading spaces already included where needed
+                const combined = (bubble.textContent + rawText).replace(/\s+/g, " ").trim();
+                bubble.textContent = role === "ai" ? normalizeTranscriptEuropeanDates(combined) : combined;
                 list.scrollTop = list.scrollHeight;
                 return;
             }
@@ -2028,7 +2035,8 @@
                 role === "user"
                     ? "transcript-bubble max-w-[85%] px-3 py-1.5 rounded-2xl rounded-br-xs bg-slate-900 text-white text-xs leading-relaxed"
                     : "transcript-bubble max-w-[85%] px-3 py-1.5 rounded-2xl rounded-bl-xs bg-slate-100 text-slate-800 border border-slate-200/70 text-xs leading-relaxed";
-            bubble.textContent = cleaned;
+            const cleaned = rawText.trim();
+            bubble.textContent = role === "ai" ? normalizeTranscriptEuropeanDates(cleaned) : cleaned;
 
             row.appendChild(bubble);
             list.appendChild(row);
@@ -2050,7 +2058,7 @@
             actions.forEach((act) => {
                 if (!act || !act.action) return;
                 if (act.action === "add" && act.title && act.startDate) {
-                    const color = COLOR_PALETTE[act.color] ? act.color : "cobalt";
+                    const color = normalizeColorKey(act.color);
                     const endDate = act.endDate && act.endDate >= act.startDate ? act.endDate : act.startDate;
                     const base = {
                         id: `ev_${Date.now()}_${appliedCount}_${Math.random().toString(36).slice(2, 6)}`,
@@ -2073,7 +2081,7 @@
                         if (act.title) target.title = act.title.trim();
                         if (act.startDate) target.startDate = act.startDate;
                         if (act.endDate) target.endDate = act.endDate;
-                        if (act.color && COLOR_PALETTE[act.color]) target.color = act.color;
+                        if (act.color) target.color = normalizeColorKey(act.color);
                         appliedCount++;
                     }
                 } else if (act.action === "delete" && act.id) {
@@ -2092,6 +2100,30 @@
         }
 
         // Text / Voice Command Submission to Gemini
+        function buildFreshCalendarContext() {
+            const todayStr = formatDateKey(new Date());
+            const activeMonthName = `${MONTHS[activeMonthIndex]} ${activeYear}`;
+            // Sort events chronologically and strip verbose per-day layout metadata so all events fit cleanly
+            const compactEvents = [...events]
+                .sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""))
+                .map(({ id, title, startDate, endDate, color, recurrence, seriesId }) => ({
+                    id,
+                    title,
+                    startDate,
+                    endDate,
+                    color: normalizeColorKey(color),
+                    ...(recurrence && recurrence !== "none" ? { recurrence } : {}),
+                    ...(seriesId ? { seriesId } : {})
+                }));
+
+            return {
+                todayStr,
+                activeMonthName,
+                selectedDate: selectedDateKey || todayStr,
+                compactEvents
+            };
+        }
+
         async function handleAiCommandSubmit(e) {
             e.preventDefault();
             const inputEl = $("ai-command-input");
@@ -2115,15 +2147,20 @@
             inputEl.value = "";
 
             try {
-                const todayStr = formatDateKey(new Date());
-                const systemPrompt = `You are the UGG Knightsbridge retail store calendar assistant in London, UK. Today's date is ${todayStr} (${WEEKDAYS_FULL[new Date().getDay()]}). Whenever mentioning dates in your reply, always use European format (DD/MM/YYYY or D Mon YYYY, e.g. 25/11/2026 or 25 Nov 2026), while keeping JSON operation fields strictly YYYY-MM-DD.
-Current events JSON: ${JSON.stringify(events.slice(0, 120))}.
+                const { todayStr, activeMonthName, selectedDate, compactEvents } = buildFreshCalendarContext();
+                const systemPrompt = `You are the UGG Knightsbridge retail store calendar assistant in London, UK.
+Today's date is ${todayStr} (${WEEKDAYS_FULL[new Date().getDay()]}).
+The user is currently viewing ${activeMonthName} on the calendar, with ${selectedDate} selected.
+IMPORTANT: The user is fully allowed to add, log, edit, or delete events on ANY date, including past dates (dates before ${todayStr}). Never refuse or push a past date into the future unless the user explicitly asks for the next/upcoming occurrence. If a user gives a day and month without a year (e.g. "15 November" or "last Friday"), resolve it accurately relative to ${todayStr} or the viewed month (${activeMonthName}), and immediately execute the operation.
+AVAILABLE EVENT COLORS (exact names used across the entire app): blue, green, yellow, red, orange, lime, purple, pink, cyan, black. Always map the user's requested color to one of these exact 10 names, and if listing available colors, ONLY list these exact 10 names (Blue, Green, Yellow, Red, Orange, Lime, Purple, Pink, Cyan, Black).
+Whenever mentioning dates in your reply, always use European format (DD/MM/YYYY or D Mon YYYY, e.g. 25/11/2026 or 25 Nov 2026), while keeping JSON operation fields strictly YYYY-MM-DD.
+Complete, live list of all calendar events (${compactEvents.length} total): ${JSON.stringify(compactEvents)}.
 Return ONLY valid JSON with this exact shape:
 {
   "reply": "Short helpful answer or confirmation sentence using European dates",
   "operations": [
-    { "action": "add", "title": "...", "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "cobalt|emerald|amber|rose|indigo|teal|violet|fuchsia|sky|slate", "recurrence": "none|daily|weekly|biweekly|monthly|yearly" },
-    { "action": "update", "id": "existing_event_id", "title": "...", "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "..." },
+    { "action": "add", "title": "...", "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "blue|green|yellow|red|orange|lime|purple|pink|cyan|black", "recurrence": "none|daily|weekly|biweekly|monthly|yearly" },
+    { "action": "update", "id": "existing_event_id", "title": "...", "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "blue|green|yellow|red|orange|lime|purple|pink|cyan|black" },
     { "action": "delete", "id": "existing_event_id" }
   ]
 }`;
@@ -2202,7 +2239,7 @@ Return ONLY valid JSON with this exact shape:
             voiceBtn.addEventListener("click", () => {
                 try {
                     speechRecognition.start();
-                } catch (_) { }
+                } catch (_) {}
             });
         }
 
@@ -2223,7 +2260,7 @@ Return ONLY valid JSON with this exact shape:
             activeAudioSources.forEach((src) => {
                 try {
                     src.stop();
-                } catch (_) { }
+                } catch (_) {}
             });
             activeAudioSources = [];
             if (playbackAudioCtx) {
@@ -2322,13 +2359,13 @@ Return ONLY valid JSON with this exact shape:
                 liveWs = new WebSocket(wsUrl);
 
                 liveWs.onopen = () => {
+                    finalizeTranscriptTurn();
                     $("live-call-status").textContent = "Listening — speak anytime";
-                    const todayStr = formatDateKey(new Date());
-                    const modelName = "models/gemini-2.5-flash-native-audio-preview-12-2025";
+                    const { todayStr, activeMonthName, selectedDate, compactEvents } = buildFreshCalendarContext();
 
-                    const setupPayload = {
+                    const setupMessage = {
                         setup: {
-                            model: modelName,
+                            model: "models/gemini-2.0-flash-exp",
                             generationConfig: {
                                 responseModalities: ["AUDIO"],
                                 speechConfig: {
@@ -2344,13 +2381,28 @@ Return ONLY valid JSON with this exact shape:
                             systemInstruction: {
                                 parts: [
                                     {
-                                        text: `You are the UGG Knightsbridge flagship store voice planner assistant in London, UK. Today is ${todayStr} (${WEEKDAYS_FULL[new Date().getDay()]}). Always refer to dates in European style (e.g. 25th November or 25/11/2026). Be concise, warm, and helpful. Use the update_calendar tool whenever the user asks to add, edit, move, or delete events. Current events: ${JSON.stringify(events.slice(0, 100))}`
+                                        text: `You are the UGG Knightsbridge retail store calendar assistant in London, UK. Keep spoken responses warm, natural, and concise.
+Today's date is ${todayStr} (${WEEKDAYS_FULL[new Date().getDay()]}).
+The user is currently viewing ${activeMonthName}, with ${selectedDate} selected.
+IMPORTANT: The user is fully allowed to add, log, edit, or delete events on ANY date, including past dates (dates before ${todayStr}). Never refuse or shift a past date into the future unless requested.
+AVAILABLE EVENT COLORS (exact names used across the entire app): blue, green, yellow, red, orange, lime, purple, pink, cyan, black. Always map requested colors to one of these exact 10 names, and if listing available colors, ONLY list these exact 10 names (Blue, Green, Yellow, Red, Orange, Lime, Purple, Pink, Cyan, Black).
+CRITICAL DATE FORMAT RULE: Always speak and format all dates in UK/European day-first order (e.g. "25th of November 2026" or "25/11/2026"), NEVER US month-first order (never say "November 25, 2026" or "11/25/2026"), while still passing YYYY-MM-DD inside tool call arguments.
+Always call get_calendar_events if you need the freshest schedule before answering or editing, and call update_calendar whenever adding, updating, or deleting events.
+Initial calendar snapshot (${compactEvents.length} events): ${JSON.stringify(compactEvents)}`
                                     }
                                 ]
                             },
                             tools: [
                                 {
                                     functionDeclarations: [
+                                        {
+                                            name: "get_calendar_events",
+                                            description: "Fetch the latest live list of all calendar events, currently viewed month, and selected date.",
+                                            parameters: {
+                                                type: "OBJECT",
+                                                properties: {}
+                                            }
+                                        },
                                         {
                                             name: "update_calendar",
                                             description: "Add, update, or delete events on the UGG Knightsbridge calendar.",
@@ -2359,16 +2411,38 @@ Return ONLY valid JSON with this exact shape:
                                                 properties: {
                                                     operations: {
                                                         type: "ARRAY",
+                                                        description: "List of calendar operations to apply.",
                                                         items: {
                                                             type: "OBJECT",
                                                             properties: {
-                                                                action: { type: "STRING", description: "add, update, or delete" },
-                                                                id: { type: "STRING" },
-                                                                title: { type: "STRING" },
-                                                                startDate: { type: "STRING", description: "YYYY-MM-DD" },
-                                                                endDate: { type: "STRING", description: "YYYY-MM-DD" },
-                                                                color: { type: "STRING", description: "cobalt, emerald, amber, rose, indigo, teal, violet, fuchsia, sky, or slate" },
-                                                                recurrence: { type: "STRING", description: "none, daily, weekly, biweekly, monthly, or yearly" }
+                                                                action: {
+                                                                    type: "STRING",
+                                                                    enum: ["add", "update", "delete"]
+                                                                },
+                                                                id: {
+                                                                    type: "STRING",
+                                                                    description: "Existing event ID (required for update or delete)."
+                                                                },
+                                                                title: {
+                                                                    type: "STRING",
+                                                                    description: "Event title."
+                                                                },
+                                                                startDate: {
+                                                                    type: "STRING",
+                                                                    description: "Start date in YYYY-MM-DD format."
+                                                                },
+                                                                endDate: {
+                                                                    type: "STRING",
+                                                                    description: "End date in YYYY-MM-DD format."
+                                                                },
+                                                                color: {
+                                                                    type: "STRING",
+                                                                    enum: ["blue", "green", "yellow", "red", "orange", "lime", "purple", "pink", "cyan", "black"]
+                                                                },
+                                                                recurrence: {
+                                                                    type: "STRING",
+                                                                    enum: ["none", "daily", "weekly", "biweekly", "monthly", "yearly"]
+                                                                }
                                                             },
                                                             required: ["action"]
                                                         }
@@ -2382,88 +2456,139 @@ Return ONLY valid JSON with this exact shape:
                             ]
                         }
                     };
-                    liveWs.send(JSON.stringify(setupPayload));
-                    startMicAudioStreaming();
+
+                    liveWs.send(JSON.stringify(setupMessage));
+                    startMicCapture();
                 };
 
                 liveWs.onmessage = async (event) => {
                     try {
-                        const raw = event.data instanceof Blob ? await event.data.text() : event.data;
-                        const msg = JSON.parse(raw);
-
-                        if (msg.serverContent?.interrupted) {
-                            stopAllPlaybackAudio();
-                            finalizeTranscriptTurn();
-                            $("live-call-status").textContent = "Listening...";
+                        let rawText = "";
+                        if (typeof event.data === "string") {
+                            rawText = event.data;
+                        } else if (event.data instanceof Blob) {
+                            rawText = await event.data.text();
                         }
+                        if (!rawText) return;
 
-                        if (msg.serverContent?.inputTranscription?.text) {
-                            appendTranscriptMessage("user", msg.serverContent.inputTranscription.text, true);
-                        }
+                        const msg = JSON.parse(rawText);
 
-                        if (msg.serverContent?.outputTranscription?.text) {
-                            appendTranscriptMessage("ai", msg.serverContent.outputTranscription.text, true);
-                        }
-
-                        const parts = msg.serverContent?.modelTurn?.parts || [];
-                        parts.forEach((part) => {
-                            if (part.inlineData?.data && part.inlineData?.mimeType?.startsWith("audio/pcm")) {
-                                $("live-call-status").textContent = "Speaking...";
-                                playPcm24kChunk(part.inlineData.data);
-                            }
-                        });
-
-                        if (msg.serverContent?.turnComplete) {
-                            finalizeTranscriptTurn();
-                            $("live-call-status").textContent = isLiveMicMuted ? "Muted" : "Listening...";
-                        }
-
-                        if (msg.toolCall?.functionCalls) {
-                            const responses = msg.toolCall.functionCalls.map((fc) => {
-                                if (fc.name === "update_calendar") {
-                                    const ops = fc.args?.operations || [];
-                                    const count = applyAiCalendarActions(ops);
+                        // Handle tool calls from Gemini Live
+                        if (msg.toolCall && Array.isArray(msg.toolCall.functionCalls)) {
+                            const functionResponses = msg.toolCall.functionCalls.map((fc) => {
+                                if (fc.name === "get_calendar_events") {
+                                    const fresh = buildFreshCalendarContext();
                                     return {
                                         id: fc.id,
                                         name: fc.name,
-                                        response: { result: `Applied ${count} calendar update(s).` }
+                                        response: {
+                                            today: fresh.todayStr,
+                                            viewingMonth: fresh.activeMonthName,
+                                            selectedDate: fresh.selectedDate,
+                                            events: fresh.compactEvents
+                                        }
                                     };
                                 }
-                                return { id: fc.id, name: fc.name, response: { result: "Unknown tool" } };
+                                if (fc.name === "update_calendar") {
+                                    const ops = fc.args?.operations || [];
+                                    const count = applyAiCalendarActions(ops);
+                                    const fresh = buildFreshCalendarContext();
+                                    return {
+                                        id: fc.id,
+                                        name: fc.name,
+                                        response: {
+                                            success: true,
+                                            appliedCount: count,
+                                            updatedEvents: fresh.compactEvents
+                                        }
+                                    };
+                                }
+                                return {
+                                    id: fc.id,
+                                    name: fc.name,
+                                    response: { error: `Unknown tool: ${fc.name}` }
+                                };
                             });
 
                             if (liveWs && liveWs.readyState === WebSocket.OPEN) {
-                                liveWs.send(JSON.stringify({ toolResponse: { functionResponses: responses } }));
+                                liveWs.send(JSON.stringify({ toolResponse: { functionResponses } }));
                             }
                         }
-                    } catch (err) {
-                        console.error("Live message parse error:", err);
+
+                        // Handle server audio, barge-in interruption, and live transcripts
+                        const sc = msg.serverContent;
+                        if (sc) {
+                            if (sc.interrupted) {
+                                stopAllPlaybackAudio();
+                                finalizeTranscriptTurn();
+                            }
+
+                            if (sc.inputTranscription && sc.inputTranscription.text) {
+                                appendTranscriptMessage("user", sc.inputTranscription.text, true);
+                            }
+
+                            if (sc.outputTranscription && sc.outputTranscription.text) {
+                                appendTranscriptMessage("ai", sc.outputTranscription.text, true);
+                            }
+
+                            if (sc.modelTurn && Array.isArray(sc.modelTurn.parts)) {
+                                sc.modelTurn.parts.forEach((part) => {
+                                    if (
+                                        part.inlineData &&
+                                        part.inlineData.data &&
+                                        part.inlineData.mimeType &&
+                                        part.inlineData.mimeType.startsWith("audio/pcm")
+                                    ) {
+                                        $("live-call-status").textContent = "AI speaking...";
+                                        playPcm24kChunk(part.inlineData.data);
+                                    }
+                                });
+                            }
+
+                            if (sc.turnComplete) {
+                                finalizeTranscriptTurn();
+                                if (isLiveCallActive) {
+                                    $("live-call-status").textContent = isLiveMicMuted
+                                        ? "Microphone muted"
+                                        : "Listening — speak anytime";
+                                }
+                            }
+                        }
+                    } catch (parseErr) {
+                        console.error("Live Voice message error:", parseErr);
                     }
                 };
 
                 liveWs.onerror = () => {
+                    finalizeTranscriptTurn();
                     showToast("Live Voice connection error", true);
                     stopGeminiLiveCall();
                 };
 
                 liveWs.onclose = () => {
+                    finalizeTranscriptTurn();
                     if (isLiveCallActive) stopGeminiLiveCall();
                 };
             } catch (err) {
                 console.error("Failed to start Live Voice:", err);
+                finalizeTranscriptTurn();
                 showToast(err.message || "Could not start Live Voice", true);
                 stopGeminiLiveCall();
             }
         }
 
-        function startMicAudioStreaming() {
+        function startMicCapture() {
             if (!micMediaStream) return;
-            micAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+            micAudioCtx = new (window.AudioContext || window.webkitAudioContext)({
+                sampleRate: 16000
+            });
             const source = micAudioCtx.createMediaStreamSource(micMediaStream);
             micProcessorNode = micAudioCtx.createScriptProcessor(4096, 1, 1);
 
             micProcessorNode.onaudioprocess = (e) => {
-                if (!isLiveCallActive || isLiveMicMuted || !liveWs || liveWs.readyState !== WebSocket.OPEN) return;
+                if (!isLiveCallActive || isLiveMicMuted || !liveWs || liveWs.readyState !== WebSocket.OPEN) {
+                    return;
+                }
                 const inputData = e.inputBuffer.getChannelData(0);
                 const base64Audio = float32ToBase64Pcm16(inputData);
                 liveWs.send(
@@ -2484,20 +2609,31 @@ Return ONLY valid JSON with this exact shape:
             micProcessorNode.connect(micAudioCtx.destination);
         }
 
+        function toggleLiveMicMute() {
+            isLiveMicMuted = !isLiveMicMuted;
+            $("live-call-mute-icon").className = isLiveMicMuted
+                ? "fa-solid fa-microphone-slash text-xs text-red-400"
+                : "fa-solid fa-microphone text-xs";
+            $("live-call-status").textContent = isLiveMicMuted
+                ? "Microphone muted"
+                : "Listening — speak anytime";
+        }
+
         function stopGeminiLiveCall() {
             isLiveCallActive = false;
+            finalizeTranscriptTurn();
             stopAllPlaybackAudio();
 
             if (micProcessorNode) {
                 try {
                     micProcessorNode.disconnect();
-                } catch (_) { }
+                } catch (_) {}
                 micProcessorNode = null;
             }
             if (micAudioCtx) {
                 try {
                     micAudioCtx.close();
-                } catch (_) { }
+                } catch (_) {}
                 micAudioCtx = null;
             }
             if (micMediaStream) {
@@ -2507,131 +2643,57 @@ Return ONLY valid JSON with this exact shape:
             if (liveWs) {
                 try {
                     liveWs.close();
-                } catch (_) { }
+                } catch (_) {}
                 liveWs = null;
             }
 
             $("live-call-panel").classList.add("hidden");
         }
 
-        // Mobile Horizontal Swipe Navigation Strictly on Calendar Grid
-        function setupSwipeNavigation() {
-            const gridEl = $("calendar-days-grid");
-            let touchStartX = 0;
-            let touchStartY = 0;
-            let isSwiping = false;
-
-            gridEl.addEventListener(
-                "touchstart",
-                (e) => {
-                    if (e.touches.length !== 1) return;
-                    touchStartX = e.touches[0].clientX;
-                    touchStartY = e.touches[0].clientY;
-                    isSwiping = true;
-                    gridEl.style.transition = "none";
-                },
-                { passive: true }
-            );
-
-            gridEl.addEventListener(
-                "touchmove",
-                (e) => {
-                    if (!isSwiping || e.touches.length !== 1) return;
-                    const dx = e.touches[0].clientX - touchStartX;
-                    const dy = e.touches[0].clientY - touchStartY;
-                    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
-                        const damped = Math.max(-45, Math.min(45, dx * 0.28));
-                        gridEl.style.transform = `translateX(${damped}px)`;
-                    }
-                },
-                { passive: true }
-            );
-
-            gridEl.addEventListener(
-                "touchend",
-                (e) => {
-                    if (!isSwiping) return;
-                    isSwiping = false;
-                    gridEl.style.transition = "transform 0.18s ease-out";
-                    gridEl.style.transform = "translateX(0px)";
-
-                    const endX = e.changedTouches[0].clientX;
-                    const endY = e.changedTouches[0].clientY;
-                    const dx = endX - touchStartX;
-                    const dy = endY - touchStartY;
-
-                    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.2) {
-                        if (dx < 0) {
-                            goToNextMonth();
-                        } else {
-                            goToPrevMonth();
-                        }
-                    }
-                },
-                { passive: true }
-            );
-        }
-
-        function goToPrevMonth() {
-            if (activeMonthIndex === 0) {
-                if (activeYear > MIN_YEAR) {
-                    activeYear--;
-                    activeMonthIndex = 11;
-                }
-            } else {
-                activeMonthIndex--;
-            }
-            renderCalendar();
-        }
-
-        function goToNextMonth() {
-            if (activeMonthIndex === 11) {
-                if (activeYear < MAX_YEAR) {
-                    activeYear++;
-                    activeMonthIndex = 0;
-                }
-            } else {
-                activeMonthIndex++;
-            }
-            renderCalendar();
-        }
-
-        function goToToday() {
-            const now = new Date();
-            activeYear = now.getFullYear();
-            activeMonthIndex = now.getMonth();
-            selectedDateKey = formatDateKey(now);
-            renderCalendar();
-        }
-
-        // Event Listeners Initialization
+        // =========================================================================
+        // APPLICATION INITIALIZATION & EVENT LISTENERS
+        // =========================================================================
         function initApp() {
-            events = loadLocalEvents();
             const now = new Date();
             activeYear = now.getFullYear();
             activeMonthIndex = now.getMonth();
             selectedDateKey = formatDateKey(now);
+            events = loadLocalEvents();
 
-            // Unlock / Lock Controls
+            // Lock screen events
             $("unlock-form").addEventListener("submit", handleUnlockSubmit);
-            $("lock-planner-btn").addEventListener("click", lockPlannerUI);
             $("toggle-password-visibility").addEventListener("click", () => {
-                const input = $("unlock-password-input");
+                const pwdInput = $("unlock-password-input");
                 const icon = $("toggle-password-icon");
-                const isHidden = input.type === "password";
-                input.type = isHidden ? "text" : "password";
-                icon.className = isHidden
-                    ? "fa-regular fa-eye-slash text-sm"
-                    : "fa-regular fa-eye text-sm";
+                const isHidden = pwdInput.type === "password";
+                pwdInput.type = isHidden ? "text" : "password";
+                icon.className = isHidden ? "fa-regular fa-eye-slash text-sm" : "fa-regular fa-eye text-sm";
             });
-            // Calendar Navigation & Month/Year Popover
+            $("lock-planner-btn").addEventListener("click", lockPlannerUI);
+
+            // Cloud sync manual trigger
+            $("cloud-sync-pill").addEventListener("click", () => {
+                if (cloudReady) {
+                    pushEventsToCloud();
+                    showToast("Synced with cloud");
+                } else if (isFirebaseConfigured()) {
+                    startCloudListener();
+                } else {
+                    showToast("Using local browser storage");
+                }
+            });
+
+            // Month & Year Picker Popover
             $("month-year-picker-trigger").addEventListener("click", (e) => {
                 e.stopPropagation();
                 toggleMonthYearPopover();
             });
-            $("picker-jump-today-btn").addEventListener("click", (e) => {
-                e.stopPropagation();
-                goToToday();
+            $("picker-jump-today-btn").addEventListener("click", () => {
+                const today = new Date();
+                activeYear = today.getFullYear();
+                activeMonthIndex = today.getMonth();
+                selectedDateKey = formatDateKey(today);
+                renderCalendar();
                 toggleMonthYearPopover(false);
             });
             document.addEventListener("click", (e) => {
@@ -2643,77 +2705,116 @@ Return ONLY valid JSON with this exact shape:
                     toggleMonthYearPopover(false);
                 }
             });
-            $("prev-month-btn").addEventListener("click", goToPrevMonth);
-            $("next-month-btn").addEventListener("click", goToNextMonth);
-            $("today-btn").addEventListener("click", goToToday);
 
-            // Event Modal Controls
+            // Calendar Navigation
+            $("prev-month-btn").addEventListener("click", () => {
+                activeMonthIndex--;
+                if (activeMonthIndex < 0) {
+                    activeMonthIndex = 11;
+                    activeYear--;
+                }
+                renderCalendar();
+            });
+            $("next-month-btn").addEventListener("click", () => {
+                activeMonthIndex++;
+                if (activeMonthIndex > 11) {
+                    activeMonthIndex = 0;
+                    activeYear++;
+                }
+                renderCalendar();
+            });
+            $("today-btn").addEventListener("click", () => {
+                const today = new Date();
+                activeYear = today.getFullYear();
+                activeMonthIndex = today.getMonth();
+                selectedDateKey = formatDateKey(today);
+                renderCalendar();
+            });
+
+            // Mobile horizontal swipe between months
+            let touchStartX = 0;
+            let touchStartY = 0;
+            const touchArea = $("calendar-touch-area");
+            touchArea.addEventListener(
+                "touchstart",
+                (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                    touchStartY = e.changedTouches[0].screenY;
+                },
+                { passive: true }
+            );
+            touchArea.addEventListener(
+                "touchend",
+                (e) => {
+                    const dx = e.changedTouches[0].screenX - touchStartX;
+                    const dy = e.changedTouches[0].screenY - touchStartY;
+                    if (Math.abs(dx) > 65 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+                        if (dx < 0) {
+                            $("next-month-btn").click();
+                        } else {
+                            $("prev-month-btn").click();
+                        }
+                    }
+                },
+                { passive: true }
+            );
+
+            // Add / Edit Event Modal
             $("add-event-btn").addEventListener("click", () => openAddEventModal());
             $("selected-day-add-btn").addEventListener("click", () => openAddEventModal(selectedDateKey));
             $("close-modal-btn").addEventListener("click", closeEventModal);
             $("cancel-modal-btn").addEventListener("click", closeEventModal);
-            $("event-modal").addEventListener("click", (e) => {
-                if (e.target === $("event-modal")) closeEventModal();
-            });
             $("event-form").addEventListener("submit", handleEventFormSubmit);
             $("delete-event-btn").addEventListener("click", handleDeleteClick);
+            $("event-start-date").addEventListener("change", (e) => {
+                if ($("event-end-date").value < e.target.value) {
+                    $("event-end-date").value = e.target.value;
+                }
+            });
 
-            // Recurring Delete Prompt Controls
+            // Recurring Delete Modal
             $("delete-single-btn").addEventListener("click", () => executeRecurringDelete("single"));
             $("delete-following-btn").addEventListener("click", () => executeRecurringDelete("following"));
             $("delete-all-btn").addEventListener("click", () => executeRecurringDelete("all"));
             $("cancel-delete-modal-btn").addEventListener("click", () => {
-                $("delete-recurring-modal").classList.add("hidden");
                 pendingDeleteEventId = null;
+                $("delete-recurring-modal").classList.add("hidden");
             });
 
-            // Briefing Controls
-            $("ai-briefing-refresh-btn").addEventListener("click", () => generateAiScheduleBriefing(true));
-            $("ai-briefing-toggle-btn").addEventListener("click", () => {
-                isBriefingCollapsed = !isBriefingCollapsed;
-                $("ai-briefing-body").classList.toggle("hidden", isBriefingCollapsed);
-                $("ai-briefing-toggle-icon").className = isBriefingCollapsed
-                    ? "fa-solid fa-chevron-down text-[10px]"
-                    : "fa-solid fa-chevron-up text-[10px]";
-            });
-
-            // Unified Settings Modal Controls
+            // Settings Modal
             $("settings-btn").addEventListener("click", openSettingsModal);
             $("close-settings-modal-btn").addEventListener("click", closeSettingsModal);
             $("cancel-settings-btn").addEventListener("click", closeSettingsModal);
             $("preview-ai-voice-btn").addEventListener("click", previewSelectedAiVoice);
-            $("save-backup-btn").addEventListener("click", exportBackupJson);
-            $("restore-file-input").addEventListener("change", handleRestoreFile);
-            $("settings-modal").addEventListener("click", (e) => {
-                if (e.target === $("settings-modal")) closeSettingsModal();
+            $("clear-ai-key-btn").addEventListener("click", () => {
+                $("ai-api-key-input").value = "";
+                geminiApiKey = "";
+                localStorage.removeItem(AI_KEY_STORAGE_KEY);
+                pushEventsToCloud();
+                showToast("Gemini API key removed");
             });
             $("settings-form").addEventListener("submit", (e) => {
                 e.preventDefault();
                 geminiApiKey = $("ai-api-key-input").value.trim();
                 const chosenVoice = $("ai-voice-select").value;
-                geminiVoiceName = VALID_VOICES.includes(chosenVoice) ? chosenVoice : "Aoede";
-                localStorage.setItem(AI_KEY_STORAGE_KEY, geminiApiKey);
+                if (VALID_VOICES.includes(chosenVoice)) {
+                    geminiVoiceName = chosenVoice;
+                }
+                if (geminiApiKey) {
+                    localStorage.setItem(AI_KEY_STORAGE_KEY, geminiApiKey);
+                } else {
+                    localStorage.removeItem(AI_KEY_STORAGE_KEY);
+                }
                 localStorage.setItem(AI_VOICE_STORAGE_KEY, geminiVoiceName);
                 pushEventsToCloud();
                 closeSettingsModal();
-                generateAiScheduleBriefing(true);
-                showToast(`Settings saved (${geminiVoiceName})`);
+                showToast("Settings saved");
             });
-            $("clear-ai-key-btn").addEventListener("click", () => {
-                geminiApiKey = "";
-                $("ai-api-key-input").value = "";
-                localStorage.removeItem(AI_KEY_STORAGE_KEY);
-                pushEventsToCloud();
-                generateAiScheduleBriefing(true);
-                showToast("AI API key removed");
-            });
+            $("save-backup-btn").addEventListener("click", exportBackupJson);
+            $("restore-file-input").addEventListener("change", handleRestoreFile);
 
             // AI Command & Live Voice Controls
             $("ai-command-form").addEventListener("submit", handleAiCommandSubmit);
-            $("ai-transcript-clear-btn").addEventListener("click", () => {
-                $("ai-transcript-list").innerHTML = "";
-                $("ai-transcript-wrapper").classList.add("hidden");
-            });
             $("ai-undo-btn").addEventListener("click", () => {
                 if (!lastEventsSnapshotBeforeAI) return;
                 events = lastEventsSnapshotBeforeAI;
@@ -2721,25 +2822,46 @@ Return ONLY valid JSON with this exact shape:
                 $("ai-undo-btn").classList.add("hidden");
                 $("ai-undo-btn").classList.remove("inline-flex");
                 commitEvents();
-                showToast("AI change undone");
+                showToast("Reverted last AI change");
+            });
+            $("ai-transcript-clear-btn").addEventListener("click", () => {
+                $("ai-transcript-list").innerHTML = "";
+                $("ai-transcript-wrapper").classList.add("hidden");
             });
             $("ai-live-call-btn").addEventListener("click", startGeminiLiveCall);
+            $("live-call-mute-btn").addEventListener("click", toggleLiveMicMute);
             $("live-call-end-btn").addEventListener("click", stopGeminiLiveCall);
-            $("live-call-mute-btn").addEventListener("click", () => {
-                isLiveMicMuted = !isLiveMicMuted;
-                $("live-call-mute-icon").className = isLiveMicMuted
-                    ? "fa-solid fa-microphone-slash text-xs text-rose-200"
-                    : "fa-solid fa-microphone text-xs";
-                $("live-call-status").textContent = isLiveMicMuted ? "Microphone muted" : "Listening...";
-            });
-
             setupSpeechToText();
-            setupSwipeNavigation();
-            renderCalendar();
+
+            // Schedule Briefing Controls
+            $("ai-briefing-refresh-btn").addEventListener("click", () => {
+                const icon = $("ai-briefing-refresh-btn").querySelector("i");
+                if (icon) {
+                    icon.classList.add("fa-spin");
+                    setTimeout(() => icon.classList.remove("fa-spin"), 600);
+                }
+                if (isBriefingCollapsed) {
+                    isBriefingCollapsed = false;
+                    $("ai-briefing-body").classList.remove("hidden");
+                    $("ai-briefing-toggle-icon").className = "fa-solid fa-chevron-up text-[10px]";
+                }
+                if (!cloudReady && isFirebaseConfigured()) {
+                    startCloudListener();
+                } else {
+                    events = loadLocalEvents();
+                }
+                generateAiScheduleBriefing(true);
+            });
+            $("ai-briefing-toggle-btn").addEventListener("click", () => {
+                isBriefingCollapsed = !isBriefingCollapsed;
+                $("ai-briefing-body").classList.toggle("hidden", isBriefingCollapsed);
+                $("ai-briefing-toggle-icon").className = isBriefingCollapsed
+                    ? "fa-solid fa-chevron-down text-[10px]"
+                    : "fa-solid fa-chevron-up text-[10px]";
+            });
         }
 
         initApp();
     </script>
 </body>
-
 </html>
