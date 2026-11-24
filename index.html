@@ -15,19 +15,28 @@
     <!-- Inter Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
     <style>
+        /* Unified base typography & crisp tabular numerals */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+            font-variant-numeric: tabular-nums;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
         /* Custom print styling for Full-Page A4 Landscape Optimization */
         @media print {
             @page {
@@ -185,11 +194,11 @@
                 text-overflow: ellipsis !important;
                 word-break: normal !important;
                 overflow-wrap: break-word !important;
-                line-height: 1.15 !important;
-                max-height: calc(2 * 1.15em + 4px) !important;
-                font-size: 9px !important;
-                font-weight: 600 !important;
-                letter-spacing: -0.015em !important;
+                line-height: 1.2 !important;
+                max-height: calc(2 * 1.2em + 3px) !important;
+                font-size: 10px !important;
+                font-weight: 500 !important;
+                letter-spacing: -0.01em !important;
             }
         }
 
@@ -238,42 +247,42 @@
             <div class="flex flex-wrap sm:flex-nowrap items-center justify-between py-2 sm:py-0 sm:h-16 gap-2 sm:gap-3">
                 <!-- Brand Identity -->
                 <div class="flex items-center gap-2.5 sm:gap-3">
-                    <div class="bg-black text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl flex-shrink-0">
-                        <i class="fa-regular fa-calendar-check text-sm sm:text-lg"></i>
+                    <div class="bg-black text-white w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl flex-shrink-0">
+                        <i class="fa-regular fa-calendar-check text-sm sm:text-base"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-[15px] sm:text-base text-slate-900 tracking-tight leading-tight">UGG Knightsbridge</h1>
+                        <h1 class="font-semibold text-sm sm:text-[15px] text-slate-900 tracking-tight leading-none">UGG Knightsbridge</h1>
                     </div>
                 </div>
 
                 <!-- Right Global Controls -->
                 <div class="flex items-center justify-end gap-1.5 sm:gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                     <!-- Cloud Sync Pill -->
-                    <button id="cloud-sync-pill" type="button" title="Click to sync now" class="mr-auto sm:mr-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200/80 hover:bg-slate-200/60 transition cursor-pointer">
+                    <button id="cloud-sync-pill" type="button" title="Click to sync now" class="mr-auto sm:mr-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200/80 hover:bg-slate-200/60 transition cursor-pointer">
                         <span id="cloud-sync-dot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                         <span id="cloud-sync-text">Local</span>
                     </button>
 
                     <!-- Primary Add Event CTA -->
-                    <button id="add-event-btn" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]">
-                        <i class="fa-solid fa-plus text-xs"></i>
+                    <button id="add-event-btn" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-medium px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition active:scale-95 text-xs sm:text-[13px] leading-none min-h-[34px] sm:min-h-[36px]">
+                        <i class="fa-solid fa-plus text-[11px]"></i>
                         <span>New Event</span>
                     </button>
 
                     <!-- Print / PDF -->
-                    <button onclick="window.print()" class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]" title="Print / Save as PDF">
+                    <button onclick="window.print()" class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-[13px] leading-none min-h-[34px] sm:min-h-[36px]" title="Print / Save as PDF">
                         <i class="fi fi-rr-print text-xs text-slate-500 leading-none"></i>
                         <span class="hidden lg:inline">Print</span>
                     </button>
 
                     <!-- Unified Settings (Voice, API Key & Backup) -->
-                    <button id="settings-btn" type="button" class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]" title="Settings: AI Voice, API Key & Backup">
+                    <button id="settings-btn" type="button" class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-[13px] leading-none min-h-[34px] sm:min-h-[36px]" title="Settings: AI Voice, API Key & Backup">
                         <i class="fi fi-rr-settings text-xs text-slate-500 leading-none"></i>
                         <span class="hidden lg:inline">Settings</span>
                     </button>
 
                     <!-- Lock Button -->
-                    <button id="lock-planner-btn" type="button" class="inline-flex items-center justify-center bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-sm min-h-[34px] sm:min-h-[38px]" title="Lock Planner">
+                    <button id="lock-planner-btn" type="button" class="inline-flex items-center justify-center bg-white hover:bg-slate-50 text-slate-700 font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 transition active:scale-95 text-xs sm:text-[13px] leading-none min-h-[34px] sm:min-h-[36px]" title="Lock Planner">
                         <i class="fi fi-rr-lock text-xs text-slate-500 leading-none"></i>
                     </button>
                 </div>
@@ -298,10 +307,10 @@
                                 class="group inline-flex items-center justify-center gap-2 px-3 py-1.5 sm:-ml-3 rounded-xl hover:bg-slate-100 active:scale-[0.99] transition cursor-pointer"
                                 title="Click to choose month and scroll years"
                             >
-                                <h2 id="current-month-display" class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">
+                                <h2 id="current-month-display" class="text-lg sm:text-xl font-semibold text-slate-900 tracking-tight leading-none">
                                     November 2026
                                 </h2>
-                                <i id="month-year-chevron" class="no-print fa-solid fa-chevron-down text-xs text-slate-400 group-hover:text-slate-800 transition-transform duration-200"></i>
+                                <i id="month-year-chevron" class="no-print fa-solid fa-chevron-down text-[11px] text-slate-400 group-hover:text-slate-800 transition-transform duration-200"></i>
                             </button>
 
                             <!-- Native-Style Month & Scrollable Year Picker Popover -->
@@ -310,11 +319,11 @@
                                 class="hidden no-print absolute left-1/2 sm:left-0 -translate-x-1/2 sm:translate-x-0 top-full mt-2 w-[300px] sm:w-[330px] bg-white rounded-2xl shadow-xl border border-slate-200/95 p-3.5 z-40 text-left"
                             >
                                 <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100">
-                                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Select Month & Year</span>
+                                    <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Select Month & Year</span>
                                     <button
                                         type="button"
                                         id="picker-jump-today-btn"
-                                        class="text-[11px] font-semibold text-slate-700 hover:text-slate-950 bg-slate-100 hover:bg-slate-200/80 px-2.5 py-1 rounded-lg transition"
+                                        class="text-xs font-medium text-slate-700 hover:text-slate-950 bg-slate-100 hover:bg-slate-200/80 px-2.5 py-1 rounded-lg transition"
                                     >
                                         Current
                                     </button>
@@ -339,19 +348,19 @@
 
                         <div class="no-print flex items-center justify-center gap-1.5">
                             <button id="prev-month-btn" class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition" title="Previous Month">
-                                <i class="fa-solid fa-chevron-left text-xs"></i>
+                                <i class="fa-solid fa-chevron-left text-[11px]"></i>
                             </button>
-                            <button id="today-btn" class="px-3 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold transition">
+                            <button id="today-btn" class="px-3 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-800 text-xs font-medium leading-none transition">
                                 Today
                             </button>
                             <button id="next-month-btn" class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center justify-center transition" title="Next Month">
-                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                                <i class="fa-solid fa-chevron-right text-[11px]"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Days of Week Header -->
-                    <div class="week-header-row grid grid-cols-[24px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] border-b border-slate-200/90 bg-slate-50/50 text-center text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 py-2.5">
+                    <div class="week-header-row grid grid-cols-[26px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] border-b border-slate-200/90 bg-slate-50/60 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-500 py-2">
                         <div class="text-slate-400 border-r border-slate-200/80 flex items-center justify-center">Wk</div>
                         <div><span class="hidden sm:inline">Mon</span><span class="sm:hidden">M</span></div>
                         <div><span class="hidden sm:inline">Tue</span><span class="sm:hidden">T</span></div>
@@ -363,7 +372,7 @@
                     </div>
 
                     <!-- Calendar Days Grid -->
-                    <div id="calendar-days-grid" class="calendar-grid grid grid-cols-[24px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] flex-1 touch-pan-y will-change-transform">
+                    <div id="calendar-days-grid" class="calendar-grid grid grid-cols-[26px_repeat(7,minmax(0,1fr))] sm:grid-cols-[44px_repeat(7,minmax(0,1fr))] flex-1 touch-pan-y will-change-transform">
                         <!-- Week number + Day cells injected dynamically -->
                     </div>
                 </div>
@@ -379,12 +388,12 @@
                             <span class="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center text-xs">
                                 <i class="fi fi-sr-sparkles leading-none"></i>
                             </span>
-                            <h3 class="text-xs font-bold text-slate-900">AI Schedule Assistant</h3>
+                            <h3 class="text-[13px] font-semibold text-slate-900 tracking-tight">AI Schedule Assistant</h3>
                         </div>
                         <button
                             type="button"
                             id="ai-undo-btn"
-                            class="hidden items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition"
+                            class="hidden items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition"
                             title="Undo last AI change"
                         >
                             <i class="fa-solid fa-rotate-left text-[10px]"></i>
@@ -397,8 +406,8 @@
                             <input
                                 type="text"
                                 id="ai-command-input"
-                                placeholder="Type..."
-                                class="flex-1 min-w-0 bg-transparent text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none py-1"
+                                placeholder="Ask or add an event..."
+                                class="flex-1 min-w-0 bg-transparent text-[13px] text-slate-900 placeholder-slate-400 focus:outline-none py-1"
                             >
                             <button
                                 type="button"
@@ -411,7 +420,7 @@
                             <button
                                 type="button"
                                 id="ai-live-call-btn"
-                                class="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200/80 active:scale-95 text-slate-800 border border-slate-200/90 inline-flex items-center gap-1.5 text-[11px] font-semibold transition flex-shrink-0"
+                                class="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200/80 active:scale-95 text-slate-800 border border-slate-200/90 inline-flex items-center gap-1.5 text-xs font-medium transition flex-shrink-0"
                                 title="Start real-time two-way AI voice conversation"
                             >
                                 <svg class="w-3.5 h-3.5 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -426,7 +435,7 @@
                             <button
                                 type="submit"
                                 id="ai-submit-btn"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 active:scale-95 text-white transition flex-shrink-0"
+                                class="inline-flex items-center gap-1.5 px-3 h-8 rounded-lg text-xs font-medium bg-slate-900 hover:bg-slate-800 active:scale-95 text-white transition flex-shrink-0"
                             >
                                 <span id="ai-submit-label">Run</span>
                                 <i id="ai-submit-icon" class="fa-solid fa-arrow-right text-[10px]"></i>
@@ -445,9 +454,9 @@
                                     <div class="min-w-0">
                                         <div class="flex items-center gap-1.5">
                                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                                            <p class="text-xs font-bold tracking-tight">Gemini Live Voice</p>
+                                            <p class="text-[13px] font-semibold tracking-tight">Gemini Live Voice</p>
                                         </div>
-                                        <p id="live-call-status" class="text-[11px] text-slate-300 truncate">Connecting...</p>
+                                        <p id="live-call-status" class="text-xs text-slate-300 truncate">Connecting...</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1.5 flex-shrink-0">
@@ -462,31 +471,31 @@
                                     <button
                                         type="button"
                                         id="live-call-end-btn"
-                                        class="px-3 h-8 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-white border border-white/20 text-[11px] font-semibold inline-flex items-center gap-1.5 transition"
-                                        title="Stop AI Voice Session"
+                                        class="h-8 px-2.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold inline-flex items-center gap-1.5 transition"
+                                        title="End Live Voice Call"
                                     >
-                                        <span class="w-2 h-2 rounded-[2px] bg-white inline-block"></span>
-                                        <span>Stop</span>
+                                        <i class="fa-solid fa-phone-slash text-[11px]"></i>
+                                        <span>End</span>
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Live On-Screen Transcript / Conversation Log -->
+                    <!-- Conversation Transcript Log -->
                     <div id="ai-transcript-wrapper" class="hidden mt-3 pt-3 border-t border-slate-100">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Conversation</span>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Conversation</span>
                             <button
                                 type="button"
                                 id="ai-transcript-clear-btn"
-                                class="text-[10px] font-semibold text-slate-400 hover:text-slate-700 transition"
+                                class="text-[11px] font-medium text-slate-400 hover:text-slate-700 transition"
                             >
                                 Clear
                             </button>
                         </div>
-                        <div id="ai-transcript-list" class="space-y-2 max-h-40 overflow-y-auto clean-scroll pr-0.5">
-                            <!-- User & AI messages rendered dynamically -->
+                        <div id="ai-transcript-list" class="clean-scroll max-h-44 overflow-y-auto space-y-2 pr-1">
+                            <!-- Transcript bubbles injected dynamically -->
                         </div>
                     </div>
                 </section>
@@ -499,14 +508,14 @@
                                 <i class="fi fi-rr-calendar-day leading-none"></i>
                             </span>
                             <div class="min-w-0">
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Selected Day</span>
-                                <h3 id="selected-day-title" class="text-xs sm:text-sm font-bold text-slate-900 truncate">Monday, 23 Nov 2026</h3>
+                                <span class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 leading-tight">Selected Day</span>
+                                <h3 id="selected-day-title" class="text-[13px] font-semibold text-slate-900 tracking-tight truncate">Monday, 23 Nov 2026</h3>
                             </div>
                         </div>
                         <button
                             type="button"
                             id="selected-day-add-btn"
-                            class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition flex-shrink-0"
+                            class="inline-flex items-center gap-1 px-2.5 h-7 rounded-lg text-xs font-medium bg-slate-900 hover:bg-slate-800 text-white transition flex-shrink-0"
                         >
                             <i class="fa-solid fa-plus text-[10px]"></i>
                             <span>Add</span>
@@ -518,14 +527,14 @@
                     </div>
                 </section>
 
-                <!-- 3. Schedule Briefing Card -->
+                <!-- 3. Compact Bulleted Schedule Briefing Card (Collapsed on Start) -->
                 <section class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center text-xs">
                                 <i class="fi fi-rr-list-check leading-none"></i>
                             </span>
-                            <h3 class="text-xs font-bold text-slate-900">Schedule Briefing</h3>
+                            <h3 class="text-[13px] font-semibold text-slate-900 tracking-tight">Schedule Briefing</h3>
                         </div>
                         <div class="flex items-center gap-1">
                             <button
@@ -542,23 +551,41 @@
                                 class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition"
                                 title="Collapse / Expand Briefing"
                             >
-                                <i id="ai-briefing-toggle-icon" class="fa-solid fa-chevron-up text-[10px]"></i>
+                                <i id="ai-briefing-toggle-icon" class="fa-solid fa-chevron-down text-[10px]"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div id="ai-briefing-body" class="mt-3 space-y-2">
-                        <div class="p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80">
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Today</span>
-                            <p id="ai-briefing-today" class="text-xs text-slate-800 leading-relaxed">Loading...</p>
+                    <div id="ai-briefing-body" class="hidden mt-3 pt-3 border-t border-slate-100 space-y-2.5">
+                        <!-- Today -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Today</span>
+                                <span id="briefing-today-date" class="text-[11px] font-normal text-slate-400"></span>
+                            </div>
+                            <div id="briefing-today-list" class="space-y-1">
+                                <p class="text-xs text-slate-400">Nothing scheduled today.</p>
+                            </div>
                         </div>
-                        <div class="p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80">
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">This Week</span>
-                            <p id="ai-briefing-this-week" class="text-xs text-slate-800 leading-relaxed">Loading...</p>
+
+                        <!-- Rest of This Week -->
+                        <div class="pt-2 border-t border-slate-100">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Rest of This Week</span>
+                            </div>
+                            <div id="briefing-this-week-list" class="space-y-1">
+                                <p class="text-xs text-slate-400">Clear for the rest of the week.</p>
+                            </div>
                         </div>
-                        <div class="p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80">
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Next Week</span>
-                            <p id="ai-briefing-next-week" class="text-xs text-slate-800 leading-relaxed">Loading...</p>
+
+                        <!-- Next Week -->
+                        <div class="pt-2 border-t border-slate-100">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Next Week</span>
+                            </div>
+                            <div id="briefing-next-week-list" class="space-y-1">
+                                <p class="text-xs text-slate-400">Nothing scheduled next week.</p>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -646,7 +673,7 @@
                     </div>
                 </div>
 
-                    <!-- Modal Actions -->
+                <!-- Modal Actions -->
                 <div class="flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-slate-100">
                     <button type="button" id="delete-event-btn" class="hidden text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl hover:bg-red-50 transition">
                         <i class="fa-regular fa-trash-can mr-1"></i> Delete
@@ -870,7 +897,7 @@ const firebaseConfig = {
         let events = [];
         let dailyOrders = {};
         let isMonthYearPopoverOpen = false;
-        let isBriefingCollapsed = false;
+        let isBriefingCollapsed = true;
         let pendingDeleteEventId = null;
         let lastEventsSnapshotBeforeAI = null;
         let activeStreamingBubble = null;
@@ -947,506 +974,7 @@ const firebaseConfig = {
         }
 
         // =========================================================================
-        // STORAGE & FIREBASE SYNC
-        // =========================================================================
-        function loadLocalEvents() {
-            try {
-                const rawOrders = localStorage.getItem(DAILY_ORDER_STORAGE_KEY);
-                dailyOrders = rawOrders ? JSON.parse(rawOrders) : {};
-            } catch (_) {
-                dailyOrders = {};
-            }
-
-            const parseEventArray = (raw) => {
-                if (!raw) return null;
-                try {
-                    const parsed = JSON.parse(raw);
-                    const list = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.events) ? parsed.events : null);
-                    if (!list) return null;
-                    return list.map((ev) => ({
-                        ...ev,
-                        color: normalizeColorKey(ev.color)
-                    }));
-                } catch (_) {
-                    return null;
-                }
-            };
-
-            const primary = parseEventArray(localStorage.getItem(STORAGE_KEY));
-            if (primary && primary.length > 0) {
-                return primary;
-            }
-
-            // Migrate events from any previous storage key if present
-            for (const legacyKey of LEGACY_STORAGE_KEYS) {
-                const recovered = parseEventArray(localStorage.getItem(legacyKey));
-                if (recovered && recovered.length > 0) {
-                    try {
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(recovered));
-                    } catch (_) {}
-                    return recovered;
-                }
-            }
-
-            return primary || [];
-        }
-
-        function saveLocalEvents() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-                localStorage.setItem(DAILY_ORDER_STORAGE_KEY, JSON.stringify(dailyOrders));
-            } catch (err) {
-                console.warn("Local storage save failed:", err);
-            }
-        }
-
-        function isFirebaseConfigured() {
-            return (
-                firebaseConfig &&
-                firebaseConfig.apiKey &&
-                !firebaseConfig.apiKey.includes("YOUR_API_KEY") &&
-                firebaseConfig.projectId &&
-                !firebaseConfig.projectId.includes("YOUR_PROJECT_ID")
-            );
-        }
-
-        function updateSyncBadge(state, label) {
-            const dot = $("cloud-sync-dot");
-            const text = $("cloud-sync-text");
-            if (!dot || !text) return;
-            text.textContent = label;
-            if (state === "synced") {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
-            } else if (state === "syncing") {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping";
-            } else if (state === "error") {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-rose-500";
-            } else {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-slate-400";
-            }
-        }
-
-        function ensureFirebaseInit() {
-            if (!isFirebaseConfigured()) return false;
-            if (!firebaseApp) {
-                firebaseApp = initializeApp(firebaseConfig);
-                firebaseAuth = getAuth(firebaseApp);
-                firestoreDb = getFirestore(firebaseApp);
-            }
-            return true;
-        }
-
-        async function pushEventsToCloud() {
-            saveLocalEvents();
-            if (!cloudReady || !firestoreDb) return;
-            try {
-                updateSyncBadge("syncing", "Syncing...");
-                await setDoc(
-                    doc(firestoreDb, "planners", "knightsbridge_main"),
-                    {
-                        events,
-                        dailyOrders,
-                        geminiApiKey: geminiApiKey || "",
-                        geminiVoiceName: geminiVoiceName || "Aoede",
-                        updatedAt: Date.now()
-                    },
-                    { merge: true }
-                );
-                updateSyncBadge("synced", "Cloud Synced");
-            } catch (err) {
-                console.warn("Cloud push error:", err);
-                updateSyncBadge("error", "Sync Error");
-            }
-        }
-
-        function startCloudListener() {
-            if (!ensureFirebaseInit() || !firestoreDb) {
-                updateSyncBadge("local", "Local");
-                return;
-            }
-            if (unsubscribeCloud) unsubscribeCloud();
-            updateSyncBadge("syncing", "Connecting...");
-            unsubscribeCloud = onSnapshot(
-                doc(firestoreDb, "planners", "knightsbridge_main"),
-                (snap) => {
-                    cloudReady = true;
-                    if (snap.exists()) {
-                        const data = snap.data();
-                        if (Array.isArray(data.events) && data.events.length > 0) {
-                            events = data.events.map((ev) => ({
-                                ...ev,
-                                color: normalizeColorKey(ev.color)
-                            }));
-                        } else if (Array.isArray(data.events) && events.length > 0) {
-                            // Preserve locally recovered events and push them up to cloud
-                            pushEventsToCloud();
-                        }
-                        if (data.dailyOrders && typeof data.dailyOrders === "object") {
-                            dailyOrders = data.dailyOrders;
-                        }
-                        if (typeof data.geminiApiKey === "string" && data.geminiApiKey) {
-                            geminiApiKey = data.geminiApiKey;
-                            localStorage.setItem(AI_KEY_STORAGE_KEY, geminiApiKey);
-                        }
-                        if (typeof data.geminiVoiceName === "string" && VALID_VOICES.includes(data.geminiVoiceName)) {
-                            geminiVoiceName = data.geminiVoiceName;
-                            localStorage.setItem(AI_VOICE_STORAGE_KEY, geminiVoiceName);
-                        }
-                        saveLocalEvents();
-                        renderCalendar();
-                    } else {
-                        pushEventsToCloud();
-                    }
-                    updateSyncBadge("synced", "Cloud Synced");
-                },
-                (err) => {
-                    console.warn("Firestore snapshot error:", err);
-                    cloudReady = false;
-                    updateSyncBadge("local", "Local");
-                }
-            );
-        }
-
-        function commitEvents() {
-            saveLocalEvents();
-            renderCalendar();
-            if (cloudReady) {
-                pushEventsToCloud();
-            }
-        }
-
-        // =========================================================================
-        // LOCK SCREEN AUTHENTICATION
-        // =========================================================================
-        function unlockPlannerUI() {
-            $("lock-screen").classList.add("hidden");
-            $("app-header").classList.remove("hidden");
-            $("app-main").classList.remove("hidden");
-            renderColorSwatches();
-            renderCalendar();
-            if (isFirebaseConfigured()) {
-                startCloudListener();
-            } else {
-                updateSyncBadge("local", "Local");
-            }
-        }
-
-        async function lockPlannerUI() {
-            stopGeminiLiveCall();
-            if (unsubscribeCloud) {
-                unsubscribeCloud();
-                unsubscribeCloud = null;
-            }
-            cloudReady = false;
-            if (firebaseAuth) {
-                try {
-                    await signOut(firebaseAuth);
-                } catch (_) {}
-            }
-            $("unlock-password-input").value = "";
-            $("unlock-error-msg").classList.add("hidden");
-            $("app-header").classList.add("hidden");
-            $("app-main").classList.add("hidden");
-            $("lock-screen").classList.remove("hidden");
-        }
-
-        async function handleUnlockSubmit(e) {
-            e.preventDefault();
-            const password = $("unlock-password-input").value;
-            const errMsg = $("unlock-error-msg");
-            const btn = $("unlock-submit-btn");
-            errMsg.classList.add("hidden");
-
-            if (!password) return;
-
-            if (isFirebaseConfigured()) {
-                try {
-                    btn.disabled = true;
-                    btn.textContent = "Unlocking...";
-                    ensureFirebaseInit();
-                    await setPersistence(firebaseAuth, inMemoryPersistence);
-                    await signInWithEmailAndPassword(firebaseAuth, PLANNER_AUTH_EMAIL, password);
-                    unlockPlannerUI();
-                } catch (err) {
-                    errMsg.textContent = "Incorrect password. Please try again.";
-                    errMsg.classList.remove("hidden");
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = "Unlock Planner";
-                }
-            } else {
-                unlockPlannerUI();
-            }
-        }
-
-        // =========================================================================
-        // FISCAL WEEK NUMBERING (WEEK 1 = FIRST WEEK OF APRIL) & CALENDAR RENDERING
-        // =========================================================================
-        function getStartOfWeekMonday(dateObj) {
-            const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
-            const day = d.getDay();
-            const diff = day === 0 ? -6 : 1 - day;
-            d.setDate(d.getDate() + diff);
-            return d;
-        }
-
-        function getRetailFiscalWeekNumber(mondayDate) {
-            const year = mondayDate.getFullYear();
-            const getFirstAprilWeekStart = (yr) => {
-                const apr1 = new Date(yr, 3, 1);
-                return getStartOfWeekMonday(apr1);
-            };
-            let fiscalStart = getFirstAprilWeekStart(year);
-            if (mondayDate < fiscalStart) {
-                fiscalStart = getFirstAprilWeekStart(year - 1);
-            }
-            const diffDays = Math.round((mondayDate - fiscalStart) / 86400000);
-            return Math.floor(diffDays / 7) + 1;
-        }
-
-        function getEventsForDate(dateKey) {
-            const matches = events.filter((ev) => {
-                const start = ev.startDate;
-                const end = ev.endDate || ev.startDate;
-                return dateKey >= start && dateKey <= end;
-            });
-
-            const orderArr = dailyOrders[dateKey];
-            if (Array.isArray(orderArr) && orderArr.length > 0) {
-                matches.sort((a, b) => {
-                    const idxA = orderArr.indexOf(a.id);
-                    const idxB = orderArr.indexOf(b.id);
-                    if (idxA === -1 && idxB === -1) return a.startDate.localeCompare(b.startDate);
-                    if (idxA === -1) return 1;
-                    if (idxB === -1) return -1;
-                    return idxA - idxB;
-                });
-            } else {
-                matches.sort((a, b) => a.startDate.localeCompare(b.startDate) || a.title.localeCompare(b.title));
-            }
-            return matches;
-        }
-
-        function toggleMonthYearPopover(forceState) {
-            const popover = $("month-year-popover");
-            const chevron = $("month-year-chevron");
-            isMonthYearPopoverOpen = typeof forceState === "boolean" ? forceState : !isMonthYearPopoverOpen;
-            popover.classList.toggle("hidden", !isMonthYearPopoverOpen);
-            chevron.classList.toggle("rotate-180", isMonthYearPopoverOpen);
-
-            if (isMonthYearPopoverOpen) {
-                renderMonthYearPopover();
-            }
-        }
-
-        function renderMonthYearPopover() {
-            const monthsGrid = $("picker-months-grid");
-            const yearsScroll = $("picker-years-scroll");
-            monthsGrid.innerHTML = "";
-            yearsScroll.innerHTML = "";
-
-            MONTHS_SHORT.forEach((mName, idx) => {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                const isSelected = idx === activeMonthIndex;
-                btn.className = isSelected
-                    ? "py-2 px-1 rounded-xl text-xs font-bold bg-slate-900 text-white shadow-xs transition"
-                    : "py-2 px-1 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100 transition";
-                btn.textContent = mName;
-                btn.addEventListener("click", () => {
-                    activeMonthIndex = idx;
-                    renderCalendar();
-                    toggleMonthYearPopover(false);
-                });
-                monthsGrid.appendChild(btn);
-            });
-
-            let activeYearBtn = null;
-            for (let yr = 1970; yr <= 2100; yr++) {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                const isSelected = yr === activeYear;
-                btn.className = isSelected
-                    ? "w-full py-1.5 px-2.5 rounded-lg text-xs font-bold bg-slate-900 text-white text-center transition"
-                    : "w-full py-1.5 px-2.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 text-center transition";
-                btn.textContent = String(yr);
-                btn.addEventListener("click", () => {
-                    activeYear = yr;
-                    renderCalendar();
-                    renderMonthYearPopover();
-                });
-                yearsScroll.appendChild(btn);
-                if (isSelected) activeYearBtn = btn;
-            }
-
-            if (activeYearBtn) {
-                requestAnimationFrame(() => {
-                    activeYearBtn.scrollIntoView({ block: "center" });
-                });
-            }
-        }
-
-        function renderCalendar() {
-            $("current-month-display").textContent = `${MONTHS[activeMonthIndex]} ${activeYear}`;
-            const grid = $("calendar-days-grid");
-            grid.innerHTML = "";
-
-            const todayKey = formatDateKey(new Date());
-            const firstOfMonth = new Date(activeYear, activeMonthIndex, 1);
-            const startMonday = getStartOfWeekMonday(firstOfMonth);
-            const lastOfMonth = new Date(activeYear, activeMonthIndex + 1, 0);
-
-            const totalDaysNeeded = Math.ceil(((lastOfMonth - startMonday) / 86400000 + 1) / 7) * 7;
-            const numWeeks = Math.max(5, Math.min(6, totalDaysNeeded / 7));
-
-            for (let w = 0; w < numWeeks; w++) {
-                const weekMonday = new Date(startMonday);
-                weekMonday.setDate(startMonday.getDate() + w * 7);
-                const wkNum = getRetailFiscalWeekNumber(weekMonday);
-
-                const wkCell = document.createElement("div");
-                wkCell.className =
-                    "week-num-cell bg-slate-50/70 border-r border-b border-slate-200/80 text-[10px] sm:text-xs font-semibold text-slate-400 flex items-start justify-center pt-2.5 select-none";
-                wkCell.textContent = `W${wkNum}`;
-                grid.appendChild(wkCell);
-
-                for (let d = 0; d < 7; d++) {
-                    const cellDate = new Date(weekMonday);
-                    cellDate.setDate(weekMonday.getDate() + d);
-                    const cellKey = formatDateKey(cellDate);
-                    const isCurrentMonth = cellDate.getMonth() === activeMonthIndex;
-                    const isToday = cellKey === todayKey;
-                    const isSelected = cellKey === selectedDateKey;
-
-                    const cell = document.createElement("div");
-                    cell.className = [
-                        "day-cell min-h-[82px] sm:min-h-[112px] p-1 sm:p-1.5 border-r border-b border-slate-200/80 flex flex-col gap-1 transition cursor-pointer relative",
-                        isCurrentMonth ? "bg-white hover:bg-slate-50/80" : "bg-slate-50/50 text-slate-400 hover:bg-slate-100/60",
-                        isSelected ? "ring-2 ring-inset ring-slate-900/85 bg-slate-50/60" : ""
-                    ].join(" ");
-
-                    cell.addEventListener("click", () => {
-                        selectedDateKey = cellKey;
-                        renderCalendar();
-                    });
-
-                    cell.addEventListener("dblclick", (e) => {
-                        e.stopPropagation();
-                        selectedDateKey = cellKey;
-                        openAddEventModal(cellKey);
-                    });
-
-                    // Fixed-height top date header row so today's black circle never pushes events down
-                    const dateRow = document.createElement("div");
-                    dateRow.className = "h-5 sm:h-6 flex items-center justify-between px-0.5 flex-shrink-0";
-
-                    const dateBadge = document.createElement("span");
-                    dateBadge.textContent = String(cellDate.getDate());
-                    if (isToday) {
-                        dateBadge.className =
-                            "is-today-badge w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-900 text-white text-[11px] sm:text-xs font-bold flex items-center justify-center shadow-xs";
-                    } else {
-                        dateBadge.className = `text-[11px] sm:text-xs font-semibold ${
-                            isCurrentMonth ? "text-slate-700" : "text-slate-400"
-                        }`;
-                    }
-                    dateRow.appendChild(dateBadge);
-                    cell.appendChild(dateRow);
-
-                    // Events container for this specific day
-                    const dayEvents = getEventsForDate(cellKey);
-                    const eventsList = document.createElement("div");
-                    eventsList.className = "flex flex-col gap-1 min-w-0";
-
-                    dayEvents.forEach((ev) => {
-                        const colorCfg = COLOR_PALETTE[normalizeColorKey(ev.color)] || COLOR_PALETTE.blue;
-                        const pill = document.createElement("div");
-                        pill.draggable = true;
-                        pill.dataset.eventId = ev.id;
-                        pill.dataset.dateKey = cellKey;
-                        pill.className = `event-pill mobile-two-line-pill px-1.5 sm:px-2 py-[1px] sm:py-0.5 leading-tight rounded-md text-[10px] sm:text-[11px] font-semibold border sm:truncate cursor-pointer select-none transition ${colorCfg.pill}`;
-                        pill.textContent = ev.title;
-                        pill.title = `${ev.title} (${formatEuropeanDate(ev.startDate)}${
-                            ev.endDate && ev.endDate !== ev.startDate ? " – " + formatEuropeanDate(ev.endDate) : ""
-                        })`;
-
-                        pill.addEventListener("click", (e) => {
-                            e.stopPropagation();
-                            selectedDateKey = cellKey;
-                            openEditEventModal(ev.id);
-                        });
-
-                        // Day-by-day drag & drop reordering
-                        pill.addEventListener("dragstart", (e) => {
-                            e.stopPropagation();
-                            pill.classList.add("dragging-pill");
-                            e.dataTransfer.effectAllowed = "move";
-                            e.dataTransfer.setData("text/plain", JSON.stringify({ eventId: ev.id, dateKey: cellKey }));
-                        });
-
-                        pill.addEventListener("dragend", () => {
-                            pill.classList.remove("dragging-pill");
-                            document
-                                .querySelectorAll(".drop-target-above, .drop-target-below")
-                                .forEach((el) => el.classList.remove("drop-target-above", "drop-target-below"));
-                        });
-
-                        pill.addEventListener("dragover", (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            const rect = pill.getBoundingClientRect();
-                            const isAbove = e.clientY < rect.top + rect.height / 2;
-                            pill.classList.toggle("drop-target-above", isAbove);
-                            pill.classList.toggle("drop-target-below", !isAbove);
-                        });
-
-                        pill.addEventListener("dragleave", () => {
-                            pill.classList.remove("drop-target-above", "drop-target-below");
-                        });
-
-                        pill.addEventListener("drop", (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            pill.classList.remove("drop-target-above", "drop-target-below");
-                            try {
-                                const payload = JSON.parse(e.dataTransfer.getData("text/plain"));
-                                if (payload.dateKey !== cellKey || payload.eventId === ev.id) return;
-                                const rect = pill.getBoundingClientRect();
-                                const insertBefore = e.clientY < rect.top + rect.height / 2;
-                                reorderEventOnSingleDay(cellKey, payload.eventId, ev.id, insertBefore);
-                            } catch (_) {}
-                        });
-
-                        eventsList.appendChild(pill);
-                    });
-
-                    cell.appendChild(eventsList);
-                    grid.appendChild(cell);
-                }
-            }
-
-            renderSelectedDayInspector();
-            generateAiScheduleBriefing(false);
-        }
-
-        function reorderEventOnSingleDay(dateKey, draggedId, targetId, insertBefore) {
-            const currentDayEvents = getEventsForDate(dateKey).map((e) => e.id);
-            const fromIdx = currentDayEvents.indexOf(draggedId);
-            if (fromIdx === -1) return;
-            currentDayEvents.splice(fromIdx, 1);
-            let toIdx = currentDayEvents.indexOf(targetId);
-            if (toIdx === -1) {
-                currentDayEvents.push(draggedId);
-            } else {
-                if (!insertBefore) toIdx += 1;
-                currentDayEvents.splice(toIdx, 0, draggedId);
-            }
-            dailyOrders[dateKey] = currentDayEvents;
-            commitEvents();
-        }
-
-        // =========================================================================
-        // SELECTED DAY INSPECTOR & SCHEDULE BRIEFING
+        // SELECTED DAY INSPECTOR & COMPACT BULLETED SCHEDULE BRIEFING
         // =========================================================================
         function renderSelectedDayInspector() {
             if (!selectedDateKey) selectedDateKey = formatDateKey(new Date());
@@ -1477,10 +1005,10 @@ const firebaseConfig = {
                 const left = document.createElement("div");
                 left.className = "flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer";
                 left.innerHTML = `
-                    <span class="w-3 h-3 rounded-full ${colorCfg.swatch} flex-shrink-0"></span>
+                    <span class="w-2.5 h-2.5 rounded-full ${colorCfg.swatch} flex-shrink-0"></span>
                     <div class="min-w-0">
-                        <p class="text-xs font-semibold text-slate-900 truncate">${ev.title}</p>
-                        <p class="text-[10px] text-slate-500">${formatEuropeanDate(ev.startDate)}${
+                        <p class="text-[13px] font-medium text-slate-900 truncate leading-snug">${ev.title}</p>
+                        <p class="text-[11px] font-normal text-slate-500 mt-0.5">${formatEuropeanDate(ev.startDate)}${
                     ev.endDate && ev.endDate !== ev.startDate ? " – " + formatEuropeanDate(ev.endDate) : ""
                 }</p>
                     </div>
@@ -1524,9 +1052,108 @@ const firebaseConfig = {
             });
         }
 
-        function generateAiScheduleBriefing(showFeedback = false) {
-            const today = new Date();
+        function formatCompactDayRange(startKey, endKey, todayKey, tomorrowKey) {
+            const sObj = parseDateKey(startKey);
+            const eObj = parseDateKey(endKey);
+            const sShort = `${WEEKDAYS_FULL[sObj.getDay()].slice(0, 3)} ${sObj.getDate()} ${MONTHS_SHORT[sObj.getMonth()]}`;
+            const eShort = `${WEEKDAYS_FULL[eObj.getDay()].slice(0, 3)} ${eObj.getDate()} ${MONTHS_SHORT[eObj.getMonth()]}`;
+
+            if (startKey === endKey) {
+                if (startKey === todayKey) return "Today";
+                if (startKey === tomorrowKey) return "Tomorrow";
+                return sShort;
+            }
+            if (startKey <= todayKey && endKey >= todayKey) {
+                return `Until ${eShort}`;
+            }
+            return `${sShort} – ${eShort}`;
+        }
+
+        function summarizeEventsInRange(startD, endD) {
+            const startKey = formatDateKey(startD);
+            const endKey = formatDateKey(endD);
+
+            return events
+                .filter((ev) => {
+                    const evStart = ev.startDate;
+                    const evEnd = ev.endDate || ev.startDate;
+                    return evEnd >= startKey && evStart <= endKey;
+                })
+                .sort((a, b) => a.startDate.localeCompare(b.startDate) || a.title.localeCompare(b.title))
+                .map((ev) => {
+                    const evStart = ev.startDate;
+                    const evEnd = ev.endDate || ev.startDate;
+                    return {
+                        id: ev.id,
+                        title: ev.title,
+                        color: normalizeColorKey(ev.color),
+                        startDate: evStart < startKey ? startKey : evStart,
+                        endDate: evEnd > endKey ? endKey : evEnd,
+                        fullStartDate: evStart,
+                        fullEndDate: evEnd
+                    };
+                });
+        }
+
+        function renderBriefingSection(containerEl, items, emptyText, todayKey, tomorrowKey) {
+            if (!containerEl) return;
+            containerEl.innerHTML = "";
+            if (!items || items.length === 0) {
+                const empty = document.createElement("p");
+                empty.className = "text-xs text-slate-400";
+                empty.textContent = emptyText;
+                containerEl.appendChild(empty);
+                return;
+            }
+
+            items.forEach((item) => {
+                const colorCfg = COLOR_PALETTE[normalizeColorKey(item.color)] || COLOR_PALETTE.blue;
+                const row = document.createElement("button");
+                row.type = "button";
+                row.className =
+                    "w-full flex items-center justify-between gap-2 px-2 py-1 rounded-lg hover:bg-slate-50 text-left transition group";
+
+                const left = document.createElement("div");
+                left.className = "flex items-center gap-2 min-w-0";
+
+                const dot = document.createElement("span");
+                dot.className = `w-2 h-2 rounded-full ${colorCfg.swatch} flex-shrink-0`;
+
+                const title = document.createElement("span");
+                title.className = "text-xs font-medium text-slate-800 truncate group-hover:text-slate-950";
+                title.textContent = item.title;
+
+                left.appendChild(dot);
+                left.appendChild(title);
+
+                const badge = document.createElement("span");
+                badge.className = "text-[11px] font-normal text-slate-400 flex-shrink-0";
+                badge.textContent = formatCompactDayRange(item.fullStartDate, item.fullEndDate, todayKey, tomorrowKey);
+
+                row.appendChild(left);
+                row.appendChild(badge);
+
+                row.addEventListener("click", () => {
+                    const targetObj = parseDateKey(item.startDate);
+                    activeYear = targetObj.getFullYear();
+                    activeMonthIndex = targetObj.getMonth();
+                    selectedDateKey = item.startDate;
+                    renderCalendar();
+                });
+
+                containerEl.appendChild(row);
+            });
+        }
+
+        function generateAiScheduleBriefing(forceRefresh = false) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const todayKey = formatDateKey(today);
+
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            const tomorrowKey = formatDateKey(tomorrow);
+
             const thisWeekMon = getStartOfWeekMonday(today);
             const thisWeekSun = new Date(thisWeekMon);
             thisWeekSun.setDate(thisWeekMon.getDate() + 6);
@@ -1536,38 +1163,32 @@ const firebaseConfig = {
             const nextWeekSun = new Date(nextWeekMon);
             nextWeekSun.setDate(nextWeekMon.getDate() + 6);
 
-            const todayEvents = getEventsForDate(todayKey);
-            $("ai-briefing-today").textContent =
-                todayEvents.length > 0
-                    ? todayEvents.map((e) => e.title).join(" • ")
-                    : "No events scheduled for today.";
+            const todayDateLabel = $("briefing-today-date");
+            if (todayDateLabel) {
+                todayDateLabel.textContent = `${WEEKDAYS_FULL[today.getDay()].slice(0, 3)}, ${today.getDate()} ${MONTHS_SHORT[today.getMonth()]}`;
+            }
 
-            const collectRangeItems = (startD, endD) => {
-                const items = [];
-                const cursor = new Date(startD);
-                while (cursor <= endD) {
-                    const k = formatDateKey(cursor);
-                    const dayEvs = getEventsForDate(k);
-                    dayEvs.forEach((ev) => {
-                        const dayLabel = `${WEEKDAYS_FULL[cursor.getDay()].slice(0, 3)} ${cursor.getDate()}/${String(
-                            cursor.getMonth() + 1
-                        ).padStart(2, "0")}`;
-                        items.push(`${dayLabel}: ${ev.title}`);
-                    });
-                    cursor.setDate(cursor.getDate() + 1);
-                }
-                return items;
-            };
+            const todayItems = summarizeEventsInRange(today, today);
+            const restOfWeekItems = tomorrow <= thisWeekSun ? summarizeEventsInRange(tomorrow, thisWeekSun) : [];
+            const nextWeekItems = summarizeEventsInRange(nextWeekMon, nextWeekSun);
 
-            const thisWeekItems = collectRangeItems(thisWeekMon, thisWeekSun);
-            $("ai-briefing-this-week").textContent =
-                thisWeekItems.length > 0 ? thisWeekItems.join(" • ") : "Clear schedule this week.";
+            renderBriefingSection($("briefing-today-list"), todayItems, "Nothing scheduled today.", todayKey, tomorrowKey);
+            renderBriefingSection(
+                $("briefing-this-week-list"),
+                restOfWeekItems,
+                "Clear for the rest of the week.",
+                todayKey,
+                tomorrowKey
+            );
+            renderBriefingSection(
+                $("briefing-next-week-list"),
+                nextWeekItems,
+                "Nothing scheduled next week.",
+                todayKey,
+                tomorrowKey
+            );
 
-            const nextWeekItems = collectRangeItems(nextWeekMon, nextWeekSun);
-            $("ai-briefing-next-week").textContent =
-                nextWeekItems.length > 0 ? nextWeekItems.join(" • ") : "Nothing scheduled yet for next week.";
-
-            if (showFeedback) {
+            if (forceRefresh) {
                 showToast("Schedule briefing updated");
             }
         }
@@ -2166,9 +1787,7 @@ Current calendar events: ${JSON.stringify(compactEvents)}`;
                     if (pendingAutoHangup && activeAudioSources.length === 0) {
                         clearTimeout(autoHangupSafetyTimer);
                         setTimeout(() => {
-                            if (isLiveCallActive && activeAudioSources.length === 0) {
-                                stopGeminiLiveCall();
-                            }
+                            if (isLiveCallActive) stopGeminiLiveCall();
                         }, 350);
                     }
                 };
@@ -2177,7 +1796,7 @@ Current calendar events: ${JSON.stringify(compactEvents)}`;
             }
         }
 
-        function stopAllPlaybackAudio() {
+        function stopPlaybackAudio() {
             activeAudioSources.forEach((src) => {
                 try {
                     src.stop();
@@ -2189,344 +1808,255 @@ Current calendar events: ${JSON.stringify(compactEvents)}`;
 
         async function startGeminiLiveCall() {
             if (isLiveCallActive) return;
-
             if (!geminiApiKey) {
                 openSettingsModal();
                 showToast("Enter your Gemini API key first", true);
                 return;
             }
 
-            isLiveCallActive = true;
-            isLiveMicMuted = false;
+            finalizeTranscriptTurn();
             pendingAutoHangup = false;
             clearTimeout(autoHangupSafetyTimer);
-            liveSession = null;
-            $("live-call-panel").classList.remove("hidden");
-            $("live-call-status").textContent = "Connecting to Gemini Live...";
-            $("live-call-mute-icon").className = "fa-solid fa-microphone text-xs";
+
+            const panel = $("live-call-panel");
+            const statusEl = $("live-call-status");
+            panel.classList.remove("hidden");
+            statusEl.textContent = "Requesting microphone...";
 
             try {
                 micMediaStream = await navigator.mediaDevices.getUserMedia({
                     audio: {
                         channelCount: 1,
+                        sampleRate: 16000,
                         echoCancellation: true,
-                        noiseSuppression: true,
-                        autoGainControl: true
+                        noiseSuppression: true
                     }
                 });
+
+                isLiveCallActive = true;
+                isLiveMicMuted = false;
+                $("live-call-mute-icon").className = "fa-solid fa-microphone text-xs";
+                statusEl.textContent = "Connecting to Gemini Live...";
 
                 const ai = new GoogleGenAI({ apiKey: geminiApiKey });
                 const { todayStr, activeMonthName, selectedDate, compactEvents } = buildFreshCalendarContext();
 
-                const sessionPromise = ai.live.connect({
+                const liveSystemInstruction = `You are the UGG Knightsbridge store voice assistant in London, UK.
+Today's date is ${todayStr} (${WEEKDAYS_FULL[new Date().getDay()]}). Viewed month: ${activeMonthName}. Selected date: ${selectedDate}.
+LANGUAGE RULE: Always transcribe, think, and speak strictly in English.
+DATE FORMAT: Always speak and format dates in UK/European day-first style (DD/MM/YYYY, e.g. 25/11/2026 or "the 25th of November 2026").
+PAST DATES: The user can add, edit, or log events on ANY date including past dates before ${todayStr}. Never refuse past dates.
+AVAILABLE COLORS (exact names everywhere): blue, green, yellow, red, orange, lime, purple, pink, cyan, black.
+AUTO HANG-UP: Whenever the user says goodbye, "that's all", "nothing else", "I'm done", or asks you to hang up, give a brief polite farewell and immediately call the end_conversation tool.
+Current calendar events: ${JSON.stringify(compactEvents)}`;
+
+                const liveTools = [
+                    {
+                        functionDeclarations: [
+                            {
+                                name: "get_calendar_events",
+                                description: "Retrieve the latest live list of calendar events and selected date.",
+                                parameters: { type: "OBJECT", properties: {} }
+                            },
+                            {
+                                name: "update_calendar",
+                                description: "Add, update, or delete calendar events.",
+                                parameters: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        operations: {
+                                            type: "ARRAY",
+                                            items: {
+                                                type: "OBJECT",
+                                                properties: {
+                                                    action: { type: "STRING", description: "add, update, or delete" },
+                                                    id: { type: "STRING" },
+                                                    title: { type: "STRING" },
+                                                    startDate: { type: "STRING", description: "YYYY-MM-DD" },
+                                                    endDate: { type: "STRING", description: "YYYY-MM-DD" },
+                                                    color: { type: "STRING", description: "blue, green, yellow, red, orange, lime, purple, pink, cyan, or black" },
+                                                    recurrence: { type: "STRING", description: "none, daily, weekly, biweekly, monthly, yearly" }
+                                                },
+                                                required: ["action"]
+                                            }
+                                        }
+                                    },
+                                    required: ["operations"]
+                                }
+                            },
+                            {
+                                name: "end_conversation",
+                                description: "End and hang up the live voice call once the user finishes talking or says goodbye.",
+                                parameters: { type: "OBJECT", properties: {} }
+                            }
+                        ]
+                    }
+                ];
+
+                liveSession = await ai.live.connect({
                     model: "gemini-3.1-flash-live-preview",
                     config: {
                         responseModalities: [Modality.AUDIO],
                         speechConfig: {
                             voiceConfig: {
-                                prebuiltVoiceConfig: {
-                                    voiceName: geminiVoiceName || "Aoede"
-                                }
+                                prebuiltVoiceConfig: { voiceName: geminiVoiceName || "Aoede" }
                             }
                         },
                         inputAudioTranscription: {},
                         outputAudioTranscription: {},
-                        systemInstruction: `You are the UGG Knightsbridge retail store calendar assistant in London, UK. Keep spoken responses warm, natural, and concise.
-LANGUAGE & TRANSCRIPTION RULE: Always speak, understand, and transcribe strictly in English (UK English) at all times. Never transcribe user speech or respond in any non-English language.
-Today's date is ${todayStr} (${WEEKDAYS_FULL[new Date().getDay()]}).
-The user is currently viewing ${activeMonthName}, with ${selectedDate} selected.
-IMPORTANT: The user is fully allowed to add, log, edit, or delete events on ANY date, including past dates (dates before ${todayStr}). Never refuse or shift a past date into the future unless requested.
-AVAILABLE EVENT COLORS (exact names used across the entire app): blue, green, yellow, red, orange, lime, purple, pink, cyan, black. Always map requested colors to one of these exact 10 names, and if listing available colors, ONLY list these exact 10 names (Blue, Green, Yellow, Red, Orange, Lime, Purple, Pink, Cyan, Black).
-CRITICAL DATE FORMAT RULE: Always speak and format all dates in UK/European day-first order (e.g. "25th of November 2026" or "25/11/2026"), NEVER US month-first order (never say "November 25, 2026" or "11/25/2026"), while still passing YYYY-MM-DD inside tool call arguments.
-AUTO HANG-UP RULE: Whenever the user says they are done or says goodbye (such as "goodbye", "bye", "that's all", "nothing else", "thanks, I'm done", "hang up", or "stop"), you MUST call the end_conversation tool immediately along with a brief goodbye so the call disconnects automatically.
-Always call get_calendar_events if you need the freshest schedule before answering or editing, and call update_calendar whenever adding, updating, or deleting events.
-Initial calendar snapshot (${compactEvents.length} events): ${JSON.stringify(compactEvents)}`,
-                        tools: [
-                            {
-                                functionDeclarations: [
-                                    {
-                                        name: "get_calendar_events",
-                                        description: "Fetch the latest live list of all calendar events, currently viewed month, and selected date.",
-                                        parameters: {
-                                            type: "OBJECT",
-                                            properties: {}
-                                        }
-                                    },
-                                    {
-                                        name: "end_conversation",
-                                        description: "Automatically hang up and end the live voice call when the user says goodbye or indicates they are done talking.",
-                                        parameters: {
-                                            type: "OBJECT",
-                                            properties: {}
-                                        }
-                                    },
-                                    {
-                                        name: "update_calendar",
-                                        description: "Add, update, or delete events on the UGG Knightsbridge calendar.",
-                                        parameters: {
-                                            type: "OBJECT",
-                                            properties: {
-                                                operations: {
-                                                    type: "ARRAY",
-                                                    description: "List of calendar operations to apply.",
-                                                    items: {
-                                                        type: "OBJECT",
-                                                        properties: {
-                                                            action: {
-                                                                type: "STRING",
-                                                                enum: ["add", "update", "delete"]
-                                                            },
-                                                            id: {
-                                                                type: "STRING",
-                                                                description: "Existing event ID (required for update or delete)."
-                                                            },
-                                                            title: {
-                                                                type: "STRING",
-                                                                description: "Event title."
-                                                            },
-                                                            startDate: {
-                                                                type: "STRING",
-                                                                description: "Start date in YYYY-MM-DD format."
-                                                            },
-                                                            endDate: {
-                                                                type: "STRING",
-                                                                description: "End date in YYYY-MM-DD format."
-                                                            },
-                                                            color: {
-                                                                type: "STRING",
-                                                                enum: ["blue", "green", "yellow", "red", "orange", "lime", "purple", "pink", "cyan", "black"]
-                                                            },
-                                                            recurrence: {
-                                                                type: "STRING",
-                                                                enum: ["none", "daily", "weekly", "biweekly", "monthly", "yearly"]
-                                                            }
-                                                        },
-                                                        required: ["action"]
-                                                    }
-                                                }
-                                            },
-                                            required: ["operations"]
-                                        }
-                                    }
-                                ]
-                            }
-                        ]
+                        systemInstruction: { parts: [{ text: liveSystemInstruction }] },
+                        tools: liveTools
                     },
                     callbacks: {
-                        onopen: async () => {
-                            finalizeTranscriptTurn();
-                            $("live-call-status").textContent = "Listening — speak anytime";
-                            await startMicCapture(sessionPromise);
+                        onopen: () => {
+                            statusEl.textContent = "Listening — speak naturally";
                         },
                         onmessage: (msg) => {
-                            // Handle tool calls from Gemini Live
-                            if (msg.toolCall && Array.isArray(msg.toolCall.functionCalls)) {
-                                const functionResponses = msg.toolCall.functionCalls.map((fc) => {
+                            const serverContent = msg.serverContent;
+                            if (serverContent) {
+                                if (serverContent.interrupted) {
+                                    stopPlaybackAudio();
+                                    finalizeTranscriptTurn();
+                                }
+
+                                const inTrans = serverContent.inputTranscription?.text;
+                                if (inTrans) {
+                                    if (activeStreamingRole && activeStreamingRole !== "user") {
+                                        finalizeTranscriptTurn();
+                                    }
+                                    appendTranscriptMessage("user", inTrans, true);
+                                    const lower = (activeStreamingBubble?.dataset?.rawText || inTrans).toLowerCase();
+                                    if (/\b(goodbye|bye|that's all|thats all|nothing else|i'm done|im done|hang up)\b/.test(lower)) {
+                                        scheduleAutoHangup(6000);
+                                    }
+                                }
+
+                                const outTrans = serverContent.outputTranscription?.text;
+                                if (outTrans) {
+                                    if (activeStreamingRole && activeStreamingRole !== "ai") {
+                                        finalizeTranscriptTurn();
+                                    }
+                                    appendTranscriptMessage("ai", outTrans, true);
+                                }
+
+                                const parts = serverContent.modelTurn?.parts || [];
+                                for (const part of parts) {
+                                    if (part.inlineData?.data && part.inlineData?.mimeType?.startsWith("audio/pcm")) {
+                                        playPcm24kChunk(part.inlineData.data);
+                                    }
+                                }
+
+                                if (serverContent.turnComplete) {
+                                    finalizeTranscriptTurn();
+                                    if (pendingAutoHangup && activeAudioSources.length === 0) {
+                                        clearTimeout(autoHangupSafetyTimer);
+                                        setTimeout(() => {
+                                            if (isLiveCallActive) stopGeminiLiveCall();
+                                        }, 350);
+                                    }
+                                }
+                            }
+
+                            if (msg.toolCall?.functionCalls?.length) {
+                                const functionResponses = [];
+                                for (const fc of msg.toolCall.functionCalls) {
                                     if (fc.name === "get_calendar_events") {
                                         const fresh = buildFreshCalendarContext();
-                                        return {
+                                        functionResponses.push({
                                             id: fc.id,
                                             name: fc.name,
                                             response: {
                                                 today: fresh.todayStr,
-                                                viewedMonth: fresh.activeMonthName,
                                                 selectedDate: fresh.selectedDate,
                                                 events: fresh.compactEvents
                                             }
-                                        };
-                                    }
-                                    if (fc.name === "update_calendar") {
+                                        });
+                                    } else if (fc.name === "update_calendar") {
                                         const ops = fc.args?.operations || [];
-                                        const count = applyAiCalendarActions(ops);
-                                        const fresh = buildFreshCalendarContext();
-                                        if (count > 0) {
-                                            showToast(`Updated ${count} event${count > 1 ? "s" : ""}`);
+                                        const updatedCount = applyAiCalendarActions(ops);
+                                        if (updatedCount > 0) {
+                                            showToast(`Updated ${updatedCount} event${updatedCount > 1 ? "s" : ""}`);
                                         }
-                                        return {
+                                        const fresh = buildFreshCalendarContext();
+                                        functionResponses.push({
                                             id: fc.id,
                                             name: fc.name,
                                             response: {
-                                                success: true,
-                                                appliedCount: count,
-                                                updatedEvents: fresh.compactEvents
+                                                status: "success",
+                                                updatedCount,
+                                                events: fresh.compactEvents
                                             }
-                                        };
-                                    }
-                                    if (fc.name === "end_conversation") {
-                                        scheduleAutoHangup(4500);
-                                        return {
+                                        });
+                                    } else if (fc.name === "end_conversation") {
+                                        functionResponses.push({
                                             id: fc.id,
                                             name: fc.name,
-                                            response: { status: "hanging_up_after_speech" }
-                                        };
-                                    }
-                                    return {
-                                        id: fc.id,
-                                        name: fc.name,
-                                        response: { error: "Unknown tool" }
-                                    };
-                                });
-
-                                sessionPromise.then((session) => {
-                                    session.sendToolResponse({ functionResponses });
-                                });
-                            }
-
-                            // Handle server audio & live transcription
-                            if (msg.serverContent) {
-                                const sc = msg.serverContent;
-
-                                if (sc.interrupted) {
-                                    stopAllPlaybackAudio();
-                                    finalizeTranscriptTurn();
-                                }
-
-                                if (sc.inputTranscription && sc.inputTranscription.text) {
-                                    appendTranscriptMessage("user", sc.inputTranscription.text, true);
-                                    const fullUserUtterance = (activeStreamingBubble?.dataset?.rawText || sc.inputTranscription.text).toLowerCase();
-                                    if (/\b(goodbye|bye\s*bye|see\s+you|that'?s\s+(all|it)|nothing\s+else|i'?m\s+done|hang\s+up|end\s+(the\s+)?call|stop\s+call)\b/.test(fullUserUtterance)) {
-                                        scheduleAutoHangup(5000);
+                                            response: { status: "ending_call" }
+                                        });
+                                        scheduleAutoHangup(4500);
                                     }
                                 }
 
-                                if (sc.outputTranscription && sc.outputTranscription.text) {
-                                    appendTranscriptMessage("ai", sc.outputTranscription.text, true);
-                                }
-
-                                if (sc.modelTurn && Array.isArray(sc.modelTurn.parts)) {
-                                    sc.modelTurn.parts.forEach((part) => {
-                                        if (
-                                            part.inlineData &&
-                                            part.inlineData.data &&
-                                            part.inlineData.mimeType &&
-                                            part.inlineData.mimeType.startsWith("audio/pcm")
-                                        ) {
-                                            $("live-call-status").textContent = "Assistant speaking...";
-                                            playPcm24kChunk(part.inlineData.data);
-                                        }
-                                    });
-                                }
-
-                                if (sc.turnComplete) {
-                                    finalizeTranscriptTurn();
-                                    if (pendingAutoHangup) {
-                                        if (activeAudioSources.length === 0) {
-                                            stopGeminiLiveCall();
-                                        } else {
-                                            scheduleAutoHangup(3500);
-                                        }
-                                    } else {
-                                        $("live-call-status").textContent = isLiveMicMuted
-                                            ? "Microphone muted"
-                                            : "Listening — speak anytime";
+                                if (functionResponses.length > 0 && liveSession) {
+                                    try {
+                                        liveSession.sendToolResponse({ functionResponses });
+                                    } catch (toolErr) {
+                                        console.warn("Tool response error:", toolErr);
                                     }
                                 }
                             }
                         },
-                        onerror: (errEvent) => {
-                            console.error("Gemini Live SDK error:", errEvent);
+                        onerror: (err) => {
+                            console.warn("Gemini Live error:", err);
                             finalizeTranscriptTurn();
-                            showToast(errEvent?.message || "Live Voice connection error", true);
+                            showToast("Live voice connection error", true);
                             stopGeminiLiveCall();
                         },
-                        onclose: (closeEvent) => {
+                        onclose: () => {
                             finalizeTranscriptTurn();
                             if (isLiveCallActive) {
-                                const reason = closeEvent?.reason ? `: ${closeEvent.reason}` : "";
-                                showToast(`Live Voice closed (${closeEvent?.code || 1006}${reason})`, true);
                                 stopGeminiLiveCall();
                             }
                         }
                     }
                 });
 
-                liveSession = await sessionPromise;
+                micAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+                if (micAudioCtx.state === "suspended") {
+                    await micAudioCtx.resume();
+                }
+                micSourceNode = micAudioCtx.createMediaStreamSource(micMediaStream);
+                micProcessorNode = micAudioCtx.createScriptProcessor(4096, 1, 1);
+
+                micProcessorNode.onaudioprocess = (e) => {
+                    if (!isLiveCallActive || isLiveMicMuted || !liveSession) return;
+                    const inputData = e.inputBuffer.getChannelData(0);
+                    const b64 = float32ToBase64Pcm16(inputData);
+                    try {
+                        liveSession.sendRealtimeInput({
+                            audio: {
+                                data: b64,
+                                mimeType: "audio/pcm;rate=16000"
+                            }
+                        });
+                    } catch (_) {}
+                };
+
+                micSourceNode.connect(micProcessorNode);
+                micProcessorNode.connect(micAudioCtx.destination);
             } catch (err) {
-                console.error("Failed to start Live Voice:", err);
-                finalizeTranscriptTurn();
-                showToast(err.message || "Could not start Live Voice", true);
+                console.error("Failed to start Gemini Live:", err);
+                showToast(err.message || "Could not start live voice", true);
                 stopGeminiLiveCall();
             }
-        }
-
-        function sendPcmFloat32Chunk(float32Data, sessionPromise) {
-            if (!isLiveCallActive || isLiveMicMuted || !sessionPromise) {
-                return;
-            }
-            const base64Audio = float32ToBase64Pcm16(float32Data);
-            sessionPromise.then((session) => {
-                if (isLiveCallActive && !isLiveMicMuted) {
-                    session.sendRealtimeInput({
-                        audio: {
-                            data: base64Audio,
-                            mimeType: "audio/pcm;rate=16000"
-                        }
-                    });
-                }
-            });
-        }
-
-        async function startMicCapture(sessionPromise) {
-            if (!micMediaStream) return;
-            micAudioCtx = new (window.AudioContext || window.webkitAudioContext)({
-                sampleRate: 16000
-            });
-            if (micAudioCtx.state === "suspended") {
-                await micAudioCtx.resume();
-            }
-            micSourceNode = micAudioCtx.createMediaStreamSource(micMediaStream);
-
-            // Use AudioWorkletNode when available, falling back to ScriptProcessorNode
-            if (micAudioCtx.audioWorklet) {
-                try {
-                    const workletCode = `
-                        class PcmRecorderProcessor extends AudioWorkletProcessor {
-                            process(inputs) {
-                                const input = inputs[0];
-                                if (input && input.length > 0 && input[0].length > 0) {
-                                    this.port.postMessage(input[0]);
-                                }
-                                return true;
-                            }
-                        }
-                        registerProcessor("pcm-recorder-processor", PcmRecorderProcessor);
-                    `;
-                    const blob = new Blob([workletCode], { type: "application/javascript" });
-                    const workletUrl = URL.createObjectURL(blob);
-                    await micAudioCtx.audioWorklet.addModule(workletUrl);
-                    URL.revokeObjectURL(workletUrl);
-
-                    const workletNode = new AudioWorkletNode(micAudioCtx, "pcm-recorder-processor");
-                    workletNode.port.onmessage = (e) => sendPcmFloat32Chunk(e.data, sessionPromise);
-                    micProcessorNode = workletNode;
-                    micSourceNode.connect(workletNode);
-                    return;
-                } catch (workletErr) {
-                    console.warn("AudioWorklet unavailable, falling back:", workletErr);
-                }
-            }
-
-            const scriptNode = micAudioCtx.createScriptProcessor(4096, 1, 1);
-            scriptNode.onaudioprocess = (e) =>
-                sendPcmFloat32Chunk(e.inputBuffer.getChannelData(0), sessionPromise);
-            micProcessorNode = scriptNode;
-            micSourceNode.connect(scriptNode);
-            scriptNode.connect(micAudioCtx.destination);
         }
 
         function toggleLiveMicMute() {
             isLiveMicMuted = !isLiveMicMuted;
             $("live-call-mute-icon").className = isLiveMicMuted
-                ? "fa-solid fa-microphone-slash text-xs text-red-400"
+                ? "fa-solid fa-microphone-slash text-xs text-rose-400"
                 : "fa-solid fa-microphone text-xs";
-            $("live-call-status").textContent = isLiveMicMuted
-                ? "Microphone muted"
-                : "Listening — speak anytime";
-            if (isLiveMicMuted && liveSession) {
-                try {
-                    liveSession.sendRealtimeInput({ audioStreamEnd: true });
-                } catch (_) {}
-            }
+            $("live-call-status").textContent = isLiveMicMuted ? "Microphone muted" : "Listening — speak naturally";
         }
 
         function stopGeminiLiveCall() {
@@ -2534,7 +2064,7 @@ Initial calendar snapshot (${compactEvents.length} events): ${JSON.stringify(com
             pendingAutoHangup = false;
             clearTimeout(autoHangupSafetyTimer);
             finalizeTranscriptTurn();
-            stopAllPlaybackAudio();
+            stopPlaybackAudio();
 
             if (micProcessorNode) {
                 try {
@@ -2568,6 +2098,503 @@ Initial calendar snapshot (${compactEvents.length} events): ${JSON.stringify(com
             $("live-call-panel").classList.add("hidden");
         }
 
+        // =========================================================================
+        // STORAGE, CLOUD SYNC & PASSWORD AUTHENTICATION
+        // =========================================================================
+        function loadDailyOrders() {
+            try {
+                const raw = localStorage.getItem(DAILY_ORDER_STORAGE_KEY);
+                return raw ? JSON.parse(raw) : {};
+            } catch (_) {
+                return {};
+            }
+        }
+
+        function saveDailyOrders() {
+            try {
+                localStorage.setItem(DAILY_ORDER_STORAGE_KEY, JSON.stringify(dailyOrders));
+            } catch (_) {}
+        }
+
+        function loadLocalEvents() {
+            dailyOrders = loadDailyOrders();
+            try {
+                let raw = localStorage.getItem(STORAGE_KEY);
+                let parsed = raw ? JSON.parse(raw) : null;
+
+                // Automatically migrate any events saved under earlier storage keys
+                if (!Array.isArray(parsed) || parsed.length === 0) {
+                    for (const legacyKey of LEGACY_STORAGE_KEYS) {
+                        const legacyRaw = localStorage.getItem(legacyKey);
+                        if (legacyRaw) {
+                            const legacyParsed = JSON.parse(legacyRaw);
+                            const list = Array.isArray(legacyParsed) ? legacyParsed : legacyParsed?.events;
+                            if (Array.isArray(list) && list.length > 0) {
+                                parsed = list;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (Array.isArray(parsed)) {
+                    const normalized = parsed.map((ev) => ({
+                        ...ev,
+                        color: normalizeColorKey(ev.color)
+                    }));
+                    saveLocalEvents(normalized);
+                    return normalized;
+                }
+            } catch (err) {
+                console.warn("Error loading local events:", err);
+            }
+            return [];
+        }
+
+        function saveLocalEvents(list = events) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+            } catch (err) {
+                console.warn("Error saving local events:", err);
+            }
+        }
+
+        function updateSyncBadge(status, label) {
+            const dot = $("cloud-sync-dot");
+            const text = $("cloud-sync-text");
+            if (!dot || !text) return;
+            text.textContent = label;
+            if (status === "connected") {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+            } else if (status === "syncing") {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping";
+            } else {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-slate-400";
+            }
+        }
+
+        function isFirebaseConfigured() {
+            return (
+                firebaseConfig &&
+                firebaseConfig.apiKey &&
+                firebaseConfig.apiKey !== "YOUR_API_KEY_HERE" &&
+                firebaseConfig.projectId &&
+                firebaseConfig.projectId !== "YOUR_PROJECT_ID"
+            );
+        }
+
+        function startCloudListener() {
+            if (!firestoreDb) return;
+            updateSyncBadge("syncing", "Syncing...");
+            const docRef = doc(firestoreDb, "planners", "ugg_knightsbridge");
+            if (unsubscribeCloud) unsubscribeCloud();
+
+            unsubscribeCloud = onSnapshot(
+                docRef,
+                (snap) => {
+                    cloudReady = true;
+                    updateSyncBadge("connected", "Cloud Synced");
+                    if (snap.exists()) {
+                        const data = snap.data() || {};
+                        if (Array.isArray(data.events)) {
+                            if (data.events.length === 0 && events.length > 0) {
+                                pushEventsToCloud();
+                            } else {
+                                events = data.events.map((ev) => ({
+                                    ...ev,
+                                    color: normalizeColorKey(ev.color)
+                                }));
+                                saveLocalEvents(events);
+                            }
+                        }
+                        if (data.dailyOrders && typeof data.dailyOrders === "object") {
+                            dailyOrders = data.dailyOrders;
+                            saveDailyOrders();
+                        }
+                        if (data.geminiApiKey && !geminiApiKey) {
+                            geminiApiKey = data.geminiApiKey;
+                            localStorage.setItem(AI_KEY_STORAGE_KEY, geminiApiKey);
+                        }
+                        if (data.geminiVoiceName && VALID_VOICES.includes(data.geminiVoiceName)) {
+                            geminiVoiceName = data.geminiVoiceName;
+                            localStorage.setItem(AI_VOICE_STORAGE_KEY, geminiVoiceName);
+                        }
+                        renderCalendar();
+                        if (!isBriefingCollapsed) generateAiScheduleBriefing(false);
+                    } else if (events.length > 0) {
+                        pushEventsToCloud();
+                    }
+                },
+                (err) => {
+                    console.warn("Firestore snapshot error:", err);
+                    cloudReady = false;
+                    updateSyncBadge("local", "Local");
+                }
+            );
+        }
+
+        async function pushEventsToCloud() {
+            if (!cloudReady || !firestoreDb) return;
+            try {
+                const docRef = doc(firestoreDb, "planners", "ugg_knightsbridge");
+                await setDoc(
+                    docRef,
+                    {
+                        events,
+                        dailyOrders,
+                        geminiApiKey: geminiApiKey || "",
+                        geminiVoiceName: geminiVoiceName || "Aoede",
+                        updatedAt: new Date().toISOString()
+                    },
+                    { merge: true }
+                );
+                updateSyncBadge("connected", "Cloud Synced");
+            } catch (err) {
+                console.warn("Cloud push error:", err);
+                updateSyncBadge("local", "Sync Error");
+            }
+        }
+
+        function commitEvents() {
+            saveLocalEvents(events);
+            saveDailyOrders();
+            renderCalendar();
+            if (!isBriefingCollapsed) {
+                generateAiScheduleBriefing(false);
+            }
+            pushEventsToCloud();
+        }
+
+        function unlockPlannerUI() {
+            $("lock-screen").classList.add("hidden");
+            $("app-header").classList.remove("hidden");
+            $("app-main").classList.remove("hidden");
+            renderCalendar();
+        }
+
+        async function lockPlannerUI() {
+            if (isLiveCallActive) stopGeminiLiveCall();
+            if (unsubscribeCloud) {
+                unsubscribeCloud();
+                unsubscribeCloud = null;
+            }
+            cloudReady = false;
+            if (firebaseAuth) {
+                try {
+                    await signOut(firebaseAuth);
+                } catch (_) {}
+            }
+            $("unlock-password-input").value = "";
+            $("unlock-error-msg").classList.add("hidden");
+            $("app-header").classList.add("hidden");
+            $("app-main").classList.add("hidden");
+            $("lock-screen").classList.remove("hidden");
+        }
+
+        async function handleUnlockSubmit(e) {
+            e.preventDefault();
+            const pwd = $("unlock-password-input").value;
+            const errEl = $("unlock-error-msg");
+            const btn = $("unlock-submit-btn");
+            errEl.classList.add("hidden");
+
+            if (!pwd) return;
+
+            if (!isFirebaseConfigured()) {
+                // Local standalone unlock when Firebase credentials are not configured
+                unlockPlannerUI();
+                updateSyncBadge("local", "Local");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = "Unlocking...";
+            try {
+                if (!firebaseApp) {
+                    firebaseApp = initializeApp(firebaseConfig);
+                    firebaseAuth = getAuth(firebaseApp);
+                    firestoreDb = getFirestore(firebaseApp);
+                    await setPersistence(firebaseAuth, inMemoryPersistence);
+                }
+                await signInWithEmailAndPassword(firebaseAuth, PLANNER_AUTH_EMAIL, pwd);
+                unlockPlannerUI();
+                startCloudListener();
+            } catch (err) {
+                console.warn("Unlock error:", err);
+                errEl.textContent = "Incorrect password. Please try again.";
+                errEl.classList.remove("hidden");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Unlock Planner";
+            }
+        }
+
+        // =========================================================================
+        // CALENDAR GRID, FISCAL WEEK NUMBERS & DAY-BY-DAY DRAG REORDERING
+        // =========================================================================
+        function getStartOfWeekMonday(dateObj) {
+            const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+            const day = d.getDay(); // 0 = Sun, 1 = Mon ... 6 = Sat
+            const diff = day === 0 ? -6 : 1 - day;
+            d.setDate(d.getDate() + diff);
+            return d;
+        }
+
+        // Fiscal week numbering anchored to the Monday of the week containing April 1
+        function getFiscalWeekNumber(mondayDate) {
+            const year = mondayDate.getFullYear();
+            let fiscalStart = getStartOfWeekMonday(new Date(year, 3, 1));
+            if (mondayDate < fiscalStart) {
+                fiscalStart = getStartOfWeekMonday(new Date(year - 1, 3, 1));
+            }
+            const diffDays = Math.round((mondayDate - fiscalStart) / 86400000);
+            return Math.floor(diffDays / 7) + 1;
+        }
+
+        function getEventsForDate(dateKey) {
+            const matching = events.filter((ev) => {
+                const start = ev.startDate;
+                const end = ev.endDate || ev.startDate;
+                return dateKey >= start && dateKey <= end;
+            });
+
+            const customOrder = Array.isArray(dailyOrders[dateKey]) ? dailyOrders[dateKey] : [];
+            return matching.sort((a, b) => {
+                const idxA = customOrder.indexOf(a.id);
+                const idxB = customOrder.indexOf(b.id);
+                if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                if (idxA !== -1) return -1;
+                if (idxB !== -1) return 1;
+                return a.startDate.localeCompare(b.startDate) || a.title.localeCompare(b.title);
+            });
+        }
+
+        function reorderEventOnSingleDay(dateKey, draggedId, targetId, insertBefore) {
+            if (!draggedId || !targetId || draggedId === targetId) return;
+            const dayEvents = getEventsForDate(dateKey);
+            const ids = dayEvents.map((e) => e.id);
+            const fromIdx = ids.indexOf(draggedId);
+            if (fromIdx === -1) return;
+            ids.splice(fromIdx, 1);
+
+            let toIdx = ids.indexOf(targetId);
+            if (toIdx === -1) {
+                ids.push(draggedId);
+            } else {
+                if (!insertBefore) toIdx += 1;
+                ids.splice(toIdx, 0, draggedId);
+            }
+
+            dailyOrders[dateKey] = ids;
+            saveDailyOrders();
+            renderCalendar();
+            pushEventsToCloud();
+        }
+
+        function toggleMonthYearPopover(forceState) {
+            isMonthYearPopoverOpen = typeof forceState === "boolean" ? forceState : !isMonthYearPopoverOpen;
+            const popover = $("month-year-popover");
+            const chevron = $("month-year-chevron");
+            popover.classList.toggle("hidden", !isMonthYearPopoverOpen);
+            chevron.classList.toggle("rotate-180", isMonthYearPopoverOpen);
+            if (isMonthYearPopoverOpen) {
+                renderMonthYearPopover();
+            }
+        }
+
+        function renderMonthYearPopover() {
+            const monthsGrid = $("picker-months-grid");
+            const yearsScroll = $("picker-years-scroll");
+            monthsGrid.innerHTML = "";
+            yearsScroll.innerHTML = "";
+
+            MONTHS_SHORT.forEach((mLabel, mIdx) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                const isActive = mIdx === activeMonthIndex;
+                btn.className = `py-2 px-1 rounded-lg text-xs font-medium transition ${
+                    isActive
+                        ? "bg-slate-900 text-white"
+                        : "text-slate-700 hover:bg-slate-100"
+                }`;
+                btn.textContent = mLabel;
+                btn.addEventListener("click", () => {
+                    activeMonthIndex = mIdx;
+                    renderCalendar();
+                    toggleMonthYearPopover(false);
+                });
+                monthsGrid.appendChild(btn);
+            });
+
+            const currentYear = new Date().getFullYear();
+            let activeYearBtn = null;
+            for (let y = currentYear - 10; y <= currentYear + 15; y++) {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                const isActive = y === activeYear;
+                btn.className = `w-full py-1.5 px-2.5 rounded-lg text-xs font-medium text-left transition ${
+                    isActive
+                        ? "bg-slate-900 text-white"
+                        : "text-slate-700 hover:bg-slate-100"
+                }`;
+                btn.textContent = String(y);
+                btn.addEventListener("click", () => {
+                    activeYear = y;
+                    renderCalendar();
+                    renderMonthYearPopover();
+                });
+                yearsScroll.appendChild(btn);
+                if (isActive) activeYearBtn = btn;
+            }
+
+            if (activeYearBtn) {
+                setTimeout(() => {
+                    activeYearBtn.scrollIntoView({ block: "center" });
+                }, 10);
+            }
+        }
+
+        function renderCalendar() {
+            $("current-month-display").textContent = `${MONTHS[activeMonthIndex]} ${activeYear}`;
+
+            const grid = $("calendar-days-grid");
+            grid.innerHTML = "";
+
+            const firstOfMonth = new Date(activeYear, activeMonthIndex, 1);
+            const lastOfMonth = new Date(activeYear, activeMonthIndex + 1, 0);
+            const startMonday = getStartOfWeekMonday(firstOfMonth);
+            const todayKey = formatDateKey(new Date());
+
+            // Calculate number of weeks needed (5 or 6 rows)
+            const totalDaysSpan = Math.round((lastOfMonth - startMonday) / 86400000) + 1;
+            const totalWeeks = Math.ceil(totalDaysSpan / 7);
+
+            let cursor = new Date(startMonday);
+            let draggedEventId = null;
+            let draggedFromDate = null;
+
+            for (let w = 0; w < totalWeeks; w++) {
+                const fiscalWk = getFiscalWeekNumber(cursor);
+                const wkCell = document.createElement("div");
+                wkCell.className =
+                    "week-num-cell border-r border-b border-slate-200/80 bg-slate-50/50 text-[10px] sm:text-[11px] font-medium text-slate-400 flex items-start justify-center pt-2 select-none";
+                wkCell.textContent = `W${fiscalWk}`;
+                grid.appendChild(wkCell);
+
+                for (let d = 0; d < 7; d++) {
+                    const cellDate = new Date(cursor);
+                    const cellKey = formatDateKey(cellDate);
+                    const isCurrentMonth = cellDate.getMonth() === activeMonthIndex;
+                    const isToday = cellKey === todayKey;
+                    const isSelected = cellKey === selectedDateKey;
+
+                    const cell = document.createElement("div");
+                    cell.className = `day-cell min-h-[84px] sm:min-h-[118px] p-1 sm:p-1.5 border-r border-b border-slate-200/80 flex flex-col transition cursor-pointer overflow-hidden ${
+                        isCurrentMonth ? "bg-white hover:bg-slate-50/70" : "bg-slate-50/60 text-slate-400"
+                    } ${isSelected ? "ring-2 ring-inset ring-slate-900/20 bg-slate-50/90" : ""}`;
+
+                    // Top Date Header Row (uniform fixed height so today's black circle never shifts events down)
+                    const dateRow = document.createElement("div");
+                    dateRow.className = "h-5 sm:h-6 flex items-center justify-between mb-0.5 sm:mb-1 flex-shrink-0";
+
+                    const dayBadge = document.createElement("span");
+                    if (isToday) {
+                        dayBadge.className =
+                            "is-today-badge w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-900 text-white text-[11px] sm:text-xs font-semibold flex items-center justify-center leading-none";
+                    } else {
+                        dayBadge.className = `w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-[11px] sm:text-xs font-medium leading-none ${
+                            isCurrentMonth ? "text-slate-700" : "text-slate-400"
+                        }`;
+                    }
+                    dayBadge.textContent =
+                        cellDate.getDate() === 1 && !isToday
+                            ? `${cellDate.getDate()} ${MONTHS_SHORT[cellDate.getMonth()]}`
+                            : String(cellDate.getDate());
+
+                    dateRow.appendChild(dayBadge);
+                    cell.appendChild(dateRow);
+
+                    // Events Container
+                    const eventsStack = document.createElement("div");
+                    eventsStack.className = "flex-1 space-y-0.5 sm:space-y-1 min-w-0";
+
+                    const dayEvents = getEventsForDate(cellKey);
+                    dayEvents.forEach((ev) => {
+                        const colorCfg = COLOR_PALETTE[normalizeColorKey(ev.color)] || COLOR_PALETTE.blue;
+                        const pill = document.createElement("div");
+                        pill.draggable = true;
+                        pill.className = `event-pill mobile-two-line-pill px-1.5 py-[1px] sm:py-0.5 rounded-md border text-[10px] sm:text-[11px] font-medium leading-tight sm:truncate cursor-pointer transition select-none ${colorCfg.pill}`;
+                        pill.textContent = ev.title;
+                        pill.title = ev.title;
+
+                        pill.addEventListener("click", (e) => {
+                            e.stopPropagation();
+                            selectedDateKey = cellKey;
+                            openEditEventModal(ev.id);
+                        });
+
+                        pill.addEventListener("dragstart", (e) => {
+                            draggedEventId = ev.id;
+                            draggedFromDate = cellKey;
+                            pill.classList.add("dragging-pill");
+                            e.dataTransfer.effectAllowed = "move";
+                        });
+
+                        pill.addEventListener("dragend", () => {
+                            pill.classList.remove("dragging-pill");
+                            pill.classList.remove("drop-target-above", "drop-target-below");
+                            draggedEventId = null;
+                            draggedFromDate = null;
+                        });
+
+                        pill.addEventListener("dragover", (e) => {
+                            if (!draggedEventId || draggedFromDate !== cellKey || draggedEventId === ev.id) return;
+                            e.preventDefault();
+                            const rect = pill.getBoundingClientRect();
+                            const isTopHalf = e.clientY < rect.top + rect.height / 2;
+                            pill.classList.toggle("drop-target-above", isTopHalf);
+                            pill.classList.toggle("drop-target-below", !isTopHalf);
+                        });
+
+                        pill.addEventListener("dragleave", () => {
+                            pill.classList.remove("drop-target-above", "drop-target-below");
+                        });
+
+                        pill.addEventListener("drop", (e) => {
+                            if (!draggedEventId || draggedFromDate !== cellKey || draggedEventId === ev.id) return;
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const rect = pill.getBoundingClientRect();
+                            const isTopHalf = e.clientY < rect.top + rect.height / 2;
+                            pill.classList.remove("drop-target-above", "drop-target-below");
+                            reorderEventOnSingleDay(cellKey, draggedEventId, ev.id, isTopHalf);
+                        });
+
+                        eventsStack.appendChild(pill);
+                    });
+
+                    cell.appendChild(eventsStack);
+
+                    cell.addEventListener("click", () => {
+                        selectedDateKey = cellKey;
+                        renderCalendar();
+                    });
+
+                    cell.addEventListener("dblclick", () => {
+                        selectedDateKey = cellKey;
+                        openAddEventModal(cellKey);
+                    });
+
+                    grid.appendChild(cell);
+                    cursor.setDate(cursor.getDate() + 1);
+                }
+            }
+
+            renderSelectedDayInspector();
+        }
+
+        // =========================================================================
+        // SELECTED DAY INSPECTOR & COMPACT BULLETED SCHEDULE BRIEFING
         // =========================================================================
         // APPLICATION INITIALIZATION & EVENT LISTENERS
         // =========================================================================
@@ -2776,6 +2803,9 @@ Initial calendar snapshot (${compactEvents.length} events): ${JSON.stringify(com
                 $("ai-briefing-toggle-icon").className = isBriefingCollapsed
                     ? "fa-solid fa-chevron-down text-[10px]"
                     : "fa-solid fa-chevron-up text-[10px]";
+                if (!isBriefingCollapsed) {
+                    generateAiScheduleBriefing(false);
+                }
             });
         }
 
