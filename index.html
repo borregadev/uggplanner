@@ -2614,6 +2614,16 @@ Return ONLY valid JSON with this exact shape:
 
             // Unlock / Lock Controls
             $("unlock-form").addEventListener("submit", handleUnlockSubmit);
+            $("lock-planner-btn").addEventListener("click", lockPlannerUI);
+            $("toggle-password-visibility").addEventListener("click", () => {
+                const input = $("unlock-password-input");
+                const icon = $("toggle-password-icon");
+                const isHidden = input.type === "password";
+                input.type = isHidden ? "text" : "password";
+                icon.className = isHidden
+                    ? "fa-regular fa-eye-slash text-sm"
+                    : "fa-regular fa-eye text-sm";
+            });
             // Calendar Navigation & Month/Year Popover
             $("month-year-picker-trigger").addEventListener("click", (e) => {
                 e.stopPropagation();
