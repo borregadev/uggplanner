@@ -7,7 +7,7 @@
     <title>UGG Knightsbridge Planner</title>
     <!-- Favicon & Flaticon UIcons -->
     <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Crect width='448' height='512' rx='96' fill='%23ffffff'/%3E%3Cpath fill='%2309090b' d='M128 64c0-17.7-14.3-32-32-32S64 46.3 64 64v32H48C21.5 96 0 117.5 0 144v272c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V144c0-26.5-21.5-48-48-48h-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v32H128V64zM48 192h352v224H48V192zm281.4 63.4c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0L208 309.1l-47.4-47.4c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0l104.8-104.2z'/%3E%3C/svg%3E">
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Crect width='448' height='512' rx='96' fill='%2309090b'/%3E%3Cpath fill='%23ffffff' d='M128 64c0-17.7-14.3-32-32-32S64 46.3 64 64v32H48C21.5 96 0 117.5 0 144v272c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V144c0-26.5-21.5-48-48-48h-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v32H128V64zM48 192h352v224H48V192zm281.4 63.4c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0L208 309.1l-47.4-47.4c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0l104.8-104.2z'/%3E%3C/svg%3E">
     <link rel="stylesheet"
         href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
     <link rel="stylesheet"
@@ -728,6 +728,44 @@
         </div>
     </div>
 
+    <!-- Recurring Color Change Prompt Modal -->
+    <div id="color-recurring-modal"
+        class="hidden no-print fixed inset-0 bg-zinc-950/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float border border-zinc-200 w-full max-w-sm overflow-hidden p-6 text-center">
+            <div
+                class="w-12 h-12 bg-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
+                <i class="fa-solid fa-palette"></i>
+            </div>
+            <h3 class="font-semibold text-zinc-950 text-base mb-1.5">Change Color of Repeating Event</h3>
+            <p class="text-xs text-zinc-500 mb-5">Do you want to change the color for just this day or all events in the
+                series?</p>
+
+            <div class="space-y-2">
+                <button type="button" id="color-single-btn"
+                    class="w-full py-3 px-4 bg-zinc-50 hover:bg-zinc-100 text-zinc-800 border border-zinc-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                    <span>Just this day</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-zinc-400"></i>
+                </button>
+                <button type="button" id="color-following-btn"
+                    class="w-full py-3 px-4 bg-zinc-50 hover:bg-zinc-100 text-zinc-800 border border-zinc-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                    <span>This and following days</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-zinc-400"></i>
+                </button>
+                <button type="button" id="color-all-btn"
+                    class="w-full py-3 px-4 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold transition text-left flex items-center justify-between shadow-sm">
+                    <span>All of them</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-zinc-400"></i>
+                </button>
+            </div>
+
+            <button type="button" id="cancel-color-modal-btn"
+                class="mt-4 py-2 px-4 text-xs font-semibold text-zinc-400 hover:text-zinc-700 transition">
+                Cancel
+            </button>
+        </div>
+    </div>
+
     <!-- Recurring Delete Prompt Modal -->
     <div id="delete-recurring-modal"
         class="hidden no-print fixed inset-0 bg-zinc-950/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -952,6 +990,7 @@
         let events = [];
         let dailyOrders = {};
         let pendingDeleteEventId = null;
+        let pendingColorEdit = null;
         let isMonthYearPopoverOpen = false;
         let isBriefingCollapsed = true;
 
@@ -1692,11 +1731,30 @@
             if (id) {
                 const idx = events.findIndex((item) => item.id === id);
                 if (idx !== -1) {
+                    const existing = events[idx];
+                    const cleanEnd = endDate >= startDate ? endDate : startDate;
+                    const colorChanged = normalizeColorKey(existing.color) !== color;
+
+                    if (existing.seriesId && colorChanged) {
+                        pendingColorEdit = {
+                            id: existing.id,
+                            seriesId: existing.seriesId,
+                            targetStartDate: existing.startDate,
+                            title,
+                            startDate,
+                            endDate: cleanEnd,
+                            color
+                        };
+                        closeEventModal();
+                        $("color-recurring-modal")?.classList.remove("hidden");
+                        return;
+                    }
+
                     events[idx] = {
-                        ...events[idx],
+                        ...existing,
                         title,
                         startDate,
-                        endDate: endDate >= startDate ? endDate : startDate,
+                        endDate: cleanEnd,
                         color
                     };
                 }
@@ -1713,6 +1771,43 @@
 
             closeEventModal();
             commitEvents();
+        }
+
+        function executeRecurringColorUpdate(scope) {
+            const pending = pendingColorEdit;
+            $("color-recurring-modal")?.classList.add("hidden");
+            pendingColorEdit = null;
+            if (!pending) return;
+
+            events = events.map((ev) => {
+                if (ev.id === pending.id) {
+                    return {
+                        ...ev,
+                        title: pending.title,
+                        startDate: pending.startDate,
+                        endDate: pending.endDate,
+                        color: pending.color
+                    };
+                }
+                if (pending.seriesId && ev.seriesId === pending.seriesId) {
+                    if (scope === "all") {
+                        return { ...ev, color: pending.color };
+                    }
+                    if (scope === "following" && ev.startDate >= pending.targetStartDate) {
+                        return { ...ev, color: pending.color };
+                    }
+                }
+                return ev;
+            });
+
+            commitEvents();
+            showToast(
+                scope === "all"
+                    ? "Color updated for all events in series"
+                    : scope === "following"
+                        ? "Color updated for this and following events"
+                        : "Color updated for this day"
+            );
         }
 
         function handleDeleteClick() {
@@ -1855,7 +1950,22 @@
             const todayStr = formatDateKey(now);
             if (todayDateEl) todayDateEl.textContent = formatEuropeanDate(todayStr);
 
-            const renderBulletList = (container, items, emptyMsg, includeDate = false) => {
+            const formatRangeLabel = (ev, windowStart, windowEnd) => {
+                const evStart = ev.startDate;
+                const evEnd = ev.endDate || ev.startDate;
+                const effectiveStart = evStart < windowStart ? windowStart : evStart;
+                const effectiveEnd = evEnd > windowEnd ? windowEnd : evEnd;
+                const startDt = parseDateKey(effectiveStart);
+                const startLabel = `${WEEKDAYS_SHORT[startDt.getDay()]} ${effectiveStart.slice(8, 10)}/${effectiveStart.slice(5, 7)}`;
+                if (effectiveEnd > effectiveStart) {
+                    const endDt = parseDateKey(effectiveEnd);
+                    const endLabel = `${WEEKDAYS_SHORT[endDt.getDay()]} ${effectiveEnd.slice(8, 10)}/${effectiveEnd.slice(5, 7)}`;
+                    return `${startLabel} – ${endLabel}`;
+                }
+                return startLabel;
+            };
+
+            const renderBulletList = (container, items, emptyMsg, windowStart = null, windowEnd = null) => {
                 if (!items.length) {
                     container.innerHTML = `<p class="text-xs text-zinc-400">${emptyMsg}</p>`;
                     return;
@@ -1863,8 +1973,8 @@
                 container.innerHTML = items
                     .map((ev) => {
                         const pal = COLOR_PALETTE[normalizeColorKey(ev.color)] || COLOR_PALETTE.blue;
-                        const prefix = includeDate
-                            ? `<span class="text-zinc-400 font-medium">${WEEKDAYS_SHORT[parseDateKey(ev.startDate).getDay()]} ${ev.startDate.slice(8, 10)}/${ev.startDate.slice(5, 7)}:</span> `
+                        const prefix = windowStart && windowEnd
+                            ? `<span class="text-zinc-400 font-medium">${formatRangeLabel(ev, windowStart, windowEnd)}:</span> `
                             : "";
                         return `<div class="flex items-start gap-2 text-xs text-zinc-700 py-0.5">
                             <span class="w-1.5 h-1.5 rounded-full ${pal.dot} mt-1.5 flex-shrink-0"></span>
@@ -1874,14 +1984,35 @@
                     .join("");
             };
 
+            // 1. Today: every event active on todayStr
             const todayEvents = getEventsForDate(todayStr);
-            renderBulletList(todayListEl, todayEvents, "Nothing scheduled today.", false);
+            renderBulletList(todayListEl, todayEvents, "Nothing scheduled today.");
 
+            // 2. Rest of This Week: tomorrow through Sunday of the current week
             const dayOfWeek = (now.getDay() + 6) % 7; // Mon = 0 .. Sun = 6
+            const tomorrow = new Date(now);
+            tomorrow.setDate(now.getDate() + 1);
+            const tomorrowStr = formatDateKey(tomorrow);
+
             const endOfThisWeek = new Date(now);
             endOfThisWeek.setDate(now.getDate() + (6 - dayOfWeek));
             const endThisWeekStr = formatDateKey(endOfThisWeek);
 
+            const restWeekEvents = dayOfWeek < 6
+                ? events
+                    .filter((ev) => {
+                        const evEnd = ev.endDate || ev.startDate;
+                        return ev.startDate <= endThisWeekStr && evEnd >= tomorrowStr;
+                    })
+                    .sort((a, b) => {
+                        const effA = a.startDate < tomorrowStr ? tomorrowStr : a.startDate;
+                        const effB = b.startDate < tomorrowStr ? tomorrowStr : b.startDate;
+                        return effA.localeCompare(effB) || a.title.localeCompare(b.title);
+                    })
+                : [];
+            renderBulletList(thisWeekEl, restWeekEvents, "Clear for the rest of the week.", tomorrowStr, endThisWeekStr);
+
+            // 3. Next Week: Monday through Sunday of next week
             const startNextWeek = new Date(endOfThisWeek);
             startNextWeek.setDate(endOfThisWeek.getDate() + 1);
             const endNextWeek = new Date(startNextWeek);
@@ -1890,15 +2021,17 @@
             const startNextStr = formatDateKey(startNextWeek);
             const endNextStr = formatDateKey(endNextWeek);
 
-            const restWeekEvents = events
-                .filter((ev) => ev.startDate > todayStr && ev.startDate <= endThisWeekStr)
-                .sort((a, b) => a.startDate.localeCompare(b.startDate));
-            renderBulletList(thisWeekEl, restWeekEvents, "Clear for the rest of the week.", true);
-
             const nextWeekEvents = events
-                .filter((ev) => ev.startDate >= startNextStr && ev.startDate <= endNextStr)
-                .sort((a, b) => a.startDate.localeCompare(b.startDate));
-            renderBulletList(nextWeekEl, nextWeekEvents, "Nothing scheduled next week.", true);
+                .filter((ev) => {
+                    const evEnd = ev.endDate || ev.startDate;
+                    return ev.startDate <= endNextStr && evEnd >= startNextStr;
+                })
+                .sort((a, b) => {
+                    const effA = a.startDate < startNextStr ? startNextStr : a.startDate;
+                    const effB = b.startDate < startNextStr ? startNextStr : b.startDate;
+                    return effA.localeCompare(effB) || a.title.localeCompare(b.title);
+                });
+            renderBulletList(nextWeekEl, nextWeekEvents, "Nothing scheduled next week.", startNextStr, endNextStr);
         }
 
         // =========================================================================
@@ -2067,13 +2200,17 @@
                 if (idx === -1) return { success: false, error: "Matching event not found." };
 
                 const current = events[idx];
+                const newColor = args.color ? normalizeColorKey(args.color) : current.color;
                 events[idx] = {
                     ...current,
                     title: args.newTitle || args.title || current.title,
                     startDate: args.newStartDate || args.startDate || current.startDate,
                     endDate: args.newEndDate || args.endDate || args.newStartDate || current.endDate,
-                    color: args.color ? normalizeColorKey(args.color) : current.color
+                    color: newColor
                 };
+                if (args.updateSeries && current.seriesId && args.color) {
+                    events = events.map((ev) => (ev.seriesId === current.seriesId ? { ...ev, color: newColor } : ev));
+                }
                 commitEvents();
                 return { success: true, updatedEvent: events[idx] };
             }
@@ -2150,7 +2287,7 @@ Analyze the user's request and respond with valid JSON ONLY matching:
   "params": { ... }
 }
 For create_event params: { "title": string, "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "blue"|"green"|"yellow"|"red"|"orange"|"lime"|"purple"|"pink"|"cyan"|"black", "recurrence": "none"|"daily"|"weekly"|"biweekly"|"monthly"|"yearly" }.
-For update_event params: { "id": string, "matchTitle": string, "matchDate": "YYYY-MM-DD", "newTitle": string, "newStartDate": "YYYY-MM-DD", "newEndDate": "YYYY-MM-DD", "color": string }.
+For update_event params: { "id": string, "matchTitle": string, "matchDate": "YYYY-MM-DD", "newTitle": string, "newStartDate": "YYYY-MM-DD", "newEndDate": "YYYY-MM-DD", "color": string, "updateSeries": boolean }.
 For delete_event params: { "id": string, "title": string, "date": "YYYY-MM-DD", "deleteSeries": boolean }.
 When asked what events are scheduled, list ALL matching events clearly without omitting any.`;
 
@@ -2427,7 +2564,8 @@ When asked what events are scheduled, list ALL matching events clearly without o
                                     newTitle: { type: Type.STRING },
                                     newStartDate: { type: Type.STRING },
                                     newEndDate: { type: Type.STRING },
-                                    color: { type: Type.STRING }
+                                    color: { type: Type.STRING },
+                                    updateSeries: { type: Type.BOOLEAN }
                                 }
                             }
                         },
@@ -2783,6 +2921,15 @@ When the user says goodbye, thank you, thanks, cheers, or that's it, say a brief
                 if (endInput && (!endInput.value || endInput.value < e.target.value)) {
                     endInput.value = e.target.value;
                 }
+            });
+
+            // Recurring color change modal
+            $("color-single-btn")?.addEventListener("click", () => executeRecurringColorUpdate("single"));
+            $("color-following-btn")?.addEventListener("click", () => executeRecurringColorUpdate("following"));
+            $("color-all-btn")?.addEventListener("click", () => executeRecurringColorUpdate("all"));
+            $("cancel-color-modal-btn")?.addEventListener("click", () => {
+                $("color-recurring-modal")?.classList.add("hidden");
+                pendingColorEdit = null;
             });
 
             // Recurring delete modal
