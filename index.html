@@ -287,14 +287,14 @@
                     <i class="fa-regular fa-calendar-check text-lg"></i>
                 </div>
                 <h2 class="text-lg font-bold text-zinc-950 tracking-tight">UGG Knightsbridge</h2>
-                <p id="auth-subtitle" class="text-xs text-zinc-500 mt-1">Sign in to unlock planner &amp; cloud sync</p>
+                <p class="text-xs text-zinc-500 mt-1">Store Schedule &amp; Planner</p>
             </div>
 
             <form id="auth-unlock-form" class="space-y-4">
                 <div>
                     <label for="auth-password-input"
                         class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">
-                        Store Password
+                        Password
                     </label>
                     <div class="relative">
                         <input type="password" id="auth-password-input" required autocomplete="current-password"
@@ -316,11 +316,6 @@
                     class="w-full py-2.5 px-4 bg-zinc-950 hover:bg-zinc-800 active:scale-[0.99] text-white text-xs font-semibold rounded-xl shadow-xs transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-unlock-keyhole text-xs"></i>
                     <span id="auth-unlock-btn-text">Unlock Planner</span>
-                </button>
-
-                <button type="button" id="auth-local-bypass-btn"
-                    class="w-full pt-1 text-[11px] font-medium text-zinc-400 hover:text-zinc-700 transition text-center">
-                    Open offline in Local mode
                 </button>
             </form>
         </div>
@@ -1060,8 +1055,10 @@
             }
 
             if (!firebaseConfigured || !firebaseAuth) {
-                unlockPlannerUI(false);
-                showToast("Unlocked in Local mode (paste firebaseConfig for Cloud sync)");
+                if (errorEl) {
+                    errorEl.textContent = "Authentication service not configured.";
+                    errorEl.classList.remove("hidden");
+                }
                 return;
             }
 
@@ -2611,9 +2608,6 @@ When the user says goodbye, thank you, thanks, cheers, or that's it, say a brief
                 try {
                     await signOut(firebaseAuth);
                 } catch (_) { }
-            } else {
-                const sub = $("auth-subtitle");
-                if (sub) sub.textContent = "Enter any password to unlock (Local mode)";
             }
 
             // Always start locked on fresh page load/refresh until password is entered
@@ -2638,10 +2632,6 @@ When the user says goodbye, thank you, thanks, cheers, or that's it, say a brief
                     btn.title = reveal ? "Hide password" : "Show password";
                     btn.setAttribute("aria-label", reveal ? "Hide password" : "Show password");
                 }
-            });
-            $("auth-local-bypass-btn")?.addEventListener("click", () => {
-                unlockPlannerUI(false);
-                showToast("Opened in Local mode");
             });
             $("lock-planner-btn")?.addEventListener("click", lockPlannerUI);
 
