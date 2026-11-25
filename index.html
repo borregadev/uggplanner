@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UGG Knightsbridge Planner</title>
     <!-- Favicon & Flaticon UIcons -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Crect width='448' height='512' rx='96' fill='%23ffffff'/%3E%3Cpath fill='%2309090b' d='M128 64c0-17.7-14.3-32-32-32S64 46.3 64 64v32H48C21.5 96 0 117.5 0 144v272c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V144c0-26.5-21.5-48-48-48h-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v32H128V64zM48 192h352v224H48V192zm281.4 63.4c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0L208 309.1l-47.4-47.4c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0l104.8-104.2z'/%3E%3C/svg%3E">
-    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
-    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-rounded/css/uicons-solid-rounded.css">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Crect width='448' height='512' rx='96' fill='%23ffffff'/%3E%3Cpath fill='%2309090b' d='M128 64c0-17.7-14.3-32-32-32S64 46.3 64 64v32H48C21.5 96 0 117.5 0 144v272c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V144c0-26.5-21.5-48-48-48h-16V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v32H128V64zM48 192h352v224H48V192zm281.4 63.4c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0L208 309.1l-47.4-47.4c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0l104.8-104.2z'/%3E%3C/svg%3E">
+    <link rel="stylesheet"
+        href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet"
+        href="https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-rounded/css/uicons-solid-rounded.css">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -47,7 +51,9 @@
                 size: A4 landscape;
                 margin: 4mm;
             }
-            html, body {
+
+            html,
+            body {
                 width: 100% !important;
                 height: 100% !important;
                 margin: 0 !important;
@@ -57,9 +63,11 @@
                 color: #09090b !important;
                 font-size: 9pt;
             }
+
             .no-print {
                 display: none !important;
             }
+
             .page-container {
                 padding: 0 !important;
                 margin: 0 !important;
@@ -69,6 +77,7 @@
                 display: flex !important;
                 flex-direction: column !important;
             }
+
             .workspace-grid {
                 display: flex !important;
                 flex-direction: column !important;
@@ -76,6 +85,7 @@
                 height: 100% !important;
                 gap: 0 !important;
             }
+
             .calendar-primary-col {
                 width: 100% !important;
                 height: 100% !important;
@@ -84,6 +94,7 @@
                 flex-direction: column !important;
                 gap: 0 !important;
             }
+
             .calendar-shell {
                 width: 100% !important;
                 height: 100% !important;
@@ -94,10 +105,12 @@
                 border: 1px solid #94a3b8 !important;
                 box-shadow: none !important;
             }
+
             .calendar-top-bar {
                 padding: 6px 10px !important;
                 flex-shrink: 0 !important;
             }
+
             .week-header-row {
                 grid-template-columns: 30px repeat(7, minmax(0, 1fr)) !important;
                 padding: 4px 0 !important;
@@ -106,6 +119,7 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
+
             .calendar-grid {
                 border-top: 1px solid #cbd5e1 !important;
                 flex: 1 1 auto !important;
@@ -115,6 +129,7 @@
                 grid-auto-rows: minmax(0, 1fr) !important;
                 height: 100% !important;
             }
+
             .week-num-cell {
                 border-color: #cbd5e1 !important;
                 border-width: 0 1px 1px 0 !important;
@@ -124,6 +139,7 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
+
             .day-cell {
                 min-height: 0 !important;
                 height: 100% !important;
@@ -136,6 +152,7 @@
                 box-shadow: none !important;
                 outline: none !important;
             }
+
             .is-today-badge {
                 background-color: transparent !important;
                 color: #09090b !important;
@@ -145,6 +162,7 @@
                 width: auto !important;
                 height: auto !important;
             }
+
             .event-pill {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -164,23 +182,29 @@
             height: 5px;
             width: 5px;
         }
+
         .clean-scroll::-webkit-scrollbar-track {
             background: transparent;
         }
+
         .clean-scroll::-webkit-scrollbar-thumb {
             background: #d4d4d8;
             border-radius: 9999px;
         }
+
         .clean-scroll::-webkit-scrollbar-thumb:hover {
             background: #a1a1aa;
         }
+
         .clean-scroll {
             -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
         }
+
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
+
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
@@ -211,34 +235,56 @@
         .dragging-pill {
             opacity: 0.45 !important;
         }
+
         .drop-target-above {
             box-shadow: 0 -2px 0 0 #09090b !important;
         }
+
         .drop-target-below {
             box-shadow: 0 2px 0 0 #09090b !important;
         }
 
         /* Animated AI Live Equalizer Bars */
         @keyframes liveEqualizer {
-            0%, 100% { transform: scaleY(0.35); }
-            50% { transform: scaleY(1); }
+
+            0%,
+            100% {
+                transform: scaleY(0.35);
+            }
+
+            50% {
+                transform: scaleY(1);
+            }
         }
+
         .ai-eq-bar {
             transform-origin: center;
             animation: liveEqualizer 1.15s ease-in-out infinite;
         }
-        .ai-eq-bar:nth-child(2) { animation-delay: 0.18s; }
-        .ai-eq-bar:nth-child(3) { animation-delay: 0.36s; }
-        .ai-eq-bar:nth-child(4) { animation-delay: 0.22s; }
+
+        .ai-eq-bar:nth-child(2) {
+            animation-delay: 0.18s;
+        }
+
+        .ai-eq-bar:nth-child(3) {
+            animation-delay: 0.36s;
+        }
+
+        .ai-eq-bar:nth-child(4) {
+            animation-delay: 0.22s;
+        }
     </style>
 </head>
-<body class="bg-[#F4F5F7] font-sans text-zinc-900 min-h-screen flex flex-col overflow-x-hidden antialiased selection:bg-zinc-200 selection:text-zinc-950">
+
+<body
+    class="bg-[#F4F5F7] font-sans text-zinc-900 min-h-screen flex flex-col overflow-x-hidden antialiased selection:bg-zinc-200 selection:text-zinc-950">
 
     <!-- Authentication Lock Screen -->
     <div id="auth-lock-screen" class="no-print fixed inset-0 z-[100] bg-zinc-950 flex items-center justify-center p-4">
         <div class="w-full max-w-sm bg-white rounded-3xl border border-zinc-200 shadow-2xl p-7 sm:p-8">
             <div class="flex flex-col items-center text-center mb-6">
-                <div class="w-12 h-12 rounded-2xl bg-zinc-950 text-white flex items-center justify-center shadow-sm mb-3.5">
+                <div
+                    class="w-12 h-12 rounded-2xl bg-zinc-950 text-white flex items-center justify-center shadow-sm mb-3.5">
                     <i class="fa-regular fa-calendar-check text-lg"></i>
                 </div>
                 <h2 class="text-lg font-bold text-zinc-950 tracking-tight">UGG Knightsbridge</h2>
@@ -247,37 +293,28 @@
 
             <form id="auth-unlock-form" class="space-y-4">
                 <div>
-                    <label for="auth-password-input" class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">
+                    <label for="auth-password-input"
+                        class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">
                         Password
                     </label>
                     <div class="relative">
-                        <input
-                            type="password"
-                            id="auth-password-input"
-                            required
-                            autocomplete="current-password"
+                        <input type="password" id="auth-password-input" required autocomplete="current-password"
                             placeholder="Enter password..."
-                            class="w-full pl-3.5 pr-10 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition"
-                        >
-                        <button
-                            type="button"
-                            id="auth-toggle-password-btn"
-                            aria-label="Show password"
+                            class="w-full pl-3.5 pr-10 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
+                        <button type="button" id="auth-toggle-password-btn" aria-label="Show password"
                             title="Show password"
-                            class="absolute inset-y-0 right-0 px-3 flex items-center justify-center text-zinc-400 hover:text-zinc-700 transition"
-                        >
+                            class="absolute inset-y-0 right-0 px-3 flex items-center justify-center text-zinc-400 hover:text-zinc-700 transition">
                             <i id="auth-toggle-password-icon" class="fa-regular fa-eye text-sm"></i>
                         </button>
                     </div>
                 </div>
 
-                <p id="auth-error-msg" class="hidden text-xs font-medium text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2 text-center"></p>
+                <p id="auth-error-msg"
+                    class="hidden text-xs font-medium text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2 text-center">
+                </p>
 
-                <button
-                    type="submit"
-                    id="auth-unlock-btn"
-                    class="w-full py-2.5 px-4 bg-zinc-950 hover:bg-zinc-800 active:scale-[0.99] text-white text-xs font-semibold rounded-xl shadow-xs transition flex items-center justify-center gap-2"
-                >
+                <button type="submit" id="auth-unlock-btn"
+                    class="w-full py-2.5 px-4 bg-zinc-950 hover:bg-zinc-800 active:scale-[0.99] text-white text-xs font-semibold rounded-xl shadow-xs transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-unlock-keyhole text-xs"></i>
                     <span id="auth-unlock-btn-text">Unlock Planner</span>
                 </button>
@@ -286,28 +323,29 @@
     </div>
 
     <!-- Status Toast -->
-    <div id="status-toast" class="hidden no-print fixed bottom-5 left-1/2 -translate-x-1/2 z-[90] bg-zinc-950 text-white px-4 py-2.5 rounded-full shadow-float border border-zinc-800 flex items-center gap-2 text-xs font-medium pointer-events-none">
+    <div id="status-toast"
+        class="hidden no-print fixed bottom-5 left-1/2 -translate-x-1/2 z-[90] bg-zinc-950 text-white px-4 py-2.5 rounded-full shadow-float border border-zinc-800 flex items-center gap-2 text-xs font-medium pointer-events-none">
         <i id="status-toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
         <span id="status-toast-msg">Saved</span>
     </div>
 
     <!-- Top Application Header -->
-    <header id="app-header" class="hidden no-print sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-b border-zinc-200/80">
+    <header id="app-header"
+        class="hidden no-print sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-b border-zinc-200/80">
         <div class="max-w-[1440px] mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2 sm:gap-3">
             <!-- Brand & Storage Status -->
             <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-zinc-950 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                <div
+                    class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-zinc-950 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
                     <i class="fa-regular fa-calendar-check text-sm sm:text-base"></i>
                 </div>
                 <div class="flex-shrink-0">
-                    <h1 class="text-[13px] sm:text-base font-bold text-zinc-950 tracking-tight whitespace-nowrap">UGG Knightsbridge</h1>
+                    <h1 class="text-[13px] sm:text-base font-bold text-zinc-950 tracking-tight whitespace-nowrap">UGG
+                        Knightsbridge</h1>
                 </div>
-                <button
-                    type="button"
-                    id="cloud-sync-pill"
+                <button type="button" id="cloud-sync-pill"
                     class="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-zinc-100 hover:bg-zinc-200/70 border border-zinc-200/80 text-[11px] font-medium text-zinc-600 transition flex-shrink-0"
-                    title="Storage sync status"
-                >
+                    title="Storage sync status">
                     <span id="cloud-sync-dot" class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
                     <span id="cloud-sync-text" class="hidden sm:inline">Local</span>
                 </button>
@@ -316,41 +354,29 @@
             <!-- Right Actions -->
             <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
                 <div class="inline-flex items-center bg-zinc-100/90 p-1 rounded-xl border border-zinc-200/80">
-                    <button
-                        type="button"
-                        onclick="window.print()"
+                    <button type="button" onclick="window.print()"
                         class="px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 hover:bg-white transition inline-flex items-center gap-1.5"
-                        title="Print A4 Landscape"
-                    >
+                        title="Print A4 Landscape">
                         <i class="fa-solid fa-print text-xs"></i>
                         <span class="hidden sm:inline">Print</span>
                     </button>
-                    <button
-                        type="button"
-                        id="settings-btn"
+                    <button type="button" id="settings-btn"
                         class="px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 hover:bg-white transition inline-flex items-center gap-1.5"
-                        title="Settings & Backup"
-                    >
+                        title="Settings & Backup">
                         <i class="fa-solid fa-gear text-xs"></i>
                         <span class="hidden sm:inline">Settings</span>
                     </button>
-                    <button
-                        type="button"
-                        id="lock-planner-btn"
+                    <button type="button" id="lock-planner-btn"
                         class="px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 hover:bg-white transition inline-flex items-center gap-1.5"
-                        title="Lock Planner"
-                    >
+                        title="Lock Planner">
                         <i class="fa-solid fa-lock text-xs"></i>
                         <span class="hidden sm:inline">Lock</span>
                     </button>
                 </div>
 
-                <button
-                    type="button"
-                    id="add-event-btn"
+                <button type="button" id="add-event-btn"
                     class="inline-flex items-center gap-1.5 px-2.5 sm:px-4 py-2 bg-zinc-950 hover:bg-zinc-800 active:scale-[0.99] text-white text-xs font-semibold rounded-xl shadow-xs transition"
-                    title="New Event"
-                >
+                    title="New Event">
                     <i class="fa-solid fa-plus text-xs"></i>
                     <span class="hidden sm:inline">New Event</span>
                 </button>
@@ -364,27 +390,31 @@
 
             <!-- Primary Calendar Column -->
             <div class="calendar-primary-col lg:col-span-8 xl:col-span-9 flex flex-col gap-5">
-                <section id="calendar-touch-area" class="calendar-shell bg-white rounded-3xl border border-zinc-200/85 shadow-soft overflow-hidden">
+                <section id="calendar-touch-area"
+                    class="calendar-shell bg-white rounded-3xl border border-zinc-200/85 shadow-soft overflow-hidden">
                     <!-- Month Navigation Bar -->
-                    <div class="calendar-top-bar px-4 sm:px-6 py-4 border-b border-zinc-100 flex items-center justify-between gap-3 relative">
+                    <div
+                        class="calendar-top-bar px-4 sm:px-6 py-4 border-b border-zinc-100 flex items-center justify-between gap-3 relative">
                         <div class="relative">
-                            <button
-                                type="button"
-                                id="month-year-picker-trigger"
-                                class="inline-flex items-center gap-2 text-base sm:text-lg font-bold text-zinc-950 tracking-tight hover:bg-zinc-100/80 px-2.5 py-1.5 -ml-2.5 rounded-xl transition"
-                            >
+                            <button type="button" id="month-year-picker-trigger"
+                                class="inline-flex items-center gap-2 text-base sm:text-lg font-bold text-zinc-950 tracking-tight hover:bg-zinc-100/80 px-2.5 py-1.5 -ml-2.5 rounded-xl transition">
                                 <span id="current-month-display">November 2026</span>
-                                <i id="month-year-chevron" class="fa-solid fa-chevron-down text-xs text-zinc-400 transition-transform duration-200"></i>
+                                <i id="month-year-chevron"
+                                    class="fa-solid fa-chevron-down text-xs text-zinc-400 transition-transform duration-200"></i>
                             </button>
 
                             <!-- Month / Year Quick Popover -->
-                            <div id="month-year-popover" class="hidden no-print absolute left-0 top-full mt-2 z-40 w-72 bg-white rounded-2xl shadow-float border border-zinc-200 p-4">
+                            <div id="month-year-popover"
+                                class="hidden no-print absolute left-0 top-full mt-2 z-40 w-72 bg-white rounded-2xl shadow-float border border-zinc-200 p-4">
                                 <div class="grid grid-cols-3 gap-3">
                                     <div id="picker-months-grid" class="col-span-2 grid grid-cols-3 gap-1.5"></div>
-                                    <div id="picker-years-scroll" class="col-span-1 max-h-44 overflow-y-auto clean-scroll border-l border-zinc-100 pl-2 space-y-1"></div>
+                                    <div id="picker-years-scroll"
+                                        class="col-span-1 max-h-44 overflow-y-auto clean-scroll border-l border-zinc-100 pl-2 space-y-1">
+                                    </div>
                                 </div>
                                 <div class="mt-3 pt-3 border-t border-zinc-100 flex justify-end">
-                                    <button type="button" id="picker-jump-today-btn" class="text-xs font-semibold text-zinc-700 hover:text-zinc-950 px-2.5 py-1 rounded-lg hover:bg-zinc-100 transition">
+                                    <button type="button" id="picker-jump-today-btn"
+                                        class="text-xs font-semibold text-zinc-700 hover:text-zinc-950 px-2.5 py-1 rounded-lg hover:bg-zinc-100 transition">
                                         Jump to Today
                                     </button>
                                 </div>
@@ -392,36 +422,29 @@
                         </div>
 
                         <!-- Segmented Month Controls -->
-                        <div class="no-print inline-flex items-center bg-zinc-100/90 p-1 rounded-xl border border-zinc-200/80">
-                            <button
-                                type="button"
-                                id="prev-month-btn"
+                        <div
+                            class="no-print inline-flex items-center bg-zinc-100/90 p-1 rounded-xl border border-zinc-200/80">
+                            <button type="button" id="prev-month-btn"
                                 class="w-8 h-8 rounded-lg flex items-center justify-center text-zinc-600 hover:text-zinc-950 hover:bg-white transition"
-                                title="Previous Month"
-                            >
+                                title="Previous Month">
                                 <i class="fa-solid fa-chevron-left text-xs"></i>
                             </button>
-                            <button
-                                type="button"
-                                id="today-btn"
-                                class="px-3 h-8 rounded-lg text-xs font-semibold text-zinc-700 hover:text-zinc-950 hover:bg-white transition"
-                            >
+                            <button type="button" id="today-btn"
+                                class="px-3 h-8 rounded-lg text-xs font-semibold text-zinc-700 hover:text-zinc-950 hover:bg-white transition">
                                 Today
                             </button>
-                            <button
-                                type="button"
-                                id="next-month-btn"
+                            <button type="button" id="next-month-btn"
                                 class="w-8 h-8 rounded-lg flex items-center justify-center text-zinc-600 hover:text-zinc-950 hover:bg-white transition"
-                                title="Next Month"
-                            >
+                                title="Next Month">
                                 <i class="fa-solid fa-chevron-right text-xs"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Weekday Header Row -->
-                    <div class="week-header-row grid grid-cols-[22px_repeat(7,minmax(0,1fr))] sm:grid-cols-[36px_repeat(7,minmax(0,1fr))] bg-zinc-50/70 border-b border-zinc-200/70 py-2.5 text-center text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-zinc-400 select-none">
-                        <div>Wk</div>
+                    <div
+                        class="week-header-row grid grid-cols-[28px_repeat(7,minmax(0,1fr))] sm:grid-cols-[36px_repeat(7,minmax(0,1fr))] bg-zinc-50/70 border-b border-zinc-200/70 py-2.5 text-center text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-zinc-400 select-none">
+                        <div class="px-1">Wk</div>
                         <div>Mon</div>
                         <div>Tue</div>
                         <div>Wed</div>
@@ -432,7 +455,9 @@
                     </div>
 
                     <!-- Calendar Days Grid -->
-                    <div id="calendar-days-grid" class="calendar-grid grid grid-cols-[22px_repeat(7,minmax(0,1fr))] sm:grid-cols-[36px_repeat(7,minmax(0,1fr))]"></div>
+                    <div id="calendar-days-grid"
+                        class="calendar-grid grid grid-cols-[28px_repeat(7,minmax(0,1fr))] sm:grid-cols-[36px_repeat(7,minmax(0,1fr))]">
+                    </div>
                 </section>
             </div>
 
@@ -443,15 +468,15 @@
                 <section class="bg-white rounded-3xl border border-zinc-200/85 shadow-soft p-5">
                     <div class="flex items-center justify-between gap-2 pb-3.5 border-b border-zinc-100">
                         <div class="min-w-0">
-                            <span class="block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Selected Day</span>
-                            <h2 id="selected-day-title" class="text-sm font-bold text-zinc-950 truncate mt-0.5">Wednesday, 25 Nov 2026</h2>
+                            <span
+                                class="block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Selected
+                                Day</span>
+                            <h2 id="selected-day-title" class="text-sm font-bold text-zinc-950 truncate mt-0.5">
+                                Wednesday, 25 Nov 2026</h2>
                         </div>
-                        <button
-                            type="button"
-                            id="selected-day-add-btn"
+                        <button type="button" id="selected-day-add-btn"
                             class="w-8 h-8 rounded-xl bg-zinc-100 hover:bg-zinc-950 text-zinc-700 hover:text-white flex items-center justify-center transition flex-shrink-0"
-                            title="Add event to selected day"
-                        >
+                            title="Add event to selected day">
                             <i class="fa-solid fa-plus text-xs"></i>
                         </button>
                     </div>
@@ -462,29 +487,35 @@
                 <section class="bg-white rounded-3xl border border-zinc-200/85 shadow-soft p-5">
                     <div class="flex items-center justify-between gap-2 mb-3.5">
                         <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-lg bg-zinc-950 text-white flex items-center justify-center text-xs">
+                            <div
+                                class="w-7 h-7 rounded-lg bg-zinc-950 text-white flex items-center justify-center text-xs">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                             </div>
                             <h2 class="text-sm font-bold text-zinc-950 tracking-tight">AI Assistant</h2>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <button
-                                type="button"
-                                id="ai-live-call-btn"
+                            <button type="button" id="ai-live-call-btn"
                                 class="group relative inline-flex items-center gap-2 p-[1px] rounded-full bg-gradient-to-r from-indigo-500/70 via-sky-400/70 to-violet-500/70 hover:from-indigo-400 hover:via-sky-300 hover:to-violet-400 active:scale-[0.98] shadow-[0_4px_16px_-4px_rgba(99,102,241,0.45)] transition-all duration-200"
-                                title="Start Live AI Voice Session"
-                            >
-                                <span class="relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-950/95 group-hover:bg-zinc-900/90 backdrop-blur-md text-white text-xs font-semibold tracking-tight transition-colors">
+                                title="Start Live AI Voice Session">
+                                <span
+                                    class="relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-950/95 group-hover:bg-zinc-900/90 backdrop-blur-md text-white text-xs font-semibold tracking-tight transition-colors">
                                     <span class="relative flex items-center justify-center w-3.5 h-3.5">
-                                        <span class="absolute inset-0 rounded-full bg-indigo-400/40 blur-[4px] group-hover:bg-sky-300/60 transition"></span>
+                                        <span
+                                            class="absolute inset-0 rounded-full bg-indigo-400/40 blur-[4px] group-hover:bg-sky-300/60 transition"></span>
                                         <span class="relative flex items-center gap-[2px] h-3">
-                                            <span class="w-[2px] h-1.5 bg-indigo-300 group-hover:h-2.5 group-hover:bg-white rounded-full transition-all duration-200"></span>
-                                            <span class="w-[2px] h-3 bg-white rounded-full transition-all duration-200"></span>
-                                            <span class="w-[2px] h-2 bg-sky-300 group-hover:h-3 group-hover:bg-white rounded-full transition-all duration-200"></span>
-                                            <span class="w-[2px] h-1 bg-violet-300 group-hover:h-2 group-hover:bg-white rounded-full transition-all duration-200"></span>
+                                            <span
+                                                class="w-[2px] h-1.5 bg-indigo-300 group-hover:h-2.5 group-hover:bg-white rounded-full transition-all duration-200"></span>
+                                            <span
+                                                class="w-[2px] h-3 bg-white rounded-full transition-all duration-200"></span>
+                                            <span
+                                                class="w-[2px] h-2 bg-sky-300 group-hover:h-3 group-hover:bg-white rounded-full transition-all duration-200"></span>
+                                            <span
+                                                class="w-[2px] h-1 bg-violet-300 group-hover:h-2 group-hover:bg-white rounded-full transition-all duration-200"></span>
                                         </span>
                                     </span>
-                                    <span class="bg-gradient-to-r from-white via-zinc-100 to-indigo-100 bg-clip-text text-transparent">Live Voice</span>
+                                    <span
+                                        class="bg-gradient-to-r from-white via-zinc-100 to-indigo-100 bg-clip-text text-transparent">Live
+                                        Voice</span>
                                 </span>
                             </button>
                         </div>
@@ -493,37 +524,31 @@
                     <!-- Command Input Form -->
                     <form id="ai-command-form" class="relative flex items-center gap-1.5">
                         <div class="relative flex-1 min-w-0">
-                            <input
-                                type="text"
-                                id="ai-command-input"
-                                placeholder="Ask or add event..."
-                                class="w-full pl-3.5 pr-9 py-2.5 bg-zinc-50 border border-zinc-200/90 rounded-xl text-xs text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition"
-                            >
-                            <button
-                                type="button"
-                                id="ai-voice-btn"
+                            <input type="text" id="ai-command-input" placeholder="Ask or add event..."
+                                class="w-full pl-3.5 pr-9 py-2.5 bg-zinc-50 border border-zinc-200/90 rounded-xl text-xs text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
+                            <button type="button" id="ai-voice-btn"
                                 class="absolute inset-y-0 right-0 px-2.5 text-zinc-400 hover:text-zinc-800 flex items-center justify-center transition"
-                                title="Dictate command"
-                            >
+                                title="Dictate command">
                                 <i id="ai-voice-icon" class="fi fi-rr-microphone text-sm leading-none"></i>
                             </button>
                         </div>
-                        <button
-                            type="submit"
-                            id="ai-submit-btn"
+                        <button type="submit" id="ai-submit-btn"
                             class="w-9 h-9 rounded-xl bg-zinc-100 hover:bg-zinc-950 text-zinc-700 hover:text-white flex items-center justify-center transition flex-shrink-0"
-                            title="Send"
-                        >
+                            title="Send">
                             <i class="fa-solid fa-arrow-up text-xs"></i>
                         </button>
                     </form>
 
                     <!-- Live Voice Session Status Bar -->
                     <div id="live-call-panel" class="hidden mt-4 pt-4 border-t border-zinc-100">
-                        <div class="relative overflow-hidden bg-gradient-to-br from-zinc-900 via-zinc-950 to-black text-white rounded-2xl px-3.5 py-3 flex items-center justify-between gap-2.5 shadow-[0_10px_25px_-6px_rgba(9,9,11,0.55),inset_0_1px_0_rgba(255,255,255,0.1)] ring-1 ring-white/10">
-                            <div class="pointer-events-none absolute -left-6 -top-6 w-24 h-24 rounded-full bg-indigo-500/15 blur-xl"></div>
+                        <div
+                            class="relative overflow-hidden bg-gradient-to-br from-zinc-900 via-zinc-950 to-black text-white rounded-2xl px-3.5 py-3 flex items-center justify-between gap-2.5 shadow-[0_10px_25px_-6px_rgba(9,9,11,0.55),inset_0_1px_0_rgba(255,255,255,0.1)] ring-1 ring-white/10">
+                            <div
+                                class="pointer-events-none absolute -left-6 -top-6 w-24 h-24 rounded-full bg-indigo-500/15 blur-xl">
+                            </div>
                             <div class="relative flex items-center gap-2.5 min-w-0">
-                                <div class="w-8 h-8 rounded-full bg-white/[0.07] ring-1 ring-white/15 flex items-center justify-center flex-shrink-0">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-white/[0.07] ring-1 ring-white/15 flex items-center justify-center flex-shrink-0">
                                     <div class="flex items-end gap-[2px] h-3">
                                         <span class="ai-eq-bar w-[2px] h-3 bg-indigo-400 rounded-full"></span>
                                         <span class="ai-eq-bar w-[2px] h-3 bg-sky-300 rounded-full"></span>
@@ -532,26 +557,24 @@
                                     </div>
                                 </div>
                                 <div class="min-w-0">
-                                    <span class="block text-[10px] font-semibold uppercase tracking-widest text-indigo-300/90">AI Live</span>
-                                    <span id="live-call-status" class="block text-xs font-medium text-zinc-100 truncate">Connecting...</span>
+                                    <span
+                                        class="block text-[10px] font-semibold uppercase tracking-widest text-indigo-300/90">AI
+                                        Live</span>
+                                    <span id="live-call-status"
+                                        class="block text-xs font-medium text-zinc-100 truncate">Connecting...</span>
                                 </div>
                             </div>
                             <div class="relative flex items-center gap-1.5 flex-shrink-0">
-                                <button
-                                    type="button"
-                                    id="live-call-mute-btn"
+                                <button type="button" id="live-call-mute-btn"
                                     class="w-8 h-8 rounded-full bg-white/[0.08] hover:bg-white/[0.16] active:scale-95 text-zinc-200 hover:text-white ring-1 ring-white/15 backdrop-blur-md flex items-center justify-center transition"
-                                    title="Mute / Unmute"
-                                >
+                                    title="Mute / Unmute">
                                     <i id="live-call-mute-icon" class="fa-solid fa-microphone text-[11px]"></i>
                                 </button>
-                                <button
-                                    type="button"
-                                    id="live-call-end-btn"
+                                <button type="button" id="live-call-end-btn"
                                     class="group inline-flex items-center gap-1.5 px-3.5 h-8 rounded-full bg-white/[0.12] hover:bg-white text-white hover:text-zinc-950 active:scale-95 text-[11px] font-semibold tracking-tight backdrop-blur-md ring-1 ring-white/25 hover:ring-white shadow-[0_2px_12px_-2px_rgba(255,255,255,0.18)] transition-all duration-200"
-                                    title="End Voice Session"
-                                >
-                                    <span class="w-2 h-2 rounded-[2.5px] bg-indigo-300 group-hover:bg-zinc-950 transition-colors"></span>
+                                    title="End Voice Session">
+                                    <span
+                                        class="w-2 h-2 rounded-[2.5px] bg-indigo-300 group-hover:bg-zinc-950 transition-colors"></span>
                                     <span>End</span>
                                 </button>
                             </div>
@@ -561,32 +584,32 @@
                     <!-- Live Transcript (Hidden until speech begins) -->
                     <div id="ai-transcript-wrapper" class="hidden mt-4 pt-4 border-t border-zinc-100">
                         <div class="flex items-center justify-between mb-2.5">
-                            <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Live Transcript</span>
-                            <button type="button" id="ai-transcript-clear-btn" class="text-[11px] font-medium text-zinc-400 hover:text-zinc-700 transition">
+                            <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Live
+                                Transcript</span>
+                            <button type="button" id="ai-transcript-clear-btn"
+                                class="text-[11px] font-medium text-zinc-400 hover:text-zinc-700 transition">
                                 Clear
                             </button>
                         </div>
-                        <div id="ai-transcript-list" class="space-y-3 max-h-64 overflow-y-auto clean-scroll pr-0.5"></div>
+                        <div id="ai-transcript-list" class="space-y-3 max-h-64 overflow-y-auto clean-scroll pr-0.5">
+                        </div>
                     </div>
                 </section>
 
                 <!-- Schedule Briefing Card (Collapsed by default) -->
                 <section class="bg-white rounded-3xl border border-zinc-200/85 shadow-soft p-5">
                     <div class="flex items-center justify-between gap-2">
-                        <button
-                            type="button"
-                            id="ai-briefing-toggle-btn"
-                            class="flex items-center gap-2 text-left flex-1 min-w-0 group"
-                        >
-                            <span class="text-xs font-bold text-zinc-950 tracking-tight group-hover:text-zinc-700 transition">Schedule Briefing</span>
-                            <i id="ai-briefing-toggle-icon" class="fa-solid fa-chevron-down text-[10px] text-zinc-400"></i>
+                        <button type="button" id="ai-briefing-toggle-btn"
+                            class="flex items-center gap-2 text-left flex-1 min-w-0 group">
+                            <span
+                                class="text-xs font-bold text-zinc-950 tracking-tight group-hover:text-zinc-700 transition">Schedule
+                                Briefing</span>
+                            <i id="ai-briefing-toggle-icon"
+                                class="fa-solid fa-chevron-down text-[10px] text-zinc-400"></i>
                         </button>
-                        <button
-                            type="button"
-                            id="ai-briefing-refresh-btn"
+                        <button type="button" id="ai-briefing-refresh-btn"
                             class="w-7 h-7 rounded-lg hover:bg-zinc-100 text-zinc-400 hover:text-zinc-800 flex items-center justify-center transition"
-                            title="Refresh Briefing"
-                        >
+                            title="Refresh Briefing">
                             <i class="fa-solid fa-arrows-rotate text-[11px]"></i>
                         </button>
                     </div>
@@ -594,17 +617,22 @@
                     <div id="ai-briefing-body" class="hidden mt-4 pt-4 border-t border-zinc-100 space-y-4">
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
-                                <span class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Today</span>
+                                <span
+                                    class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Today</span>
                                 <span id="briefing-today-date" class="text-[10px] font-medium text-zinc-400"></span>
                             </div>
                             <div id="briefing-today-list" class="space-y-1"></div>
                         </div>
                         <div>
-                            <span class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Rest of This Week</span>
+                            <span
+                                class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Rest
+                                of This Week</span>
                             <div id="briefing-this-week-list" class="space-y-1"></div>
                         </div>
                         <div>
-                            <span class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Next Week</span>
+                            <span
+                                class="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Next
+                                Week</span>
                             <div id="briefing-next-week-list" class="space-y-1"></div>
                         </div>
                     </div>
@@ -615,11 +643,15 @@
     </main>
 
     <!-- Add / Edit Event Modal -->
-    <div id="event-modal" class="hidden no-print fixed inset-0 bg-zinc-950/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float border border-zinc-200 w-full max-w-md overflow-hidden p-6">
+    <div id="event-modal"
+        class="hidden no-print fixed inset-0 bg-zinc-950/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float border border-zinc-200 w-full max-w-md overflow-hidden p-6">
             <div class="flex items-center justify-between pb-4 border-b border-zinc-100">
-                <h3 id="modal-title" class="font-semibold text-zinc-950 text-[15px] tracking-tight">Add All-Day Event</h3>
-                <button type="button" id="close-modal-btn" class="text-zinc-400 hover:text-zinc-800 rounded-xl hover:bg-zinc-100 transition w-8 h-8 flex items-center justify-center">
+                <h3 id="modal-title" class="font-semibold text-zinc-950 text-[15px] tracking-tight">Add All-Day Event
+                </h3>
+                <button type="button" id="close-modal-btn"
+                    class="text-zinc-400 hover:text-zinc-800 rounded-xl hover:bg-zinc-100 transition w-8 h-8 flex items-center justify-center">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
@@ -629,43 +661,35 @@
                 <input type="hidden" id="event-color" value="blue">
 
                 <div>
-                    <label for="event-title" class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Event Title</label>
-                    <input
-                        type="text"
-                        id="event-title"
-                        required
-                        placeholder="e.g. Visual Merchandising Walkthrough"
-                        class="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition"
-                    >
+                    <label for="event-title"
+                        class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Event
+                        Title</label>
+                    <input type="text" id="event-title" required placeholder="e.g. Visual Merchandising Walkthrough"
+                        class="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label for="event-start-date" class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Start Date</label>
-                        <input
-                            type="date"
-                            id="event-start-date"
-                            required
-                            class="w-full px-3 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-xs font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition"
-                        >
+                        <label for="event-start-date"
+                            class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Start
+                            Date</label>
+                        <input type="date" id="event-start-date" required
+                            class="w-full px-3 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-xs font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
                     </div>
                     <div>
-                        <label for="event-end-date" class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">End Date</label>
-                        <input
-                            type="date"
-                            id="event-end-date"
-                            required
-                            class="w-full px-3 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-xs font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition"
-                        >
+                        <label for="event-end-date"
+                            class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">End
+                            Date</label>
+                        <input type="date" id="event-end-date" required
+                            class="w-full px-3 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-xs font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
                     </div>
                 </div>
 
                 <div>
-                    <label for="event-recurrence" class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Repeat</label>
-                    <select
-                        id="event-recurrence"
-                        class="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition"
-                    >
+                    <label for="event-recurrence"
+                        class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Repeat</label>
+                    <select id="event-recurrence"
+                        class="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
                         <option value="none">Does not repeat</option>
                         <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
@@ -677,25 +701,25 @@
 
                 <div>
                     <div class="flex items-center justify-between mb-2">
-                        <span class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Label Color</span>
+                        <span class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Label
+                            Color</span>
                         <span id="selected-color-name" class="text-[11px] font-semibold text-zinc-700">Blue</span>
                     </div>
                     <div id="color-picker-options" class="flex flex-wrap items-center gap-2"></div>
                 </div>
 
                 <div class="flex items-center justify-between gap-2 pt-4 border-t border-zinc-100">
-                    <button
-                        type="button"
-                        id="delete-event-btn"
-                        class="hidden px-3.5 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-semibold transition"
-                    >
+                    <button type="button" id="delete-event-btn"
+                        class="hidden px-3.5 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-semibold transition">
                         Delete
                     </button>
                     <div class="flex items-center gap-2 ml-auto">
-                        <button type="button" id="cancel-modal-btn" class="px-4 py-2.5 border border-zinc-200 text-zinc-600 rounded-xl text-xs font-semibold hover:bg-zinc-50 transition">
+                        <button type="button" id="cancel-modal-btn"
+                            class="px-4 py-2.5 border border-zinc-200 text-zinc-600 rounded-xl text-xs font-semibold hover:bg-zinc-50 transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-5 py-2.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold transition">
+                        <button type="submit"
+                            class="px-5 py-2.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold transition">
                             Save Event
                         </button>
                     </div>
@@ -705,38 +729,48 @@
     </div>
 
     <!-- Recurring Delete Prompt Modal -->
-    <div id="delete-recurring-modal" class="hidden no-print fixed inset-0 bg-zinc-950/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float border border-zinc-200 w-full max-w-sm overflow-hidden p-6 text-center">
-            <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
+    <div id="delete-recurring-modal"
+        class="hidden no-print fixed inset-0 bg-zinc-950/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float border border-zinc-200 w-full max-w-sm overflow-hidden p-6 text-center">
+            <div
+                class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-trash-can"></i>
             </div>
             <h3 class="font-semibold text-zinc-950 text-base mb-1.5">Delete Repeating Event</h3>
-            <p class="text-xs text-zinc-500 mb-5">This event belongs to a recurring series. Choose which occurrences to remove:</p>
-            
+            <p class="text-xs text-zinc-500 mb-5">This event belongs to a recurring series. Choose which occurrences to
+                remove:</p>
+
             <div class="space-y-2">
-                <button id="delete-single-btn" class="w-full py-3 px-4 bg-zinc-50 hover:bg-zinc-100 text-zinc-800 border border-zinc-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                <button id="delete-single-btn"
+                    class="w-full py-3 px-4 bg-zinc-50 hover:bg-zinc-100 text-zinc-800 border border-zinc-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
                     <span>Only this event</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-zinc-400"></i>
                 </button>
-                <button id="delete-following-btn" class="w-full py-3 px-4 bg-zinc-50 hover:bg-zinc-100 text-zinc-800 border border-zinc-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                <button id="delete-following-btn"
+                    class="w-full py-3 px-4 bg-zinc-50 hover:bg-zinc-100 text-zinc-800 border border-zinc-200/80 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
                     <span>This and following events</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-zinc-400"></i>
                 </button>
-                <button id="delete-all-btn" class="w-full py-3 px-4 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold transition text-left flex items-center justify-between shadow-sm">
+                <button id="delete-all-btn"
+                    class="w-full py-3 px-4 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold transition text-left flex items-center justify-between shadow-sm">
                     <span>All events in series</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-rose-200"></i>
                 </button>
             </div>
 
-            <button id="cancel-delete-modal-btn" class="mt-4 py-2 px-4 text-xs font-semibold text-zinc-400 hover:text-zinc-700 transition">
+            <button id="cancel-delete-modal-btn"
+                class="mt-4 py-2 px-4 text-xs font-semibold text-zinc-400 hover:text-zinc-700 transition">
                 Cancel
             </button>
         </div>
     </div>
 
     <!-- Unified Settings Modal (AI Voice, API Key & Backup) -->
-    <div id="settings-modal" class="hidden no-print fixed inset-0 bg-zinc-950/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float border border-zinc-200 w-full max-w-md max-h-[92vh] overflow-y-auto p-6">
+    <div id="settings-modal"
+        class="hidden no-print fixed inset-0 bg-zinc-950/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float border border-zinc-200 w-full max-w-md max-h-[92vh] overflow-y-auto p-6">
             <div class="flex items-center justify-between pb-4 border-b border-zinc-100">
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-xl bg-zinc-100 text-zinc-800 flex items-center justify-center">
@@ -744,7 +778,8 @@
                     </div>
                     <h3 class="font-semibold text-zinc-950 text-[15px] tracking-tight">Planner Settings</h3>
                 </div>
-                <button type="button" id="close-settings-modal-btn" class="text-zinc-400 hover:text-zinc-800 rounded-xl hover:bg-zinc-100 transition w-8 h-8 flex items-center justify-center">
+                <button type="button" id="close-settings-modal-btn"
+                    class="text-zinc-400 hover:text-zinc-800 rounded-xl hover:bg-zinc-100 transition w-8 h-8 flex items-center justify-center">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
@@ -752,15 +787,14 @@
             <form id="settings-form" class="mt-5 space-y-5">
                 <!-- 1. AI Voice Selection & Live Preview -->
                 <div class="space-y-2">
-                    <label for="ai-voice-select" class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
+                    <label for="ai-voice-select"
+                        class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
                         AI Assistant Voice
                     </label>
                     <div class="flex items-center gap-2">
                         <div class="relative flex-1 min-w-0">
-                            <select
-                                id="ai-voice-select"
-                                class="w-full appearance-none pl-3.5 pr-9 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition cursor-pointer"
-                            >
+                            <select id="ai-voice-select"
+                                class="w-full appearance-none pl-3.5 pr-9 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition cursor-pointer">
                                 <option value="Aoede">Aoede — Warm & Conversational</option>
                                 <option value="Kore">Kore — Firm & Articulate</option>
                                 <option value="Leda">Leda — Youthful & Bright</option>
@@ -770,14 +804,12 @@
                                 <option value="Fenrir">Fenrir — Dynamic & Engaging</option>
                                 <option value="Orus">Orus — Grounded & Steady</option>
                             </select>
-                            <i class="fa-solid fa-chevron-down text-xs text-zinc-400 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2"></i>
+                            <i
+                                class="fa-solid fa-chevron-down text-xs text-zinc-400 pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2"></i>
                         </div>
-                        <button
-                            type="button"
-                            id="preview-ai-voice-btn"
+                        <button type="button" id="preview-ai-voice-btn"
                             class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-zinc-100 hover:bg-zinc-200/80 text-zinc-800 border border-zinc-200 rounded-xl text-xs font-semibold transition flex-shrink-0"
-                            title="Listen to selected voice"
-                        >
+                            title="Listen to selected voice">
                             <i id="preview-ai-voice-icon" class="fa-solid fa-volume-high text-xs"></i>
                             <span id="preview-ai-voice-label">Preview</span>
                         </button>
@@ -787,19 +819,17 @@
                 <!-- 2. Gemini API Key -->
                 <div class="pt-4 border-t border-zinc-100 space-y-2">
                     <div class="flex items-center justify-between">
-                        <label for="ai-api-key-input" class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
+                        <label for="ai-api-key-input"
+                            class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
                             Gemini API Key
                         </label>
-                        <button type="button" id="clear-ai-key-btn" class="text-[11px] font-semibold text-rose-600 hover:text-rose-700">
+                        <button type="button" id="clear-ai-key-btn"
+                            class="text-[11px] font-semibold text-rose-600 hover:text-rose-700">
                             Remove Key
                         </button>
                     </div>
-                    <input
-                        type="password"
-                        id="ai-api-key-input"
-                        placeholder="AIzaSy..."
-                        class="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition"
-                    >
+                    <input type="password" id="ai-api-key-input" placeholder="AIzaSy..."
+                        class="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
                     <p class="text-[11px] text-zinc-500 leading-relaxed">
                         Saved locally in your browser (and synced if Firebase is configured).
                     </p>
@@ -811,24 +841,29 @@
                         Schedule Backup
                     </span>
                     <div class="grid grid-cols-2 gap-2.5">
-                        <button type="button" id="save-backup-btn" class="inline-flex items-center justify-center gap-2 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 font-semibold px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs transition">
+                        <button type="button" id="save-backup-btn"
+                            class="inline-flex items-center justify-center gap-2 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 font-semibold px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs transition">
                             <i class="fa-solid fa-download text-xs text-zinc-500"></i>
                             <span>Export JSON</span>
                         </button>
-                        <label for="restore-file-input" id="restore-backup-btn" class="cursor-pointer inline-flex items-center justify-center gap-2 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 font-semibold px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs transition relative overflow-hidden">
+                        <label for="restore-file-input" id="restore-backup-btn"
+                            class="cursor-pointer inline-flex items-center justify-center gap-2 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 font-semibold px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs transition relative overflow-hidden">
                             <i class="fa-solid fa-upload text-xs text-zinc-500"></i>
                             <span>Import JSON</span>
-                            <input type="file" id="restore-file-input" accept=".json,application/json,text/plain" class="sr-only">
+                            <input type="file" id="restore-file-input" accept=".json,application/json,text/plain"
+                                class="sr-only">
                         </label>
                     </div>
                 </div>
 
                 <!-- Modal Footer -->
                 <div class="flex items-center justify-end gap-2 pt-4 border-t border-zinc-100">
-                    <button type="button" id="cancel-settings-btn" class="px-4 py-2.5 border border-zinc-200 text-zinc-600 rounded-xl text-xs font-semibold hover:bg-zinc-50 transition">
+                    <button type="button" id="cancel-settings-btn"
+                        class="px-4 py-2.5 border border-zinc-200 text-zinc-600 rounded-xl text-xs font-semibold hover:bg-zinc-50 transition">
                         Cancel
                     </button>
-                    <button type="submit" class="px-5 py-2.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold transition">
+                    <button type="submit"
+                        class="px-5 py-2.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold transition">
                         Save Settings
                     </button>
                 </div>
@@ -846,14 +881,14 @@
         // =========================================================================
         // PASTE YOUR FIREBASE CONFIG BELOW
         // =========================================================================
-const firebaseConfig = {
-  apiKey: "AIzaSyATrASttp3YBm-CalBJDeb5uEGGAqLKauI",
-  authDomain: "calendar-18ceb.firebaseapp.com",
-  projectId: "calendar-18ceb",
-  storageBucket: "calendar-18ceb.firebasestorage.app",
-  messagingSenderId: "588044247244",
-  appId: "1:588044247244:web:8a21a8c91110a350e4e269"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyATrASttp3YBm-CalBJDeb5uEGGAqLKauI",
+            authDomain: "calendar-18ceb.firebaseapp.com",
+            projectId: "calendar-18ceb",
+            storageBucket: "calendar-18ceb.firebasestorage.app",
+            messagingSenderId: "588044247244",
+            appId: "1:588044247244:web:8a21a8c91110a350e4e269"
+        };
 
         const STORE_AUTH_EMAIL = "knightsbridge@ugg.com";
         const STORAGE_KEY = "ugg_knightsbridge_events_v1";
@@ -876,13 +911,13 @@ const firebaseConfig = {
                 memoryFallbackStorage.set(key, String(val));
                 try {
                     window.localStorage.setItem(key, String(val));
-                } catch (_) {}
+                } catch (_) { }
             },
             removeItem(key) {
                 memoryFallbackStorage.delete(key);
                 try {
                     window.localStorage.removeItem(key);
-                } catch (_) {}
+                } catch (_) { }
             }
         };
 
@@ -896,16 +931,16 @@ const firebaseConfig = {
         const WEEKDAYS_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
         const COLOR_PALETTE = {
-            blue:   { name: "Blue",   swatch: "bg-blue-600",    pill: "bg-blue-600 text-white border-blue-700 hover:bg-blue-700",       dot: "bg-blue-600" },
-            green:  { name: "Green",  swatch: "bg-emerald-600", pill: "bg-emerald-600 text-white border-emerald-700 hover:bg-emerald-700", dot: "bg-emerald-600" },
-            yellow: { name: "Yellow", swatch: "bg-amber-400",   pill: "bg-amber-400 text-zinc-950 border-amber-500 hover:bg-amber-500", dot: "bg-amber-400" },
-            red:    { name: "Red",    swatch: "bg-rose-600",    pill: "bg-rose-600 text-white border-rose-700 hover:bg-rose-700",       dot: "bg-rose-600" },
-            orange: { name: "Orange", swatch: "bg-orange-500",  pill: "bg-orange-500 text-white border-orange-600 hover:bg-orange-600", dot: "bg-orange-500" },
-            lime:   { name: "Lime",   swatch: "bg-lime-500",    pill: "bg-lime-500 text-zinc-950 border-lime-600 hover:bg-lime-600",    dot: "bg-lime-500" },
-            purple: { name: "Purple", swatch: "bg-purple-600",  pill: "bg-purple-600 text-white border-purple-700 hover:bg-purple-700", dot: "bg-purple-600" },
-            pink:   { name: "Pink",   swatch: "bg-pink-500",    pill: "bg-pink-500 text-white border-pink-600 hover:bg-pink-600",       dot: "bg-pink-500" },
-            cyan:   { name: "Cyan",   swatch: "bg-cyan-600",    pill: "bg-cyan-600 text-white border-cyan-700 hover:bg-cyan-700",       dot: "bg-cyan-600" },
-            black:  { name: "Black",  swatch: "bg-zinc-900",    pill: "bg-zinc-900 text-white border-zinc-950 hover:bg-zinc-800",       dot: "bg-zinc-900" }
+            blue: { name: "Blue", swatch: "bg-blue-600", pill: "bg-blue-600 text-white border-blue-700 hover:bg-blue-700", dot: "bg-blue-600" },
+            green: { name: "Green", swatch: "bg-emerald-600", pill: "bg-emerald-600 text-white border-emerald-700 hover:bg-emerald-700", dot: "bg-emerald-600" },
+            yellow: { name: "Yellow", swatch: "bg-amber-400", pill: "bg-amber-400 text-zinc-950 border-amber-500 hover:bg-amber-500", dot: "bg-amber-400" },
+            red: { name: "Red", swatch: "bg-rose-600", pill: "bg-rose-600 text-white border-rose-700 hover:bg-rose-700", dot: "bg-rose-600" },
+            orange: { name: "Orange", swatch: "bg-orange-500", pill: "bg-orange-500 text-white border-orange-600 hover:bg-orange-600", dot: "bg-orange-500" },
+            lime: { name: "Lime", swatch: "bg-lime-500", pill: "bg-lime-500 text-zinc-950 border-lime-600 hover:bg-lime-600", dot: "bg-lime-500" },
+            purple: { name: "Purple", swatch: "bg-purple-600", pill: "bg-purple-600 text-white border-purple-700 hover:bg-purple-700", dot: "bg-purple-600" },
+            pink: { name: "Pink", swatch: "bg-pink-500", pill: "bg-pink-500 text-white border-pink-600 hover:bg-pink-600", dot: "bg-pink-500" },
+            cyan: { name: "Cyan", swatch: "bg-cyan-600", pill: "bg-cyan-600 text-white border-cyan-700 hover:bg-cyan-700", dot: "bg-cyan-600" },
+            black: { name: "Black", swatch: "bg-zinc-900", pill: "bg-zinc-900 text-white border-zinc-950 hover:bg-zinc-800", dot: "bg-zinc-900" }
         };
 
         const $ = (id) => document.getElementById(id);
@@ -1334,7 +1369,7 @@ const firebaseConfig = {
                 const weekNum = getFiscalWeekNumber(weekMonday);
 
                 const wkCell = document.createElement("div");
-                wkCell.className = "week-num-cell border-r border-b border-zinc-200/70 bg-zinc-50/40 text-[10px] sm:text-[11px] font-semibold text-zinc-400 flex items-start justify-center pt-2 select-none";
+                wkCell.className = "week-num-cell border-r border-b border-zinc-200/70 bg-zinc-50/40 px-1 sm:px-0 text-[9.5px] sm:text-[11px] font-semibold text-zinc-400 flex items-start justify-center pt-2 select-none";
                 wkCell.textContent = `W${weekNum}`;
                 grid.appendChild(wkCell);
 
@@ -1371,9 +1406,8 @@ const firebaseConfig = {
                     if (isToday) {
                         dayBadge.className = "is-today-badge w-6 h-6 rounded-full bg-zinc-950 text-white text-[11px] sm:text-xs font-bold flex items-center justify-center shadow-2xs";
                     } else {
-                        dayBadge.className = `w-6 h-6 rounded-full text-[11px] sm:text-xs font-semibold flex items-center justify-center ${
-                            isCurrentMonth ? "text-zinc-800" : "text-zinc-400"
-                        }`;
+                        dayBadge.className = `w-6 h-6 rounded-full text-[11px] sm:text-xs font-semibold flex items-center justify-center ${isCurrentMonth ? "text-zinc-800" : "text-zinc-400"
+                            }`;
                     }
                     headerRow.appendChild(dayBadge);
                     cell.appendChild(headerRow);
@@ -1464,8 +1498,8 @@ const firebaseConfig = {
                 const subText = isMultiDay
                     ? `${formatEuropeanDate(ev.startDate)} – ${formatEuropeanDate(ev.endDate)}`
                     : ev.recurrence && ev.recurrence !== "none"
-                    ? `Repeats ${ev.recurrence}`
-                    : "All-day event";
+                        ? `Repeats ${ev.recurrence}`
+                        : "All-day event";
 
                 row.innerHTML = `
                     <div class="flex items-center gap-2.5 min-w-0">
@@ -1556,9 +1590,8 @@ const firebaseConfig = {
                 const btn = document.createElement("button");
                 btn.type = "button";
                 const isSelected = key === activeKey;
-                btn.className = `w-7 h-7 rounded-full ${meta.swatch} transition flex items-center justify-center ${
-                    isSelected ? "ring-2 ring-offset-2 ring-zinc-950 scale-110" : "opacity-85 hover:opacity-100 hover:scale-105"
-                }`;
+                btn.className = `w-7 h-7 rounded-full ${meta.swatch} transition flex items-center justify-center ${isSelected ? "ring-2 ring-offset-2 ring-zinc-950 scale-110" : "opacity-85 hover:opacity-100 hover:scale-105"
+                    }`;
                 btn.title = meta.name;
                 if (isSelected) {
                     btn.innerHTML = `<i class="fa-solid fa-check text-[10px] ${key === "yellow" || key === "lime" ? "text-zinc-950" : "text-white"}"></i>`;
@@ -2211,7 +2244,7 @@ When asked what events are scheduled, list ALL matching events clearly without o
                 src.buffer = buffer;
                 src.connect(ctx.destination);
                 src.onended = () => {
-                    ctx.close().catch(() => {});
+                    ctx.close().catch(() => { });
                     resolve();
                 };
                 src.start();
@@ -2226,7 +2259,7 @@ When asked what events are scheduled, list ALL matching events clearly without o
                 live.nextPlayTime = live.playCtx.currentTime;
             }
             if (live.playCtx.state === "suspended") {
-                live.playCtx.resume().catch(() => {});
+                live.playCtx.resume().catch(() => { });
             }
             const audioBuffer = base64Pcm24kToAudioBuffer(live.playCtx, base64Data);
             const src = live.playCtx.createBufferSource();
@@ -2245,7 +2278,7 @@ When asked what events are scheduled, list ALL matching events clearly without o
         function interruptLivePlayback() {
             const live = aiEngine.live;
             live.activeSources.forEach((src) => {
-                try { src.stop(); } catch (_) {}
+                try { src.stop(); } catch (_) { }
             });
             live.activeSources = [];
             if (live.playCtx) {
@@ -2499,7 +2532,7 @@ When the user says goodbye, thank you, thanks, cheers, or that's it, say a brief
                             sess.sendRealtimeInput({
                                 audio: { data: b64, mimeType: "audio/pcm;rate=16000" }
                             });
-                        } catch (_) {}
+                        } catch (_) { }
                     });
                 };
                 source.connect(processor);
@@ -2522,15 +2555,15 @@ When the user says goodbye, thank you, thanks, cheers, or that's it, say a brief
             interruptLivePlayback();
 
             if (live.processor) {
-                try { live.processor.disconnect(); } catch (_) {}
+                try { live.processor.disconnect(); } catch (_) { }
                 live.processor = null;
             }
             if (live.audioCtx) {
-                live.audioCtx.close().catch(() => {});
+                live.audioCtx.close().catch(() => { });
                 live.audioCtx = null;
             }
             if (live.playCtx) {
-                live.playCtx.close().catch(() => {});
+                live.playCtx.close().catch(() => { });
                 live.playCtx = null;
             }
             if (live.mediaStream) {
@@ -2538,7 +2571,7 @@ When the user says goodbye, thank you, thanks, cheers, or that's it, say a brief
                 live.mediaStream = null;
             }
             if (live.session) {
-                try { live.session.close(); } catch (_) {}
+                try { live.session.close(); } catch (_) { }
                 live.session = null;
             }
             live.sessionPromise = null;
@@ -2576,7 +2609,7 @@ When the user says goodbye, thank you, thanks, cheers, or that's it, say a brief
             if (hasFirebase && firebaseAuth) {
                 try {
                     await signOut(firebaseAuth);
-                } catch (_) {}
+                } catch (_) { }
             }
 
             // Always start locked on fresh page load/refresh until password is entered
@@ -2795,4 +2828,5 @@ When the user says goodbye, thank you, thanks, cheers, or that's it, say a brief
         }
     </script>
 </body>
+
 </html>
