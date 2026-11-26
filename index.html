@@ -36,7 +36,7 @@
         }
     </script>
     <style>
-        /* Reserve scrollbar space permanently so switching between Calendar and Notes never shifts the header */
+        /* Reserve scrollbar space permanently so switching between Calendar, Shifts, and Notes never shifts the header */
         html {
             overflow-y: scroll;
             scrollbar-gutter: stable;
@@ -235,31 +235,20 @@
                 font-weight: 600 !important;
                 letter-spacing: -0.015em !important;
             }
-        }
 
-        /* Drag-and-drop visual states */
-        .dragging-pill {
-            opacity: 0.45 !important;
-        }
-
-        .drop-target-above {
-            box-shadow: 0 -2px 0 0 #09090b !important;
-        }
-
-        .drop-target-below {
-            box-shadow: 0 2px 0 0 #09090b !important;
-        }
-
-        /* Animated AI Live Equalizer Bars */
-        @keyframes liveEqualizer {
-
-            0%,
-            100% {
-                transform: scaleY(0.35);
-            }
-
-            50% {
-                transform: scaleY(1);
+            .mobile-shift-pill {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                white-space: normal !important;
+                overflow: visible !important;
+                text-overflow: clip !important;
+                word-break: normal !important;
+                overflow-wrap: break-word !important;
+                line-height: 1.15 !important;
+                font-size: 8.5px !important;
+                font-weight: 600 !important;
+                letter-spacing: -0.02em !important;
             }
         }
 
@@ -357,12 +346,17 @@
                 </button>
             </div>
 
-            <!-- Workspace Tab Switcher (Second row on mobile so it never overlaps, centered on desktop) -->
-            <div class="w-full sm:w-auto order-3 sm:order-2 grid grid-cols-2 bg-zinc-100/90 p-1 rounded-xl border border-zinc-200/80 flex-shrink-0 justify-self-center" role="tablist" aria-label="Workspace view">
+            <!-- Workspace Tab Switcher: Calendar | Shifts | Notes -->
+            <div class="w-full sm:w-auto order-3 sm:order-2 grid grid-cols-3 bg-zinc-100/90 p-1 rounded-xl border border-zinc-200/80 flex-shrink-0 justify-self-center" role="tablist" aria-label="Workspace view">
                 <button type="button" id="tab-calendar-btn" role="tab" aria-selected="true"
                     class="px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center justify-center gap-1.5">
                     <i class="fa-regular fa-calendar text-[11px] w-3.5 text-center"></i>
                     <span>Calendar</span>
+                </button>
+                <button type="button" id="tab-shifts-btn" role="tab" aria-selected="false"
+                    class="px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center justify-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-indigo-600 flex-shrink-0"></span>
+                    <span>Shifts</span>
                 </button>
                 <button type="button" id="tab-notes-btn" role="tab" aria-selected="false"
                     class="px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center justify-center gap-1.5">
@@ -394,13 +388,6 @@
                         <span class="hidden lg:inline">Lock</span>
                     </button>
                 </div>
-
-                <button type="button" id="primary-action-btn"
-                    class="inline-flex items-center justify-center gap-1.5 w-8 sm:w-[116px] h-8 sm:h-9 bg-zinc-950 hover:bg-zinc-800 active:scale-[0.99] text-white text-xs font-semibold rounded-xl shadow-xs transition flex-shrink-0"
-                    title="New Event">
-                    <i class="fa-solid fa-plus text-xs w-3 text-center"></i>
-                    <span id="primary-action-label" class="hidden sm:inline">New Event</span>
-                </button>
             </div>
         </div>
     </header>
@@ -409,7 +396,7 @@
     <main id="app-main" class="hidden page-container flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 py-5 sm:py-6">
         <div class="workspace-grid grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
 
-            <!-- Primary Left Column (Switches cleanly between Calendar View & Notes View) -->
+            <!-- Primary Left Column (Switches cleanly between Calendar View, Shifts View & Notes View) -->
             <div class="calendar-primary-col lg:col-span-8 xl:col-span-9 flex flex-col gap-5">
 
                 <!-- 1. CALENDAR VIEW -->
@@ -483,7 +470,123 @@
                     </div>
                 </section>
 
-                <!-- 2. NOTES WORKSPACE VIEW (Swapped in place of Calendar when Notes tab is active) -->
+                <!-- 2. SHIFTS WORKSPACE VIEW (Dedicated Weekly/Monthly Shift Rota Calendar in Indigo) -->
+                <section id="shifts-workspace-view"
+                    class="hidden calendar-shell bg-white rounded-3xl border border-zinc-200/85 shadow-soft overflow-hidden">
+                    <!-- Shifts Month Navigation Bar -->
+                    <div
+                        class="calendar-top-bar px-4 sm:px-6 py-4 border-b border-zinc-100 flex flex-wrap items-center justify-between gap-3 relative">
+                        <div class="flex items-center gap-2.5 flex-wrap">
+                            <div class="relative">
+                                <button type="button" id="shifts-month-year-picker-trigger"
+                                    class="inline-flex items-center gap-2 text-base sm:text-lg font-bold text-zinc-950 tracking-tight hover:bg-zinc-100/80 px-2.5 py-1.5 -ml-2.5 rounded-xl transition">
+                                    <span id="shifts-current-month-display">November 2026</span>
+                                    <i id="shifts-month-year-chevron"
+                                        class="fa-solid fa-chevron-down text-xs text-zinc-400 transition-transform duration-200"></i>
+                                </button>
+
+                                <!-- Shifts Month / Year Quick Popover -->
+                                <div id="shifts-month-year-popover"
+                                    class="hidden no-print absolute left-0 top-full mt-2 z-40 w-72 bg-white rounded-2xl shadow-float border border-zinc-200 p-4">
+                                    <div class="grid grid-cols-3 gap-3">
+                                        <div id="shifts-picker-months-grid" class="col-span-2 grid grid-cols-3 gap-1.5"></div>
+                                        <div id="shifts-picker-years-scroll"
+                                            class="col-span-1 max-h-44 overflow-y-auto clean-scroll border-l border-zinc-100 pl-2 space-y-1">
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 pt-3 border-t border-zinc-100 flex justify-end">
+                                        <button type="button" id="shifts-picker-jump-today-btn"
+                                            class="text-xs font-semibold text-indigo-700 hover:text-indigo-900 px-2.5 py-1 rounded-lg hover:bg-indigo-50 transition">
+                                            Jump to Today
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Segmented Month Controls -->
+                        <div
+                            class="no-print inline-flex items-center bg-zinc-100/90 p-1 rounded-xl border border-zinc-200/80">
+                            <button type="button" id="shifts-prev-month-btn"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center text-zinc-600 hover:text-zinc-950 hover:bg-white transition"
+                                title="Previous Month">
+                                <i class="fa-solid fa-chevron-left text-xs"></i>
+                            </button>
+                            <button type="button" id="shifts-today-btn"
+                                class="px-3 h-8 rounded-lg text-xs font-semibold text-zinc-700 hover:text-zinc-950 hover:bg-white transition">
+                                Today
+                            </button>
+                            <button type="button" id="shifts-next-month-btn"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center text-zinc-600 hover:text-zinc-950 hover:bg-white transition"
+                                title="Next Month">
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick One-Tap Shift Preset Popover (Opens on Day Click) -->
+                    <div id="shifts-day-popover"
+                        class="hidden no-print fixed z-[80] w-64 bg-white rounded-2xl shadow-float border border-indigo-200/90 p-3 space-y-2.5">
+                        <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-zinc-100">
+                            <div class="min-w-0">
+                                <span class="block text-[9.5px] font-semibold uppercase tracking-wider text-indigo-600">Add Shift</span>
+                                <span id="shifts-popover-date-label" class="block text-xs font-bold text-zinc-950 truncate">Thu 26 Nov</span>
+                            </div>
+                            <button type="button" id="close-shifts-popover-btn"
+                                class="w-6 h-6 rounded-lg text-zinc-400 hover:text-zinc-800 hover:bg-zinc-100 flex items-center justify-center transition flex-shrink-0"
+                                title="Close">
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button type="button" data-quick-shift="08:00-17:00"
+                                class="px-2 py-2 rounded-xl bg-indigo-50/60 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200/80 text-[11px] font-semibold transition text-center">
+                                08:00 – 17:00
+                            </button>
+                            <button type="button" data-quick-shift="09:00-18:00"
+                                class="px-2 py-2 rounded-xl bg-indigo-50/60 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200/80 text-[11px] font-semibold transition text-center">
+                                09:00 – 18:00
+                            </button>
+                            <button type="button" data-quick-shift="10:00-19:00"
+                                class="px-2 py-2 rounded-xl bg-indigo-50/60 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200/80 text-[11px] font-semibold transition text-center">
+                                10:00 – 19:00
+                            </button>
+                            <button type="button" data-quick-shift="11:00-20:00"
+                                class="px-2 py-2 rounded-xl bg-indigo-50/60 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200/80 text-[11px] font-semibold transition text-center">
+                                11:00 – 20:00
+                            </button>
+                            <button type="button" data-quick-shift="11:30-20:30"
+                                class="px-2 py-2 rounded-xl bg-indigo-50/60 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200/80 text-[11px] font-semibold transition text-center">
+                                11:30 – 20:30
+                            </button>
+                            <button type="button" data-quick-shift="custom"
+                                class="px-2 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-700 text-[11px] font-semibold transition inline-flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-sliders text-[9.5px]"></i>
+                                <span>Custom</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Weekday Header Row -->
+                    <div
+                        class="week-header-row grid grid-cols-[28px_repeat(7,minmax(0,1fr))] sm:grid-cols-[36px_repeat(7,minmax(0,1fr))] bg-zinc-50/70 border-b border-zinc-200/70 py-2.5 text-center text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-zinc-400 select-none">
+                        <div class="px-1">Wk</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                        <div>Sun</div>
+                    </div>
+
+                    <!-- Shifts Calendar Days Grid -->
+                    <div id="shifts-days-grid"
+                        class="calendar-grid grid grid-cols-[28px_repeat(7,minmax(0,1fr))] sm:grid-cols-[36px_repeat(7,minmax(0,1fr))]">
+                    </div>
+                </section>
+
+                <!-- 3. NOTES WORKSPACE VIEW (Swapped in place of Calendar when Notes tab is active) -->
                 <section id="notes-workspace-view"
                     class="hidden no-print bg-white rounded-3xl border border-zinc-200/85 shadow-soft overflow-hidden">
                     <!-- Notes Header & Search Bar -->
@@ -601,6 +704,25 @@
                         </button>
                     </div>
                     <div id="selected-day-list" class="mt-3.5 space-y-2"></div>
+                </section>
+
+                <!-- Rota Summary Card (Shown on Shifts tab: Today + Next Shift) -->
+                <section id="selected-shifts-card" class="hidden bg-white rounded-3xl border border-zinc-200/85 shadow-soft p-5">
+                    <div class="flex items-center justify-between gap-2 pb-3.5 border-b border-zinc-100">
+                        <div class="min-w-0">
+                            <span
+                                class="block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Rota
+                                Overview</span>
+                            <h2 id="shifts-summary-month-title" class="text-sm font-bold text-zinc-950 truncate mt-0.5">
+                                Today &amp; Next Shift</h2>
+                        </div>
+                        <button type="button" id="selected-shifts-add-btn"
+                            class="w-8 h-8 rounded-xl bg-zinc-100 hover:bg-zinc-950 text-zinc-700 hover:text-white flex items-center justify-center transition flex-shrink-0"
+                            title="Add shift">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                        </button>
+                    </div>
+                    <div id="shifts-summary-week-list" class="mt-3.5 space-y-2"></div>
                 </section>
 
                 <!-- Pinned Notes Quick Card (Shown on Notes tab) -->
@@ -861,6 +983,138 @@
                         <button type="submit"
                             class="px-5 py-2.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold transition">
                             Save Event
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add / Edit Shift Modal (Predetermined Shifts + Custom Time Option, Dedicated Indigo Accent) -->
+    <div id="shift-modal"
+        class="hidden no-print fixed inset-0 bg-zinc-950/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float border border-zinc-200 w-full max-w-md overflow-hidden p-6">
+            <div class="flex items-center justify-between pb-4 border-b border-zinc-100">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                    <h3 id="shift-modal-title" class="font-semibold text-zinc-950 text-[15px] tracking-tight">Add Shift</h3>
+                </div>
+                <button type="button" id="close-shift-modal-btn"
+                    class="text-zinc-400 hover:text-zinc-800 rounded-xl hover:bg-zinc-100 transition w-8 h-8 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <form id="shift-form" class="mt-5 space-y-4">
+                <input type="hidden" id="shift-id">
+                <input type="hidden" id="shift-preset-key" value="09:00-18:00">
+                <input type="hidden" id="shift-color" value="indigo">
+
+                <!-- Predetermined Shift Presets + Custom -->
+                <div>
+                    <span class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">Shift Hours</span>
+                    <div id="shift-preset-grid" class="grid grid-cols-3 gap-2">
+                        <button type="button" data-shift-preset="08:00-17:00"
+                            class="py-2 px-2.5 rounded-xl border text-xs font-semibold transition text-center">
+                            08:00 – 17:00
+                        </button>
+                        <button type="button" data-shift-preset="09:00-18:00"
+                            class="py-2 px-2.5 rounded-xl border text-xs font-semibold transition text-center">
+                            09:00 – 18:00
+                        </button>
+                        <button type="button" data-shift-preset="10:00-19:00"
+                            class="py-2 px-2.5 rounded-xl border text-xs font-semibold transition text-center">
+                            10:00 – 19:00
+                        </button>
+                        <button type="button" data-shift-preset="11:00-20:00"
+                            class="py-2 px-2.5 rounded-xl border text-xs font-semibold transition text-center">
+                            11:00 – 20:00
+                        </button>
+                        <button type="button" data-shift-preset="11:30-20:30"
+                            class="py-2 px-2.5 rounded-xl border text-xs font-semibold transition text-center">
+                            11:30 – 20:30
+                        </button>
+                        <button type="button" data-shift-preset="custom"
+                            class="py-2 px-2.5 rounded-xl border text-xs font-semibold transition text-center">
+                            Custom
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Custom Time Range Fields (Shown when Custom is chosen, or auto-populated for fine tuning) -->
+                <div id="shift-custom-time-wrap" class="hidden grid grid-cols-2 gap-3 p-3 rounded-2xl bg-indigo-50/60 border border-indigo-100">
+                    <div>
+                        <label for="shift-start-time"
+                            class="block text-[10.5px] font-semibold text-indigo-900/75 uppercase tracking-wider mb-1">Start Time</label>
+                        <input type="time" id="shift-start-time" value="09:00"
+                            class="w-full px-3 py-2 bg-white border border-indigo-200 rounded-xl text-zinc-900 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition">
+                    </div>
+                    <div>
+                        <label for="shift-end-time"
+                            class="block text-[10.5px] font-semibold text-indigo-900/75 uppercase tracking-wider mb-1">End Time</label>
+                        <input type="time" id="shift-end-time" value="18:00"
+                            class="w-full px-3 py-2 bg-white border border-indigo-200 rounded-xl text-zinc-900 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="shift-label"
+                        class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Role / Note (Optional)</label>
+                    <input type="text" id="shift-label" placeholder="e.g. Floor, Opening, Closing, Manager"
+                        class="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 transition">
+                </div>
+
+                <!-- Shift Colour / Swap Status Toggle -->
+                <div>
+                    <span class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">Shift Status / Colour</span>
+                    <div id="shift-color-grid" class="grid grid-cols-2 gap-2">
+                        <button type="button" data-shift-color="indigo"
+                            class="py-2 px-3 rounded-xl border text-xs font-semibold transition inline-flex items-center justify-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600 flex-shrink-0"></span>
+                            <span>Standard Shift</span>
+                        </button>
+                        <button type="button" data-shift-color="amber"
+                            class="py-2 px-3 rounded-xl border text-xs font-semibold transition inline-flex items-center justify-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 flex-shrink-0"></span>
+                            <span>Swap / Change</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="shift-date"
+                            class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Date</label>
+                        <input type="date" id="shift-date" required
+                            class="w-full px-3 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-xs font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 transition">
+                    </div>
+                    <div>
+                        <label for="shift-recurrence"
+                            class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Repeat</label>
+                        <select id="shift-recurrence"
+                            class="w-full px-3 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-xs font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 transition">
+                            <option value="none">Single day</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="biweekly">Every 2 weeks</option>
+                            <option value="daily">Daily (7 days)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-2 pt-4 border-t border-zinc-100">
+                    <button type="button" id="delete-shift-btn"
+                        class="hidden px-3.5 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-semibold transition">
+                        Delete
+                    </button>
+                    <div class="flex items-center gap-2 ml-auto">
+                        <button type="button" id="cancel-shift-modal-btn"
+                            class="px-4 py-2.5 border border-zinc-200 text-zinc-600 rounded-xl text-xs font-semibold hover:bg-zinc-50 transition">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition shadow-2xs">
+                            Save Shift
                         </button>
                     </div>
                 </div>
@@ -1140,7 +1394,7 @@
                 <!-- 3. JSON Backup & Restore -->
                 <div class="pt-4 border-t border-zinc-100 space-y-2.5">
                     <span class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
-                        Schedule &amp; Notes Backup
+                        Schedule, Shifts &amp; Notes Backup
                     </span>
                     <div class="grid grid-cols-2 gap-2.5">
                         <button type="button" id="save-backup-btn"
@@ -1181,7 +1435,7 @@
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // =========================================================================
-        // PASTE YOUR FIREBASE CONFIG BELOW
+        // FIREBASE CONFIG
         // =========================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyATrASttp3YBm-CalBJDeb5uEGGAqLKauI",
@@ -1196,6 +1450,7 @@
         const STORAGE_KEY = "ugg_knightsbridge_events_v1";
         const LEGACY_STORAGE_KEYS = ["ugg_knightsbridge_planner_events", "ugg_planner_events"];
         const DAILY_ORDER_STORAGE_KEY = "ugg_knightsbridge_daily_orders_v1";
+        const SHIFTS_STORAGE_KEY = "ugg_knightsbridge_shifts_v1";
         const NOTES_STORAGE_KEY = "ugg_knightsbridge_notes_v1";
         const NOTE_TAGS_STORAGE_KEY = "ugg_knightsbridge_note_tags_v1";
         const AI_KEY_STORAGE_KEY = "ugg_knightsbridge_gemini_key_v1";
@@ -1233,18 +1488,48 @@
         const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const WEEKDAYS_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const WEEKDAYS_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
         const COLOR_PALETTE = {
-            blue: { name: "Blue", swatch: "bg-blue-600", pill: "bg-blue-600 text-white border-blue-700 hover:bg-blue-700", dot: "bg-blue-600" },
-            green: { name: "Green", swatch: "bg-emerald-600", pill: "bg-emerald-600 text-white border-emerald-700 hover:bg-emerald-700", dot: "bg-emerald-600" },
-            yellow: { name: "Yellow", swatch: "bg-amber-400", pill: "bg-amber-400 text-zinc-950 border-amber-500 hover:bg-amber-500", dot: "bg-amber-400" },
-            red: { name: "Red", swatch: "bg-rose-600", pill: "bg-rose-600 text-white border-rose-700 hover:bg-rose-700", dot: "bg-rose-600" },
-            orange: { name: "Orange", swatch: "bg-orange-500", pill: "bg-orange-500 text-white border-orange-600 hover:bg-orange-600", dot: "bg-orange-500" },
-            lime: { name: "Lime", swatch: "bg-lime-500", pill: "bg-lime-500 text-zinc-950 border-lime-600 hover:bg-lime-600", dot: "bg-lime-500" },
-            purple: { name: "Purple", swatch: "bg-purple-600", pill: "bg-purple-600 text-white border-purple-700 hover:bg-purple-700", dot: "bg-purple-600" },
-            pink: { name: "Pink", swatch: "bg-pink-500", pill: "bg-pink-500 text-white border-pink-600 hover:bg-pink-600", dot: "bg-pink-500" },
-            cyan: { name: "Cyan", swatch: "bg-cyan-600", pill: "bg-cyan-600 text-white border-cyan-700 hover:bg-cyan-600", dot: "bg-cyan-600" },
-            black: { name: "Black", swatch: "bg-zinc-900", pill: "bg-zinc-900 text-white border-zinc-950 hover:bg-zinc-800", dot: "bg-zinc-900" }
+            blue: { name: "Blue", swatch: "bg-blue-600", dot: "bg-blue-600", pill: "bg-blue-600 text-white border-blue-700 hover:bg-blue-700" },
+            green: { name: "Green", swatch: "bg-emerald-600", dot: "bg-emerald-600", pill: "bg-emerald-600 text-white border-emerald-700 hover:bg-emerald-700" },
+            yellow: { name: "Yellow", swatch: "bg-amber-400", dot: "bg-amber-400", pill: "bg-amber-400 text-zinc-950 border-amber-500 hover:bg-amber-500" },
+            red: { name: "Red", swatch: "bg-rose-600", dot: "bg-rose-600", pill: "bg-rose-600 text-white border-rose-700 hover:bg-rose-700" },
+            orange: { name: "Orange", swatch: "bg-orange-500", dot: "bg-orange-500", pill: "bg-orange-500 text-white border-orange-600 hover:bg-orange-600" },
+            lime: { name: "Lime", swatch: "bg-lime-400", dot: "bg-lime-400", pill: "bg-lime-400 text-zinc-950 border-lime-500 hover:bg-lime-500" },
+            purple: { name: "Purple", swatch: "bg-purple-600", dot: "bg-purple-600", pill: "bg-purple-600 text-white border-purple-700 hover:bg-purple-700" },
+            pink: { name: "Pink", swatch: "bg-pink-500", dot: "bg-pink-500", pill: "bg-pink-500 text-white border-pink-600 hover:bg-pink-600" },
+            cyan: { name: "Cyan", swatch: "bg-cyan-500", dot: "bg-cyan-500", pill: "bg-cyan-500 text-white border-cyan-600 hover:bg-cyan-600" },
+            black: { name: "Black", swatch: "bg-zinc-900", dot: "bg-zinc-900", pill: "bg-zinc-900 text-white border-zinc-950 hover:bg-zinc-800" }
+        };
+        // Dedicated Shifts Theme (Indigo for standard shifts, Amber for swapped/changed shifts)
+        const SHIFT_THEMES = {
+            indigo: {
+                name: "Standard",
+                swatch: "bg-indigo-600",
+                pill: "bg-indigo-600 text-white border-indigo-700 hover:bg-indigo-700",
+                dot: "bg-indigo-600",
+                card: "bg-indigo-50/75 hover:bg-indigo-100/75 border-indigo-200/80",
+                badgeText: "text-indigo-600"
+            },
+            amber: {
+                name: "Swap / Change",
+                swatch: "bg-amber-500",
+                pill: "bg-amber-500 text-zinc-950 border-amber-600 hover:bg-amber-600",
+                dot: "bg-amber-500",
+                card: "bg-amber-50/85 hover:bg-amber-100/80 border-amber-200/90",
+                badgeText: "text-amber-700"
+            }
+        };
+
+        function getShiftTheme(shiftObj) {
+            return shiftObj?.color === "amber" ? SHIFT_THEMES.amber : SHIFT_THEMES.indigo;
+        }
+
+        const SHIFT_PRESETS = {
+            "08:00-17:00": { startTime: "08:00", endTime: "17:00", label: "08:00 – 17:00" },
+            "09:00-18:00": { startTime: "09:00", endTime: "18:00", label: "09:00 – 18:00" },
+            "10:00-19:00": { startTime: "10:00", endTime: "19:00", label: "10:00 – 19:00" },
+            "11:00-20:00": { startTime: "11:00", endTime: "20:00", label: "11:00 – 20:00" },
+            "11:30-20:30": { startTime: "11:30", endTime: "20:30", label: "11:30 – 20:30" }
         };
 
         const DEFAULT_NOTE_TAGS = [
@@ -1277,12 +1562,18 @@
         const $ = (id) => document.getElementById(id);
 
         const initialToday = new Date();
-        let activeWorkspaceTab = "calendar"; // "calendar" | "notes"
+        let activeWorkspaceTab = "calendar"; // "calendar" | "shifts" | "notes"
         let activeYear = initialToday.getFullYear();
         let activeMonthIndex = initialToday.getMonth();
         let selectedDateKey = null;
+
+        let shiftsActiveYear = initialToday.getFullYear();
+        let shiftsActiveMonthIndex = initialToday.getMonth();
+        let selectedShiftDateKey = null;
+
         let events = [];
         let dailyOrders = {};
+        let shifts = [];
         let notes = [];
         let noteTags = [...DEFAULT_NOTE_TAGS];
         let selectedNewTagStyle = "blue";
@@ -1294,6 +1585,7 @@
         let pendingDeleteEventId = null;
         let pendingColorEdit = null;
         let isMonthYearPopoverOpen = false;
+        let isShiftsMonthYearPopoverOpen = false;
         let isBriefingCollapsed = true;
 
         let firebaseAuth = null;
@@ -1313,214 +1605,224 @@
         if (!VALID_VOICES.includes(geminiVoiceName)) geminiVoiceName = "Aoede";
 
         // =========================================================================
-        // WORKSPACE TAB SWITCHER (CALENDAR <-> NOTES)
+        // WORKSPACE TAB SWITCHER (CALENDAR <-> SHIFTS <-> NOTES)
         // =========================================================================
         function switchWorkspaceTab(tabName) {
-            activeWorkspaceTab = tabName === "notes" ? "notes" : "calendar";
+            if (tabName === "shifts") activeWorkspaceTab = "shifts";
+            else if (tabName === "notes") activeWorkspaceTab = "notes";
+            else activeWorkspaceTab = "calendar";
+
+            const isCalendar = activeWorkspaceTab === "calendar";
+            const isShifts = activeWorkspaceTab === "shifts";
             const isNotes = activeWorkspaceTab === "notes";
 
             const calTabBtn = $("tab-calendar-btn");
+            const shiftsTabBtn = $("tab-shifts-btn");
             const notesTabBtn = $("tab-notes-btn");
-            const calArea = $("calendar-touch-area");
-            const notesArea = $("notes-workspace-view");
-            const dayCard = $("selected-day-card");
-            const pinnedCard = $("pinned-notes-card");
-            const primaryBtn = $("primary-action-btn");
-            const primaryLabel = $("primary-action-label");
 
-            if (calTabBtn && notesTabBtn) {
-                if (isNotes) {
-                    calTabBtn.className = "px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center justify-center gap-1.5";
-                    calTabBtn.setAttribute("aria-selected", "false");
-                    notesTabBtn.className = "px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center justify-center gap-1.5";
-                    notesTabBtn.setAttribute("aria-selected", "true");
-                } else {
-                    calTabBtn.className = "px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center justify-center gap-1.5";
-                    calTabBtn.setAttribute("aria-selected", "true");
-                    notesTabBtn.className = "px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center justify-center gap-1.5";
-                    notesTabBtn.setAttribute("aria-selected", "false");
-                }
+            const activeBtnCls = "px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center justify-center gap-1.5";
+            const inactiveBtnCls = "px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center justify-center gap-1.5";
+
+            if (calTabBtn) {
+                calTabBtn.className = isCalendar ? activeBtnCls : inactiveBtnCls;
+                calTabBtn.setAttribute("aria-selected", isCalendar ? "true" : "false");
+            }
+            if (shiftsTabBtn) {
+                shiftsTabBtn.className = isShifts ? activeBtnCls : inactiveBtnCls;
+                shiftsTabBtn.setAttribute("aria-selected", isShifts ? "true" : "false");
+            }
+            if (notesTabBtn) {
+                notesTabBtn.className = isNotes ? activeBtnCls : inactiveBtnCls;
+                notesTabBtn.setAttribute("aria-selected", isNotes ? "true" : "false");
             }
 
-            calArea?.classList.toggle("hidden", isNotes);
-            notesArea?.classList.toggle("hidden", !isNotes);
-            dayCard?.classList.toggle("hidden", isNotes);
-            pinnedCard?.classList.toggle("hidden", !isNotes);
+            $("calendar-touch-area")?.classList.toggle("hidden", !isCalendar);
+            $("shifts-workspace-view")?.classList.toggle("hidden", !isShifts);
+            $("notes-workspace-view")?.classList.toggle("hidden", !isNotes);
+
+            $("selected-day-card")?.classList.toggle("hidden", !isCalendar);
+            $("selected-shifts-card")?.classList.toggle("hidden", !isShifts);
+            $("pinned-notes-card")?.classList.toggle("hidden", !isNotes);
+
+            // Show Print button on both Calendar and Shifts tabs; hide on Notes
             $("print-btn")?.classList.toggle("hidden", isNotes);
 
-            if (primaryBtn && primaryLabel) {
-                primaryLabel.textContent = isNotes ? "New Note" : "New Event";
-                primaryBtn.title = isNotes ? "New Note" : "New Event";
-            }
-
-            if (isNotes) {
+            if (isShifts) {
+                renderShiftsCalendar();
+            } else if (isNotes) {
+                closeShiftsDayPopover();
                 renderNotesWorkspace();
             } else {
+                closeShiftsDayPopover();
                 renderCalendar();
             }
         }
 
         // =========================================================================
-        // AUTHENTICATION, LOCK SCREEN & CLOUD SYNC
+        // DATE, FISCAL WEEK, SHIFT & NOTE HELPERS
         // =========================================================================
-        function initFirebaseServices() {
-            const hasConfig = Boolean(
-                firebaseConfig &&
-                typeof firebaseConfig.apiKey === "string" &&
-                firebaseConfig.apiKey.trim().length > 10 &&
-                !firebaseConfig.apiKey.includes("YOUR_") &&
-                typeof firebaseConfig.projectId === "string" &&
-                firebaseConfig.projectId.trim().length > 2 &&
-                !firebaseConfig.projectId.includes("YOUR_")
-            );
-            if (!hasConfig) return false;
-            try {
-                const app = initializeApp(firebaseConfig);
-                firebaseAuth = getAuth(app);
-                firestoreDb = getFirestore(app);
-                firebaseConfigured = true;
-                return true;
-            } catch (err) {
-                console.error("Firebase initialization failed:", err);
-                firebaseAuth = null;
-                firestoreDb = null;
-                firebaseConfigured = false;
-                return false;
+        function formatDateKey(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+            const d = String(dateObj.getDate()).padStart(2, "0");
+            return `${y}-${m}-${d}`;
+        }
+
+        function parseDateKey(dateKey) {
+            const [y, m, d] = String(dateKey || "2026-01-01").split("-").map(Number);
+            return new Date(y || 2026, (m || 1) - 1, d || 1);
+        }
+
+        function formatEuropeanDate(dateKey) {
+            if (!dateKey || dateKey.length < 10) return dateKey || "";
+            return `${dateKey.slice(8, 10)}/${dateKey.slice(5, 7)}/${dateKey.slice(0, 4)}`;
+        }
+
+        function formatHumanDate(dateKey) {
+            const dt = parseDateKey(dateKey);
+            return `${WEEKDAYS_FULL[dt.getDay()]}, ${dt.getDate()} ${MONTHS_SHORT[dt.getMonth()]} ${dt.getFullYear()}`;
+        }
+
+        function formatShortDayDate(dateKey) {
+            const dt = parseDateKey(dateKey);
+            return `${WEEKDAYS_SHORT[dt.getDay()]} ${dt.getDate()} ${MONTHS_SHORT[dt.getMonth()]}`;
+        }
+
+        function getFiscalWeekNumber(mondayDate) {
+            const year = mondayDate.getFullYear();
+            const april1 = new Date(year, 3, 1);
+            const aprilOffset = (april1.getDay() + 6) % 7;
+            const fiscalStart = new Date(year, 3, 1 - aprilOffset);
+            if (mondayDate < fiscalStart) {
+                const prevApril1 = new Date(year - 1, 3, 1);
+                const prevOffset = (prevApril1.getDay() + 6) % 7;
+                const prevFiscalStart = new Date(year - 1, 3, 1 - prevOffset);
+                return Math.floor(Math.round((mondayDate - prevFiscalStart) / 86400000) / 7) + 1;
             }
+            return Math.floor(Math.round((mondayDate - fiscalStart) / 86400000) / 7) + 1;
+        }
+
+        function normalizeColorKey(rawColor) {
+            const key = String(rawColor || "blue").toLowerCase().trim();
+            return COLOR_PALETTE[key] ? key : "blue";
+        }
+
+        function escapeHtml(str) {
+            return String(str || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        let toastTimer = null;
+        function showToast(message, isError = false) {
+            const toast = $("status-toast");
+            const icon = $("status-toast-icon");
+            const msgEl = $("status-toast-msg");
+            if (!toast || !msgEl) return;
+            msgEl.textContent = message;
+            if (icon) {
+                icon.className = isError
+                    ? "fa-solid fa-circle-exclamation text-rose-400"
+                    : "fa-solid fa-circle-check text-emerald-400";
+            }
+            toast.classList.remove("hidden");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.add("hidden"), 2800);
         }
 
         function updateSyncBadge(status, label) {
             const dot = $("cloud-sync-dot");
             const text = $("cloud-sync-text");
-            if (text && label) text.textContent = label;
+            if (text) text.textContent = label || "Local";
             if (dot) {
-                if (status === "synced") {
-                    dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
-                } else if (status === "syncing") {
-                    dot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse";
-                } else if (status === "error") {
-                    dot.className = "w-1.5 h-1.5 rounded-full bg-rose-500";
-                } else {
-                    dot.className = "w-1.5 h-1.5 rounded-full bg-zinc-400";
-                }
+                if (status === "cloud") dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+                else if (status === "syncing") dot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse";
+                else dot.className = "w-1.5 h-1.5 rounded-full bg-zinc-400";
             }
         }
 
-        function unlockPlannerUI(useCloud) {
-            $("auth-lock-screen")?.classList.add("hidden");
-            $("app-header")?.classList.remove("hidden");
-            $("app-main")?.classList.remove("hidden");
-            if ($("auth-password-input")) {
-                $("auth-password-input").value = "";
-                $("auth-password-input").type = "password";
-            }
-            const toggleIcon = $("auth-toggle-password-icon");
-            if (toggleIcon) toggleIcon.className = "fa-regular fa-eye text-sm";
-
-            loadLocalData();
-            if (useCloud && firestoreDb) {
-                startCloudListener();
-            } else {
-                cloudReady = false;
-                updateSyncBadge("local", "Local");
-            }
-            renderCalendar();
-            renderNotesWorkspace();
+        function normalizeShiftItem(raw = {}) {
+            return {
+                id: raw.id || `sh_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                date: raw.date || formatDateKey(new Date()),
+                startTime: raw.startTime || "09:00",
+                endTime: raw.endTime || "18:00",
+                label: String(raw.label || "").trim(),
+                color: raw.color === "amber" ? "amber" : "indigo",
+                recurrence: raw.recurrence || "none",
+                seriesId: raw.seriesId || null
+            };
         }
 
-        async function lockPlannerUI() {
-            stopLiveVoiceSession();
-            if (unsubscribeCloud) {
-                unsubscribeCloud();
-                unsubscribeCloud = null;
+        function createShiftOccurrences(dateStr, startTime, endTime, label, recurrence, color = "indigo") {
+            const shiftColor = color === "amber" ? "amber" : "indigo";
+            if (!recurrence || recurrence === "none") {
+                return [normalizeShiftItem({ date: dateStr, startTime, endTime, label, color: shiftColor, recurrence: "none", seriesId: null })];
             }
-            cloudReady = false;
-            if (firebaseAuth && firebaseAuth.currentUser) {
-                try {
-                    await signOut(firebaseAuth);
-                } catch (err) {
-                    console.error("Sign out error:", err);
-                }
+            const seriesId = `shser_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+            const startObj = parseDateKey(dateStr);
+            const maxCount = recurrence === "daily" ? 7 : recurrence === "biweekly" ? 12 : 16;
+            const list = [];
+            for (let i = 0; i < maxCount; i++) {
+                const occ = new Date(startObj);
+                if (recurrence === "daily") occ.setDate(occ.getDate() + i);
+                else if (recurrence === "weekly") occ.setDate(occ.getDate() + i * 7);
+                else if (recurrence === "biweekly") occ.setDate(occ.getDate() + i * 14);
+                list.push(normalizeShiftItem({
+                    date: formatDateKey(occ),
+                    startTime,
+                    endTime,
+                    label,
+                    color: shiftColor,
+                    recurrence,
+                    seriesId
+                }));
             }
-            $("app-header")?.classList.add("hidden");
-            $("app-main")?.classList.add("hidden");
-            $("auth-lock-screen")?.classList.remove("hidden");
-            setTimeout(() => $("auth-password-input")?.focus(), 40);
+            return list;
         }
 
-        async function handleAuthUnlockSubmit(e) {
-            e.preventDefault();
-            const passwordInput = $("auth-password-input");
-            const errorEl = $("auth-error-msg");
-            const btn = $("auth-unlock-btn");
-            const btnText = $("auth-unlock-btn-text");
-            const password = passwordInput?.value || "";
-
-            if (!password) return;
-
-            if (errorEl) {
-                errorEl.textContent = "";
-                errorEl.classList.add("hidden");
-            }
-
-            if (!firebaseConfigured || !firebaseAuth) {
-                if (errorEl) {
-                    errorEl.textContent = "Authentication service not configured.";
-                    errorEl.classList.remove("hidden");
-                }
-                return;
-            }
-
-            if (btn) btn.disabled = true;
-            if (btnText) btnText.textContent = "Signing in...";
-
-            try {
-                await signInWithEmailAndPassword(firebaseAuth, STORE_AUTH_EMAIL, password);
-                unlockPlannerUI(true);
-            } catch (err) {
-                console.error("Firebase sign-in failed:", err);
-                const code = err?.code || "unknown";
-                let message = "Incorrect password";
-                if (code === "auth/too-many-requests") {
-                    message = "Too many attempts. Please wait a moment and try again.";
-                } else if (code === "auth/network-request-failed") {
-                    message = "Network error. Check your internet connection.";
-                }
-                if (errorEl) {
-                    errorEl.textContent = message;
-                    errorEl.classList.remove("hidden");
-                }
-            } finally {
-                if (btn) btn.disabled = false;
-                if (btnText) btnText.textContent = "Unlock Planner";
-            }
+        function getShiftsForDate(dateKey) {
+            return shifts
+                .filter((sh) => sh.date === dateKey)
+                .sort((a, b) => a.startTime.localeCompare(b.startTime));
         }
 
-        function getTagMeta(tagId) {
-            const found = noteTags.find((t) => t.id === tagId) || noteTags[0] || DEFAULT_NOTE_TAGS[0];
-            const style = TAG_BADGE_STYLES[found.styleKey] || TAG_BADGE_STYLES.zinc;
-            return { id: found.id, label: found.label, badge: style.badge, builtIn: Boolean(found.builtIn) };
+        function formatShiftDisplayRange(sh) {
+            return `${sh.startTime} – ${sh.endTime}`;
         }
 
-        function resolveValidTagId(rawTag) {
-            if (!rawTag) return "general";
-            const q = String(rawTag).trim().toLowerCase();
-            const byId = noteTags.find((t) => t.id.toLowerCase() === q);
+        function resolveValidTagId(rawCategory) {
+            const val = String(rawCategory || "").trim();
+            if (!val) return noteTags[0]?.id || "general";
+            const byId = noteTags.find((t) => t.id === val);
             if (byId) return byId.id;
-            const byLabel = noteTags.find((t) => t.label.toLowerCase() === q);
+            const byLabel = noteTags.find((t) => t.label.toLowerCase() === val.toLowerCase());
             if (byLabel) return byLabel.id;
-            return "general";
+            return noteTags[0]?.id || "general";
         }
 
-        function normalizeNoteItem(raw) {
-            const contentStr = String(raw.content || "");
-            const hasChecklistSyntax = /^\s*-\s*\[[ xX]\]/m.test(contentStr);
-            const resolvedType = raw.type === "checklist" || (!raw.type && hasChecklistSyntax) ? "checklist" : "note";
+        function getTagMeta(categoryId) {
+            const tag = noteTags.find((t) => t.id === categoryId) || noteTags[0] || DEFAULT_NOTE_TAGS[0];
+            const style = TAG_BADGE_STYLES[tag.styleKey] || TAG_BADGE_STYLES.zinc;
+            return {
+                id: tag.id,
+                label: tag.label,
+                badge: style.badge,
+                swatch: style.swatch
+            };
+        }
+
+        function normalizeNoteItem(raw = {}) {
+            const content = String(raw.content || "");
+            const detectedChecklist = raw.type === "checklist" || /^\s*-\s*\[[ xX]\]/m.test(content);
             return {
                 id: raw.id || `note_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-                title: String(raw.title || "Untitled Note").trim(),
-                type: resolvedType,
-                content: contentStr,
+                title: String(raw.title || "Untitled Note").trim() || "Untitled Note",
+                type: detectedChecklist ? "checklist" : "note",
+                content,
                 category: resolveValidTagId(raw.category),
                 color: NOTE_TINTS[raw.color] ? raw.color : "default",
                 pinned: Boolean(raw.pinned),
@@ -1532,12 +1834,492 @@
             const lines = String(contentStr || "").split("\n").map((l) => l.trim()).filter(Boolean);
             if (lines.length === 0) return [{ text: "", checked: false }];
             return lines.map((line) => {
-                const checkedMatch = line.match(/^\s*-\s*\[[xX]\]\s*(.*)$/);
-                if (checkedMatch) return { text: checkedMatch[1], checked: true };
-                const uncheckedMatch = line.match(/^\s*-\s*\[\s\]\s*(.*)$/);
-                if (uncheckedMatch) return { text: uncheckedMatch[1], checked: false };
-                return { text: line.replace(/^[-*•]\s+/, ""), checked: false };
+                const checkedMatch = line.match(/^-\s*\[[xX]\]\s*(.*)$/);
+                if (checkedMatch) return { text: checkedMatch[1].trim(), checked: true };
+                const uncheckedMatch = line.match(/^-\s*\[\s\]\s*(.*)$/);
+                if (uncheckedMatch) return { text: uncheckedMatch[1].trim(), checked: false };
+                return { text: line.replace(/^[-*•]\s+/, "").trim(), checked: false };
             });
+        }
+
+        // =========================================================================
+        // SHIFTS CALENDAR, ONE-TAP DAY POPOVER & ROTA SUMMARY
+        // =========================================================================
+        let activeShiftsPopoverDateKey = null;
+
+        function closeShiftsDayPopover() {
+            const popover = $("shifts-day-popover");
+            if (popover) popover.classList.add("hidden");
+            activeShiftsPopoverDateKey = null;
+        }
+
+        function openShiftsDayPopover(dateKey, anchorEl) {
+            const popover = $("shifts-day-popover");
+            const dateLabel = $("shifts-popover-date-label");
+            if (!popover) return;
+
+            if (popover.parentElement !== document.body) {
+                document.body.appendChild(popover);
+            }
+
+            activeShiftsPopoverDateKey = dateKey;
+            if (dateLabel) dateLabel.textContent = formatShortDayDate(dateKey);
+
+            popover.classList.remove("hidden");
+            popover.style.visibility = "hidden";
+
+            const targetCell = anchorEl && document.body.contains(anchorEl)
+                ? anchorEl
+                : document.querySelector(`#shifts-days-grid [data-shift-date="${dateKey}"]`);
+
+            const popRect = popover.getBoundingClientRect();
+            const popW = popRect.width || 256;
+            const popH = popRect.height || 175;
+            const pad = 10;
+
+            if (targetCell) {
+                const rect = targetCell.getBoundingClientRect();
+                let left = rect.right + 8;
+                let top = rect.top;
+
+                if (left + popW > window.innerWidth - pad) {
+                    left = rect.left - popW - 8;
+                }
+                if (left < pad) {
+                    left = Math.max(pad, Math.min(rect.left, window.innerWidth - popW - pad));
+                    top = rect.bottom + 6;
+                    if (top + popH > window.innerHeight - pad) {
+                        top = Math.max(pad, rect.top - popH - 6);
+                    }
+                } else {
+                    top = Math.max(pad, Math.min(top, window.innerHeight - popH - pad));
+                }
+
+                popover.style.left = `${Math.round(left)}px`;
+                popover.style.top = `${Math.round(top)}px`;
+            } else {
+                popover.style.left = `${Math.max(pad, Math.round((window.innerWidth - popW) / 2))}px`;
+                popover.style.top = `${Math.max(pad, Math.round((window.innerHeight - popH) / 2))}px`;
+            }
+
+            popover.style.visibility = "visible";
+        }
+
+        function quickAssignShift(dateKey, presetKey) {
+            if (!dateKey) return;
+            if (presetKey === "custom") {
+                closeShiftsDayPopover();
+                openAddShiftModal(dateKey, "custom");
+                return;
+            }
+            const preset = SHIFT_PRESETS[presetKey];
+            if (!preset) return;
+
+            const existingIdx = shifts.findIndex((sh) => sh.date === dateKey && !sh.seriesId);
+            if (existingIdx !== -1) {
+                shifts[existingIdx] = {
+                    ...shifts[existingIdx],
+                    startTime: preset.startTime,
+                    endTime: preset.endTime
+                };
+            } else {
+                shifts.push(normalizeShiftItem({
+                    date: dateKey,
+                    startTime: preset.startTime,
+                    endTime: preset.endTime,
+                    label: "",
+                    recurrence: "none"
+                }));
+            }
+
+            selectedShiftDateKey = dateKey;
+            closeShiftsDayPopover();
+            commitAllData();
+            showToast(`Shift set: ${preset.label}`);
+        }
+
+        function renderShiftsCalendar() {
+            const monthDisplay = $("shifts-current-month-display");
+            const grid = $("shifts-days-grid");
+            if (!monthDisplay || !grid) return;
+
+            monthDisplay.textContent = `${MONTHS[shiftsActiveMonthIndex]} ${shiftsActiveYear}`;
+            grid.innerHTML = "";
+
+            const firstDay = new Date(shiftsActiveYear, shiftsActiveMonthIndex, 1);
+            const startOffset = (firstDay.getDay() + 6) % 7;
+            const gridStart = new Date(shiftsActiveYear, shiftsActiveMonthIndex, 1 - startOffset);
+
+            const lastDay = new Date(shiftsActiveYear, shiftsActiveMonthIndex + 1, 0);
+            const totalDaysNeeded = startOffset + lastDay.getDate();
+            const totalWeeks = Math.ceil(totalDaysNeeded / 7);
+            const todayKey = formatDateKey(new Date());
+
+            for (let w = 0; w < totalWeeks; w++) {
+                const weekMonday = new Date(gridStart);
+                weekMonday.setDate(gridStart.getDate() + w * 7);
+                const weekNum = getFiscalWeekNumber(weekMonday);
+
+                const wkCell = document.createElement("div");
+                wkCell.className = "week-num-cell border-r border-b border-zinc-200/70 bg-zinc-50/40 px-1 sm:px-0 text-[9.5px] sm:text-[11px] font-semibold text-zinc-400 flex items-start justify-center pt-2 select-none";
+                wkCell.textContent = `W${weekNum}`;
+                grid.appendChild(wkCell);
+
+                for (let d = 0; d < 7; d++) {
+                    const cellDate = new Date(weekMonday);
+                    cellDate.setDate(weekMonday.getDate() + d);
+                    const cellKey = formatDateKey(cellDate);
+                    const isCurrentMonth = cellDate.getMonth() === shiftsActiveMonthIndex;
+                    const isToday = cellKey === todayKey;
+                    const isSelected = cellKey === selectedShiftDateKey;
+
+                    const cell = document.createElement("div");
+                    cell.setAttribute("data-shift-date", cellKey);
+                    cell.className = [
+                        "day-cell border-r border-b border-zinc-200/70 p-0.5 sm:p-1.5 min-h-[82px] sm:min-h-[112px] flex flex-col gap-0.5 sm:gap-1 transition cursor-pointer relative",
+                        isCurrentMonth ? "bg-white hover:bg-indigo-50/35" : "bg-zinc-50/50 text-zinc-400 hover:bg-zinc-100/50",
+                        isSelected ? "ring-2 ring-inset ring-indigo-600/85 bg-indigo-50/25" : ""
+                    ].join(" ");
+
+                    cell.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        selectedShiftDateKey = cellKey;
+                        renderShiftsCalendar();
+                        openShiftsDayPopover(cellKey);
+                    });
+
+                    const headerRow = document.createElement("div");
+                    headerRow.className = "h-6 flex items-center justify-between px-0.5 flex-shrink-0";
+
+                    const dayBadge = document.createElement("span");
+                    dayBadge.textContent = cellDate.getDate();
+                    if (isToday) {
+                        dayBadge.className = "is-today-badge w-6 h-6 rounded-full bg-indigo-600 text-white text-[11px] sm:text-xs font-bold flex items-center justify-center shadow-2xs";
+                    } else {
+                        dayBadge.className = `w-6 h-6 rounded-full text-[11px] sm:text-xs font-semibold flex items-center justify-center ${
+                            isCurrentMonth ? "text-zinc-800" : "text-zinc-400"
+                        }`;
+                    }
+                    headerRow.appendChild(dayBadge);
+                    cell.appendChild(headerRow);
+
+                    const shiftsWrap = document.createElement("div");
+                    shiftsWrap.className = "flex flex-col gap-1 min-w-0 flex-1";
+                    const dayShifts = getShiftsForDate(cellKey);
+
+                    dayShifts.forEach((sh) => {
+                        const theme = getShiftTheme(sh);
+                        const pill = document.createElement("button");
+                        pill.type = "button";
+                        pill.className = `event-pill mobile-shift-pill w-full text-left px-1 sm:px-2 py-[3px] sm:py-1 rounded-[4px] sm:rounded-md border text-[8.5px] sm:text-[11px] font-semibold sm:font-medium leading-tight sm:truncate shadow-2xs transition cursor-pointer ${theme.pill}`;
+                        const timeRangeText = formatShiftDisplayRange(sh);
+                        const isSwapped = sh.color === "amber";
+                        if (sh.label) {
+                            pill.innerHTML = `<span class="block">${escapeHtml(timeRangeText)}</span><span class="block sm:inline font-medium opacity-95"><span class="hidden sm:inline"> · </span>${escapeHtml(sh.label)}</span>`;
+                        } else if (isSwapped) {
+                            pill.innerHTML = `<span class="block">${escapeHtml(timeRangeText)}</span><span class="block sm:inline font-medium opacity-90"><span class="hidden sm:inline"> · </span>Swap</span>`;
+                        } else {
+                            pill.textContent = timeRangeText;
+                        }
+                        pill.title = `${timeRangeText}${sh.label ? ` (${sh.label})` : ""}${isSwapped ? " — Swap / Change" : ""}`;
+
+                        pill.addEventListener("click", (e) => {
+                            e.stopPropagation();
+                            closeShiftsDayPopover();
+                            selectedShiftDateKey = cellKey;
+                            openEditShiftModal(sh.id);
+                        });
+
+                        shiftsWrap.appendChild(pill);
+                    });
+
+                    cell.appendChild(shiftsWrap);
+                    grid.appendChild(cell);
+                }
+            }
+
+            renderRotaOverviewCard();
+        }
+
+        function setShiftPresetSelection(presetKey) {
+            const key = presetKey || "09:00-18:00";
+            const hiddenInput = $("shift-preset-key");
+            const customWrap = $("shift-custom-time-wrap");
+            const startTimeInput = $("shift-start-time");
+            const endTimeInput = $("shift-end-time");
+
+            if (hiddenInput) hiddenInput.value = key;
+
+            document.querySelectorAll("#shift-preset-grid [data-shift-preset]").forEach((btn) => {
+                const isActive = btn.getAttribute("data-shift-preset") === key;
+                btn.className = isActive
+                    ? "py-2 px-2.5 rounded-xl border border-indigo-600 bg-indigo-600 text-white text-xs font-semibold transition text-center shadow-2xs"
+                    : "py-2 px-2.5 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-indigo-50/60 text-zinc-700 hover:text-indigo-700 text-xs font-semibold transition text-center";
+            });
+
+            if (key === "custom") {
+                customWrap?.classList.remove("hidden");
+            } else {
+                const preset = SHIFT_PRESETS[key] || SHIFT_PRESETS["09:00-18:00"];
+                if (startTimeInput) startTimeInput.value = preset.startTime;
+                if (endTimeInput) endTimeInput.value = preset.endTime;
+                customWrap?.classList.add("hidden");
+            }
+        }
+
+        function setShiftColorSelection(colorKey) {
+            const key = colorKey === "amber" ? "amber" : "indigo";
+            const hiddenInput = $("shift-color");
+            if (hiddenInput) hiddenInput.value = key;
+
+            document.querySelectorAll("#shift-color-grid [data-shift-color]").forEach((btn) => {
+                const btnColor = btn.getAttribute("data-shift-color");
+                const isActive = btnColor === key;
+                if (isActive && key === "indigo") {
+                    btn.className = "py-2 px-3 rounded-xl border border-indigo-600 bg-indigo-50 text-indigo-900 text-xs font-semibold transition inline-flex items-center justify-center gap-2 ring-2 ring-indigo-600/20";
+                } else if (isActive && key === "amber") {
+                    btn.className = "py-2 px-3 rounded-xl border border-amber-500 bg-amber-50 text-amber-950 text-xs font-semibold transition inline-flex items-center justify-center gap-2 ring-2 ring-amber-500/25";
+                } else {
+                    btn.className = "py-2 px-3 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-600 text-xs font-semibold transition inline-flex items-center justify-center gap-2";
+                }
+            });
+        }
+
+        function openAddShiftModal(dateStr, initialPreset = "09:00-18:00") {
+            const defaultDate = dateStr || selectedShiftDateKey || formatDateKey(new Date());
+            $("shift-modal-title").textContent = "Add Shift";
+            $("shift-id").value = "";
+            $("shift-label").value = "";
+            $("shift-date").value = defaultDate;
+            $("shift-recurrence").value = "none";
+            $("shift-recurrence").disabled = false;
+            $("delete-shift-btn").classList.add("hidden");
+            setShiftColorSelection("indigo");
+
+            const preset = SHIFT_PRESETS[initialPreset];
+            if (preset) {
+                $("shift-start-time").value = preset.startTime;
+                $("shift-end-time").value = preset.endTime;
+            } else if (!$("shift-start-time").value) {
+                $("shift-start-time").value = "09:00";
+                $("shift-end-time").value = "18:00";
+            }
+
+            setShiftPresetSelection(initialPreset);
+            $("shift-modal")?.classList.remove("hidden");
+        }
+
+        function openEditShiftModal(shiftId) {
+            const sh = shifts.find((item) => item.id === shiftId);
+            if (!sh) return;
+            $("shift-modal-title").textContent = "Edit Shift";
+            $("shift-id").value = sh.id;
+            $("shift-label").value = sh.label || "";
+            $("shift-date").value = sh.date;
+            $("shift-recurrence").value = sh.recurrence || "none";
+            $("shift-recurrence").disabled = Boolean(sh.seriesId);
+            $("delete-shift-btn").classList.remove("hidden");
+            setShiftColorSelection(sh.color || "indigo");
+
+            $("shift-start-time").value = sh.startTime || "09:00";
+            $("shift-end-time").value = sh.endTime || "18:00";
+
+            const matchedPresetKey = Object.keys(SHIFT_PRESETS).find((k) => {
+                const p = SHIFT_PRESETS[k];
+                return p.startTime === sh.startTime && p.endTime === sh.endTime;
+            });
+            setShiftPresetSelection(matchedPresetKey || "custom");
+            $("shift-modal")?.classList.remove("hidden");
+        }
+
+        function closeShiftModal() {
+            $("shift-modal")?.classList.add("hidden");
+        }
+
+        function handleShiftFormSubmit(e) {
+            e.preventDefault();
+            const id = $("shift-id").value;
+            const dateStr = $("shift-date").value;
+            const label = $("shift-label").value.trim();
+            const recurrence = $("shift-recurrence").value || "none";
+            const presetKey = $("shift-preset-key").value;
+            const color = $("shift-color")?.value === "amber" ? "amber" : "indigo";
+
+            let startTime = $("shift-start-time").value || "09:00";
+            let endTime = $("shift-end-time").value || "18:00";
+            if (presetKey && presetKey !== "custom" && SHIFT_PRESETS[presetKey]) {
+                startTime = SHIFT_PRESETS[presetKey].startTime;
+                endTime = SHIFT_PRESETS[presetKey].endTime;
+            }
+
+            if (!dateStr) return;
+
+            if (id) {
+                const idx = shifts.findIndex((item) => item.id === id);
+                if (idx !== -1) {
+                    shifts[idx] = {
+                        ...shifts[idx],
+                        date: dateStr,
+                        startTime,
+                        endTime,
+                        label,
+                        color
+                    };
+                }
+                showToast("Shift updated");
+            } else {
+                const created = createShiftOccurrences(dateStr, startTime, endTime, label, recurrence, color);
+                shifts.push(...created);
+                selectedShiftDateKey = dateStr;
+                const dt = parseDateKey(dateStr);
+                shiftsActiveYear = dt.getFullYear();
+                shiftsActiveMonthIndex = dt.getMonth();
+                showToast(created.length > 1 ? `Added ${created.length} recurring shifts` : "Shift added");
+            }
+
+            closeShiftModal();
+            commitAllData();
+        }
+
+        function handleDeleteShiftClick() {
+            const id = $("shift-id").value;
+            if (!id) return;
+            shifts = shifts.filter((item) => item.id !== id);
+            closeShiftModal();
+            commitAllData();
+            showToast("Shift deleted");
+        }
+
+        function renderShiftsMonthYearPopover() {
+            const monthsGrid = $("shifts-picker-months-grid");
+            const yearsScroll = $("shifts-picker-years-scroll");
+            if (!monthsGrid || !yearsScroll) return;
+
+            monthsGrid.innerHTML = "";
+            MONTHS_SHORT.forEach((mName, idx) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                const isActive = idx === shiftsActiveMonthIndex;
+                btn.className = isActive
+                    ? "py-2 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-2xs"
+                    : "py-2 rounded-xl text-xs font-medium text-zinc-700 hover:bg-zinc-100 transition";
+                btn.textContent = mName;
+                btn.addEventListener("click", () => {
+                    shiftsActiveMonthIndex = idx;
+                    renderShiftsCalendar();
+                    renderShiftsMonthYearPopover();
+                });
+                monthsGrid.appendChild(btn);
+            });
+
+            yearsScroll.innerHTML = "";
+            for (let y = shiftsActiveYear - 6; y <= shiftsActiveYear + 8; y++) {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                const isActive = y === shiftsActiveYear;
+                btn.className = isActive
+                    ? "w-full py-1.5 px-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white text-center"
+                    : "w-full py-1.5 px-2.5 rounded-xl text-xs font-medium text-zinc-600 hover:bg-zinc-100 text-center transition";
+                btn.textContent = String(y);
+                btn.addEventListener("click", () => {
+                    shiftsActiveYear = y;
+                    renderShiftsCalendar();
+                    renderShiftsMonthYearPopover();
+                });
+                yearsScroll.appendChild(btn);
+            }
+        }
+
+        function toggleShiftsMonthYearPopover(forceState) {
+            const popover = $("shifts-month-year-popover");
+            const chevron = $("shifts-month-year-chevron");
+            if (!popover) return;
+            isShiftsMonthYearPopoverOpen = typeof forceState === "boolean" ? forceState : !isShiftsMonthYearPopoverOpen;
+            popover.classList.toggle("hidden", !isShiftsMonthYearPopoverOpen);
+            if (chevron) {
+                chevron.style.transform = isShiftsMonthYearPopoverOpen ? "rotate(180deg)" : "rotate(0deg)";
+            }
+            if (isShiftsMonthYearPopoverOpen) {
+                renderShiftsMonthYearPopover();
+            }
+        }
+
+        function renderRotaOverviewCard() {
+            const monthTitleEl = $("shifts-summary-month-title");
+            const listEl = $("shifts-summary-week-list");
+            if (!listEl) return;
+
+            const todayKey = formatDateKey(new Date());
+            if (monthTitleEl) {
+                monthTitleEl.textContent = formatHumanDate(todayKey);
+            }
+
+            const sortedAll = [...shifts].sort(
+                (a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime)
+            );
+
+            const todayShifts = sortedAll.filter((sh) => sh.date === todayKey);
+            const futureShifts = sortedAll.filter((sh) => sh.date > todayKey);
+            const nextShift = futureShifts.length > 0 ? futureShifts[0] : null;
+
+            listEl.innerHTML = "";
+
+            const createShiftRow = (badgeLabel, sh, isTodayItem) => {
+                const theme = getShiftTheme(sh);
+                const isSwapped = sh.color === "amber";
+                const row = document.createElement("div");
+                row.className = isTodayItem || isSwapped
+                    ? `flex items-center justify-between gap-2 px-3 py-2.5 rounded-2xl border transition cursor-pointer ${theme.card}`
+                    : "flex items-center justify-between gap-2 px-3 py-2.5 rounded-2xl bg-zinc-50/90 hover:bg-indigo-50/60 border border-zinc-200/70 transition cursor-pointer";
+                row.addEventListener("click", () => openEditShiftModal(sh.id));
+
+                const shiftPrimaryText = sh.label
+                    ? `${formatShiftDisplayRange(sh)} · ${sh.label}`
+                    : formatShiftDisplayRange(sh);
+                const subDateText = isTodayItem ? "Today" : formatShortDayDate(sh.date);
+                const displayBadge = isSwapped ? `${badgeLabel} · Swap` : badgeLabel;
+
+                row.innerHTML = `
+                    <div class="min-w-0">
+                        <span class="block text-[9.5px] font-semibold uppercase tracking-wider ${isTodayItem || isSwapped ? theme.badgeText : "text-zinc-400"}">${escapeHtml(displayBadge)}</span>
+                        <div class="flex items-center gap-1.5 mt-0.5 min-w-0">
+                            <span class="w-2 h-2 rounded-full ${theme.dot} flex-shrink-0"></span>
+                            <span class="text-xs font-bold text-zinc-950 truncate">${escapeHtml(shiftPrimaryText)}</span>
+                            <span class="text-[11px] text-zinc-500 flex-shrink-0">${escapeHtml(subDateText)}</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-pen text-[10px] text-zinc-300 flex-shrink-0"></i>
+                `;
+                return row;
+            };
+
+            if (todayShifts.length > 0) {
+                todayShifts.forEach((sh, i) => {
+                    listEl.appendChild(createShiftRow(i === 0 ? "Today's Shift" : "Today (Extra)", sh, true));
+                });
+            } else {
+                const emptyToday = document.createElement("div");
+                emptyToday.className = "px-3 py-2.5 rounded-2xl bg-zinc-50/70 border border-dashed border-zinc-200/80 flex items-center justify-between";
+                emptyToday.innerHTML = `
+                    <div>
+                        <span class="block text-[9.5px] font-semibold uppercase tracking-wider text-zinc-400">Today's Shift</span>
+                        <span class="block text-xs font-medium text-zinc-500 mt-0.5">Day off</span>
+                    </div>
+                `;
+                listEl.appendChild(emptyToday);
+            }
+
+            if (nextShift) {
+                listEl.appendChild(createShiftRow("Next Shift", nextShift, false));
+            } else {
+                const emptyNext = document.createElement("div");
+                emptyNext.className = "px-3 py-2.5 rounded-2xl bg-zinc-50/70 border border-dashed border-zinc-200/80";
+                emptyNext.innerHTML = `
+                    <span class="block text-[9.5px] font-semibold uppercase tracking-wider text-zinc-400">Next Shift</span>
+                    <span class="block text-xs font-medium text-zinc-500 mt-0.5">No upcoming shift scheduled</span>
+                `;
+                listEl.appendChild(emptyNext);
+            }
         }
 
         function serializeChecklistToContent(items) {
@@ -1553,9 +2335,8 @@
             let total = 0;
             let done = 0;
             lines.forEach((line) => {
-                if (/^\s*-\s*\[\s\]\s*/.test(line)) {
-                    total++;
-                } else if (/^\s*-\s*\[[xX]\]\s*/.test(line)) {
+                if (/^\s*-\s*\[\s\]\s*/.test(line)) total++;
+                else if (/^\s*-\s*\[[xX]\]\s*/.test(line)) {
                     total++;
                     done++;
                 }
@@ -1563,256 +2344,26 @@
             return { total, done };
         }
 
-        function loadLocalData() {
-            try {
-                let raw = safeStorage.getItem(STORAGE_KEY);
-                if (!raw) {
-                    for (const legacyKey of LEGACY_STORAGE_KEYS) {
-                        const found = safeStorage.getItem(legacyKey);
-                        if (found) {
-                            raw = found;
-                            break;
-                        }
-                    }
-                }
-                const parsed = raw ? JSON.parse(raw) : [];
-                events = Array.isArray(parsed)
-                    ? parsed.map((ev) => ({ ...ev, color: normalizeColorKey(ev.color) }))
-                    : [];
-
-                const orderRaw = safeStorage.getItem(DAILY_ORDER_STORAGE_KEY);
-                dailyOrders = orderRaw ? JSON.parse(orderRaw) : {};
-
-                const tagsRaw = safeStorage.getItem(NOTE_TAGS_STORAGE_KEY);
-                if (tagsRaw) {
-                    const parsedTags = JSON.parse(tagsRaw);
-                    if (Array.isArray(parsedTags) && parsedTags.length > 0) {
-                        noteTags = parsedTags.map((t) => ({
-                            id: String(t.id),
-                            label: String(t.label || t.id).trim(),
-                            styleKey: TAG_BADGE_STYLES[t.styleKey] ? t.styleKey : "zinc",
-                            builtIn: t.id === "general"
-                        }));
-                    }
-                } else {
-                    noteTags = [...DEFAULT_NOTE_TAGS];
-                }
-
-                const notesRaw = safeStorage.getItem(NOTES_STORAGE_KEY);
-                const parsedNotes = notesRaw ? JSON.parse(notesRaw) : [];
-                notes = Array.isArray(parsedNotes) ? parsedNotes.map(normalizeNoteItem) : [];
-            } catch (err) {
-                console.error("Failed loading local data:", err);
-                events = [];
-                dailyOrders = {};
-                noteTags = [...DEFAULT_NOTE_TAGS];
-                notes = [];
-            }
-        }
-
-        function saveLocalData() {
-            try {
-                safeStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-                safeStorage.setItem(DAILY_ORDER_STORAGE_KEY, JSON.stringify(dailyOrders));
-                safeStorage.setItem(NOTE_TAGS_STORAGE_KEY, JSON.stringify(noteTags));
-                safeStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
-            } catch (err) {
-                console.error("Failed saving local data:", err);
-            }
-        }
-
-        async function pushDataToCloud() {
-            if (!cloudReady || !firestoreDb) return;
-            updateSyncBadge("syncing", "Syncing...");
-            try {
-                const plannerDocRef = doc(firestoreDb, "planner_data", "ugg_knightsbridge");
-                await setDoc(
-                    plannerDocRef,
-                    {
-                        events,
-                        dailyOrders,
-                        noteTags,
-                        notes,
-                        geminiApiKey: geminiApiKey || "",
-                        geminiVoiceName: geminiVoiceName || "Aoede",
-                        updatedAt: new Date().toISOString()
-                    },
-                    { merge: true }
-                );
-                updateSyncBadge("synced", "Cloud");
-            } catch (err) {
-                console.error("Cloud push failed:", err);
-                updateSyncBadge("error", "Sync Error");
-            }
-        }
-
-        function startCloudListener() {
-            if (!firestoreDb) return;
-            cloudReady = true;
-            updateSyncBadge("syncing", "Connecting...");
-            const plannerDocRef = doc(firestoreDb, "planner_data", "ugg_knightsbridge");
-
-            if (unsubscribeCloud) unsubscribeCloud();
-            unsubscribeCloud = onSnapshot(
-                plannerDocRef,
-                (snap) => {
-                    if (snap.exists()) {
-                        const data = snap.data();
-                        if (Array.isArray(data.events)) {
-                            events = data.events.map((ev) => ({ ...ev, color: normalizeColorKey(ev.color) }));
-                        }
-                        if (data.dailyOrders && typeof data.dailyOrders === "object") {
-                            dailyOrders = data.dailyOrders;
-                        }
-                        if (Array.isArray(data.noteTags) && data.noteTags.length > 0) {
-                            noteTags = data.noteTags.map((t) => ({
-                                id: String(t.id),
-                                label: String(t.label || t.id).trim(),
-                                styleKey: TAG_BADGE_STYLES[t.styleKey] ? t.styleKey : "zinc",
-                                builtIn: t.id === "general"
-                            }));
-                        }
-                        if (Array.isArray(data.notes)) {
-                            notes = data.notes.map(normalizeNoteItem);
-                        }
-                        if (typeof data.geminiApiKey === "string" && cleanApiKey(data.geminiApiKey)) {
-                            geminiApiKey = cleanApiKey(data.geminiApiKey);
-                            safeStorage.setItem(AI_KEY_STORAGE_KEY, geminiApiKey);
-                        }
-                        if (typeof data.geminiVoiceName === "string" && VALID_VOICES.includes(data.geminiVoiceName)) {
-                            geminiVoiceName = data.geminiVoiceName;
-                            safeStorage.setItem(AI_VOICE_STORAGE_KEY, geminiVoiceName);
-                        }
-                        saveLocalData();
-                        renderCalendar();
-                        renderNotesWorkspace();
-                    } else if (events.length > 0 || notes.length > 0) {
-                        pushDataToCloud();
-                    }
-                    updateSyncBadge("synced", "Cloud");
-                },
-                (err) => {
-                    console.error("Firestore listener error:", err);
-                    updateSyncBadge("local", "Local");
-                    cloudReady = false;
-                }
-            );
-        }
-
-        function commitAllData() {
-            saveLocalData();
-            renderCalendar();
-            renderNotesWorkspace();
-            if (cloudReady) {
-                pushDataToCloud();
-            }
-        }
-
-        // =========================================================================
-        // DATE, FISCAL WEEK & UI UTILITIES
-        // =========================================================================
-        function normalizeColorKey(color) {
-            if (!color) return "blue";
-            const key = String(color).toLowerCase().trim();
-            return COLOR_PALETTE[key] ? key : "blue";
-        }
-
-        function formatDateKey(dateObj) {
-            const y = dateObj.getFullYear();
-            const m = String(dateObj.getMonth() + 1).padStart(2, "0");
-            const d = String(dateObj.getDate()).padStart(2, "0");
-            return `${y}-${m}-${d}`;
-        }
-
-        function parseDateKey(dateStr) {
-            const [y, m, d] = String(dateStr).split("-").map(Number);
-            return new Date(y, (m || 1) - 1, d || 1);
-        }
-
-        function formatEuropeanDate(dateStr) {
-            const [y, m, d] = String(dateStr).split("-");
-            if (!y || !m || !d) return dateStr;
-            return `${d}/${m}/${y}`;
-        }
-
-        function formatHumanDate(dateStr) {
-            const dt = parseDateKey(dateStr);
-            return `${WEEKDAYS_FULL[dt.getDay()]}, ${dt.getDate()} ${MONTHS_SHORT[dt.getMonth()]} ${dt.getFullYear()}`;
-        }
-
         function formatRelativeTimestamp(isoStr) {
-            if (!isoStr) return "Just now";
-            const dt = new Date(isoStr);
-            if (Number.isNaN(dt.getTime())) return "Recently";
-            const diffMin = Math.floor((Date.now() - dt.getTime()) / 60000);
-            if (diffMin < 1) return "Just now";
+            if (!isoStr) return "just now";
+            const diffSec = Math.max(0, Math.round((Date.now() - new Date(isoStr).getTime()) / 1000));
+            if (diffSec < 60) return "just now";
+            const diffMin = Math.floor(diffSec / 60);
             if (diffMin < 60) return `${diffMin}m ago`;
             const diffHr = Math.floor(diffMin / 60);
             if (diffHr < 24) return `${diffHr}h ago`;
-            return `${dt.getDate()} ${MONTHS_SHORT[dt.getMonth()]}`;
+            return `${Math.floor(diffHr / 24)}d ago`;
         }
 
-        function getFiscalWeekNumber(dateObj) {
-            const d = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
-            const dayNum = d.getUTCDay() || 7;
-            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-        }
-
-        function showToast(msg, isError = false) {
-            const toast = $("status-toast");
-            const icon = $("status-toast-icon");
-            const label = $("status-toast-msg");
-            if (!toast || !label) return;
-            label.textContent = msg;
-            if (icon) {
-                icon.className = isError
-                    ? "fa-solid fa-circle-exclamation text-rose-400"
-                    : "fa-solid fa-circle-check text-emerald-400";
-            }
-            toast.classList.remove("hidden");
-            clearTimeout(window.__toastTimer);
-            window.__toastTimer = setTimeout(() => {
-                toast.classList.add("hidden");
-            }, 3000);
-        }
-
-        function escapeHtml(str) {
-            return String(str || "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;");
-        }
-
-        // =========================================================================
-        // NOTES WORKSPACE RENDERING, CHECKLISTS & MODAL CRUD
-        // =========================================================================
-        function updateNotesBadgeCount() {
-            const badge = $("notes-tab-count");
-            const totalBadge = $("notes-total-badge");
-            if (badge) {
-                badge.textContent = String(notes.length);
-                badge.classList.toggle("hidden", notes.length === 0);
-            }
-            if (totalBadge) {
-                totalBadge.textContent = String(notes.length);
-            }
-        }
-
-        function toggleNoteChecklistLine(noteId, lineIndex) {
+        function toggleNoteChecklistLine(noteId, lineIdx) {
             const idx = notes.findIndex((n) => n.id === noteId);
             if (idx === -1) return;
-            const lines = notes[idx].content.split("\n");
-            if (lineIndex < 0 || lineIndex >= lines.length) return;
-
-            const line = lines[lineIndex];
-            if (/^\s*-\s*\[\s\]\s*/.test(line)) {
-                lines[lineIndex] = line.replace(/^(\s*-\s*)\[\s\]/, "$1[x]");
-            } else if (/^\s*-\s*\[[xX]\]\s*/.test(line)) {
-                lines[lineIndex] = line.replace(/^(\s*-\s*)\[[xX]\]/, "$1[ ]");
+            const lines = String(notes[idx].content || "").split("\n");
+            if (lineIdx < 0 || lineIdx >= lines.length) return;
+            if (/^\s*-\s*\[\s\]/.test(lines[lineIdx])) {
+                lines[lineIdx] = lines[lineIdx].replace(/^\s*-\s*\[\s\]/, "- [x]");
+            } else if (/^\s*-\s*\[[xX]\]/.test(lines[lineIdx])) {
+                lines[lineIdx] = lines[lineIdx].replace(/^\s*-\s*\[[xX]\]/, "- [ ]");
             }
             notes[idx].content = lines.join("\n");
             notes[idx].updatedAt = new Date().toISOString();
@@ -1836,27 +2387,30 @@
                         <span class="text-xs text-zinc-400 line-through leading-snug">${escapeHtml(checkedMatch[1])}</span>
                     </label>`;
                 }
-                if (!line.trim()) {
-                    return `<div class="h-2"></div>`;
-                }
+                if (!line.trim()) return `<div class="h-2"></div>`;
                 return `<p class="text-xs text-zinc-600 leading-relaxed whitespace-pre-wrap">${escapeHtml(line)}</p>`;
             }).join("");
         }
 
         function renderNotesWorkspace() {
-            updateNotesBadgeCount();
+            const badge = $("notes-tab-count");
+            const totalBadge = $("notes-total-badge");
+            if (badge) {
+                badge.textContent = String(notes.length);
+                badge.classList.toggle("hidden", notes.length === 0);
+            }
+            if (totalBadge) totalBadge.textContent = String(notes.length);
+
             syncNoteTagControls();
             const grid = $("notes-cards-grid");
             const pinnedList = $("pinned-notes-list");
             if (!grid) return;
 
-            // Sort: pinned first, then most recently updated
             const sorted = [...notes].sort((a, b) => {
                 if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
                 return String(b.updatedAt || "").localeCompare(String(a.updatedAt || ""));
             });
 
-            // Render right-rail Pinned Notes card
             if (pinnedList) {
                 const pinnedItems = sorted.filter((n) => n.pinned);
                 if (pinnedItems.length === 0) {
@@ -1880,7 +2434,6 @@
                 }
             }
 
-            // Filter by category and search query
             const q = noteSearchQuery.toLowerCase().trim();
             const filtered = sorted.filter((note) => {
                 if (activeNoteCategoryFilter !== "all" && note.category !== activeNoteCategoryFilter) return false;
@@ -1962,7 +2515,6 @@
                     });
                 }
 
-                // Interactive checklist toggle without opening modal
                 card.querySelectorAll("[data-note-chk]").forEach((lbl) => {
                     lbl.addEventListener("click", (e) => {
                         e.stopPropagation();
@@ -1980,7 +2532,6 @@
                 activeNoteCategoryFilter = "all";
             }
 
-            // 1. Filter bar pills
             const filterBar = $("notes-category-filters");
             if (filterBar) {
                 filterBar.innerHTML = "";
@@ -2012,7 +2563,6 @@
                 });
             }
 
-            // 2. Quick composer & Note modal dropdowns
             [$("quick-note-category"), $("note-category")].forEach((sel) => {
                 if (!sel) return;
                 const prevVal = sel.value;
@@ -2026,7 +2576,6 @@
                 sel.value = noteTags.some((t) => t.id === prevVal) ? prevVal : (noteTags[0]?.id || "general");
             });
 
-            // 3. Tag manager swatches & removable tag pills
             const swatchesEl = $("new-tag-color-swatches");
             if (swatchesEl) {
                 swatchesEl.innerHTML = "";
@@ -2104,9 +2653,7 @@
             const isChecklist = quickComposerType === "checklist";
             const noteBtn = $("quick-type-note-btn");
             const chkBtn = $("quick-type-checklist-btn");
-            const titleInput = $("quick-note-title");
             const bodyInput = $("quick-note-body");
-            const catSelect = $("quick-note-category");
 
             if (noteBtn && chkBtn) {
                 noteBtn.className = !isChecklist
@@ -2116,17 +2663,8 @@
                     ? "px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center gap-1.5"
                     : "px-2.5 py-1 rounded-md text-[11px] font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center gap-1.5";
             }
-
-            if (titleInput) {
-                titleInput.placeholder = "Title";
-            }
             if (bodyInput) {
-                bodyInput.placeholder = isChecklist
-                    ? "Tasks..."
-                    : "Write a note...";
-            }
-            if (catSelect && isChecklist && catSelect.value === "general" && noteTags.some((t) => t.id === "tasks")) {
-                catSelect.value = "tasks";
+                bodyInput.placeholder = isChecklist ? "Tasks..." : "Write a note...";
             }
         }
 
@@ -2156,8 +2694,7 @@
                 if (isChecklist) {
                     modalChecklistDraft = parseContentToChecklist($("note-content")?.value || "");
                 } else {
-                    const serialized = serializeChecklistToContent(modalChecklistDraft);
-                    if ($("note-content")) $("note-content").value = serialized;
+                    if ($("note-content")) $("note-content").value = serializeChecklistToContent(modalChecklistDraft);
                 }
             }
 
@@ -2165,12 +2702,7 @@
             chkWrap?.classList.toggle("hidden", !isChecklist);
             progressEl?.classList.toggle("hidden", !isChecklist);
 
-            if (isChecklist) {
-                if ($("note-category") && $("note-category").value === "general") {
-                    $("note-category").value = "tasks";
-                }
-                renderModalChecklistItems();
-            }
+            if (isChecklist) renderModalChecklistItems();
         }
 
         function renderModalChecklistItems() {
@@ -2185,9 +2717,7 @@
 
             const validItems = modalChecklistDraft.filter((i) => i.text.trim().length > 0);
             const doneCount = validItems.filter((i) => i.checked).length;
-            if (progressEl) {
-                progressEl.textContent = `${doneCount}/${validItems.length} done`;
-            }
+            if (progressEl) progressEl.textContent = `${doneCount}/${validItems.length} done`;
             clearBtn?.classList.toggle("hidden", doneCount === 0);
 
             container.innerHTML = "";
@@ -2211,34 +2741,11 @@
                 inp.className = `flex-1 bg-transparent text-xs focus:outline-none ${item.checked ? "line-through text-zinc-400" : "text-zinc-900"}`;
                 inp.addEventListener("input", () => {
                     modalChecklistDraft[idx].text = inp.value;
-                    const vItems = modalChecklistDraft.filter((i) => i.text.trim().length > 0);
-                    const dCount = vItems.filter((i) => i.checked).length;
-                    if (progressEl) progressEl.textContent = `${dCount}/${vItems.length} done`;
-                });
-                inp.addEventListener("keydown", (e) => {
-                    if (e.key === "Enter") {
-                        e.preventDefault();
-                        modalChecklistDraft.splice(idx + 1, 0, { text: "", checked: false });
-                        renderModalChecklistItems();
-                        setTimeout(() => {
-                            const inputs = container.querySelectorAll('input[type="text"]');
-                            inputs[idx + 1]?.focus();
-                        }, 10);
-                    } else if (e.key === "Backspace" && inp.value === "" && modalChecklistDraft.length > 1) {
-                        e.preventDefault();
-                        modalChecklistDraft.splice(idx, 1);
-                        renderModalChecklistItems();
-                        setTimeout(() => {
-                            const inputs = container.querySelectorAll('input[type="text"]');
-                            inputs[Math.max(0, idx - 1)]?.focus();
-                        }, 10);
-                    }
                 });
 
                 const delBtn = document.createElement("button");
                 delBtn.type = "button";
                 delBtn.className = "w-6 h-6 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition flex-shrink-0";
-                delBtn.title = "Remove item";
                 delBtn.innerHTML = `<i class="fa-solid fa-xmark text-[10px]"></i>`;
                 delBtn.addEventListener("click", () => {
                     modalChecklistDraft.splice(idx, 1);
@@ -2266,9 +2773,7 @@
                 const isSel = key === active;
                 btn.className = `w-7 h-7 rounded-full ${meta.swatch} transition flex items-center justify-center ${isSel ? "ring-2 ring-offset-2 ring-zinc-950 scale-110" : "hover:scale-105"}`;
                 btn.title = meta.name;
-                if (isSel) {
-                    btn.innerHTML = `<i class="fa-solid fa-check text-[10px] text-zinc-900"></i>`;
-                }
+                if (isSel) btn.innerHTML = `<i class="fa-solid fa-check text-[10px] text-zinc-900"></i>`;
                 btn.addEventListener("click", () => renderNoteTintSwatches(key));
                 container.appendChild(btn);
             });
@@ -2291,10 +2796,7 @@
             $("note-id").value = "";
             $("note-title").value = prefill.title || "";
             $("note-content").value = prefill.content || "";
-            const defaultCat = prefill.category
-                ? resolveValidTagId(prefill.category)
-                : (prefill.type === "checklist" && noteTags.some((t) => t.id === "tasks") ? "tasks" : (noteTags[0]?.id || "general"));
-            $("note-category").value = defaultCat;
+            $("note-category").value = prefill.category ? resolveValidTagId(prefill.category) : (noteTags[0]?.id || "general");
             $("delete-note-btn").classList.add("hidden");
             updateNoteModalPinState(Boolean(prefill.pinned));
             renderNoteTintSwatches(prefill.color || "default");
@@ -2328,7 +2830,7 @@
         }
 
         function closeNoteModal() {
-            $("note-modal").classList.add("hidden");
+            $("note-modal")?.classList.add("hidden");
         }
 
         function handleNoteFormSubmit(e) {
@@ -2359,7 +2861,7 @@
                         updatedAt: new Date().toISOString()
                     };
                 }
-                showToast(type === "checklist" ? "Checklist updated" : "Note updated");
+                showToast("Note updated");
             } else {
                 notes.unshift(normalizeNoteItem({
                     title,
@@ -2370,7 +2872,7 @@
                     pinned,
                     updatedAt: new Date().toISOString()
                 }));
-                showToast(type === "checklist" ? "Checklist saved" : "Note saved");
+                showToast("Note saved");
             }
 
             closeNoteModal();
@@ -2391,14 +2893,9 @@
             let finalContent = rawBody;
 
             if (isChecklist) {
-                const parts = rawBody
-                    .split(/[\n,]+/)
-                    .map((s) => s.trim())
-                    .filter(Boolean);
+                const parts = rawBody.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
                 finalTitle = rawTitle || (parts[0] ? parts[0].slice(0, 48) : "Checklist");
-                finalContent = parts.length > 0
-                    ? parts.map((item) => `- [ ] ${item}`).join("\n")
-                    : `- [ ] ${finalTitle}`;
+                finalContent = parts.length > 0 ? parts.map((item) => `- [ ] ${item}`).join("\n") : `- [ ] ${finalTitle}`;
             } else {
                 finalTitle = rawTitle || rawBody.split("\n")[0].slice(0, 48);
                 finalContent = rawTitle ? rawBody : (rawBody.length > 48 ? rawBody : "");
@@ -2408,7 +2905,7 @@
                 title: finalTitle,
                 type: isChecklist ? "checklist" : "note",
                 content: finalContent,
-                category: catSelect?.value || (isChecklist ? "tasks" : "general"),
+                category: catSelect?.value || "general",
                 color: "default",
                 pinned: false,
                 updatedAt: new Date().toISOString()
@@ -2430,7 +2927,244 @@
         }
 
         // =========================================================================
-        // EVENT EXPANSION, ORDERING & CALENDAR RENDERING
+        // PERSISTENCE, FIREBASE AUTH & CLOUD SYNC
+        // =========================================================================
+        function loadLocalData() {
+            try {
+                let raw = safeStorage.getItem(STORAGE_KEY);
+                if (!raw) {
+                    for (const legacyKey of LEGACY_STORAGE_KEYS) {
+                        const found = safeStorage.getItem(legacyKey);
+                        if (found) {
+                            raw = found;
+                            break;
+                        }
+                    }
+                }
+                const parsed = raw ? JSON.parse(raw) : [];
+                events = Array.isArray(parsed)
+                    ? parsed.map((ev) => ({ ...ev, color: normalizeColorKey(ev.color) }))
+                    : [];
+
+                const orderRaw = safeStorage.getItem(DAILY_ORDER_STORAGE_KEY);
+                dailyOrders = orderRaw ? JSON.parse(orderRaw) : {};
+
+                const shiftsRaw = safeStorage.getItem(SHIFTS_STORAGE_KEY);
+                const parsedShifts = shiftsRaw ? JSON.parse(shiftsRaw) : [];
+                shifts = Array.isArray(parsedShifts) ? parsedShifts.map(normalizeShiftItem) : [];
+
+                const tagsRaw = safeStorage.getItem(NOTE_TAGS_STORAGE_KEY);
+                if (tagsRaw) {
+                    const parsedTags = JSON.parse(tagsRaw);
+                    if (Array.isArray(parsedTags) && parsedTags.length > 0) {
+                        noteTags = parsedTags.map((t) => ({
+                            id: String(t.id),
+                            label: String(t.label || t.id).trim(),
+                            styleKey: TAG_BADGE_STYLES[t.styleKey] ? t.styleKey : "zinc",
+                            builtIn: t.id === "general"
+                        }));
+                    }
+                } else {
+                    noteTags = [...DEFAULT_NOTE_TAGS];
+                }
+
+                const notesRaw = safeStorage.getItem(NOTES_STORAGE_KEY);
+                const parsedNotes = notesRaw ? JSON.parse(notesRaw) : [];
+                notes = Array.isArray(parsedNotes) ? parsedNotes.map(normalizeNoteItem) : [];
+            } catch (err) {
+                console.error("Failed loading local data:", err);
+                events = [];
+                dailyOrders = {};
+                shifts = [];
+                noteTags = [...DEFAULT_NOTE_TAGS];
+                notes = [];
+            }
+        }
+
+        function saveLocalData() {
+            try {
+                safeStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+                safeStorage.setItem(DAILY_ORDER_STORAGE_KEY, JSON.stringify(dailyOrders));
+                safeStorage.setItem(SHIFTS_STORAGE_KEY, JSON.stringify(shifts));
+                safeStorage.setItem(NOTE_TAGS_STORAGE_KEY, JSON.stringify(noteTags));
+                safeStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+            } catch (err) {
+                console.error("Failed saving local data:", err);
+            }
+        }
+
+        function commitAllData() {
+            saveLocalData();
+            if (activeWorkspaceTab === "shifts") renderShiftsCalendar();
+            else if (activeWorkspaceTab === "notes") renderNotesWorkspace();
+            else renderCalendar();
+
+            if (!isBriefingCollapsed) generateAiScheduleBriefing();
+            if (cloudReady) pushDataToCloud();
+        }
+
+        function initFirebaseServices() {
+            try {
+                if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("YOUR_")) {
+                    firebaseConfigured = false;
+                    return false;
+                }
+                const app = initializeApp(firebaseConfig);
+                firebaseAuth = getAuth(app);
+                firestoreDb = getFirestore(app);
+                firebaseConfigured = true;
+                return true;
+            } catch (err) {
+                console.warn("Firebase init skipped:", err);
+                firebaseConfigured = false;
+                return false;
+            }
+        }
+
+        function startCloudListener() {
+            if (!firestoreDb) return;
+            const docRef = doc(firestoreDb, "planners", "ugg_knightsbridge");
+            updateSyncBadge("syncing", "Syncing...");
+            if (unsubscribeCloud) unsubscribeCloud();
+
+            unsubscribeCloud = onSnapshot(docRef, (snap) => {
+                cloudReady = true;
+                updateSyncBadge("cloud", "Cloud");
+                if (snap.exists()) {
+                    const data = snap.data();
+                    if (Array.isArray(data.events)) {
+                        events = data.events.map((ev) => ({ ...ev, color: normalizeColorKey(ev.color) }));
+                    }
+                    if (data.dailyOrders && typeof data.dailyOrders === "object") {
+                        dailyOrders = data.dailyOrders;
+                    }
+                    if (Array.isArray(data.shifts)) {
+                        shifts = data.shifts.map(normalizeShiftItem);
+                    }
+                    if (Array.isArray(data.noteTags) && data.noteTags.length > 0) {
+                        noteTags = data.noteTags.map((t) => ({
+                            id: String(t.id),
+                            label: String(t.label || t.id).trim(),
+                            styleKey: TAG_BADGE_STYLES[t.styleKey] ? t.styleKey : "zinc",
+                            builtIn: t.id === "general"
+                        }));
+                    }
+                    if (Array.isArray(data.notes)) {
+                        notes = data.notes.map(normalizeNoteItem);
+                    }
+                    if (typeof data.geminiApiKey === "string" && cleanApiKey(data.geminiApiKey)) {
+                        geminiApiKey = cleanApiKey(data.geminiApiKey);
+                        safeStorage.setItem(AI_KEY_STORAGE_KEY, geminiApiKey);
+                    }
+                    if (typeof data.geminiVoiceName === "string" && VALID_VOICES.includes(data.geminiVoiceName)) {
+                        geminiVoiceName = data.geminiVoiceName;
+                        safeStorage.setItem(AI_VOICE_STORAGE_KEY, geminiVoiceName);
+                    }
+                    saveLocalData();
+                    renderCalendar();
+                    renderShiftsCalendar();
+                    renderNotesWorkspace();
+                } else {
+                    pushDataToCloud();
+                }
+            }, (err) => {
+                console.error("Cloud snapshot error:", err);
+                updateSyncBadge("local", "Local");
+            });
+        }
+
+        async function pushDataToCloud() {
+            if (!firestoreDb || !cloudReady) return;
+            try {
+                updateSyncBadge("syncing", "Saving...");
+                const docRef = doc(firestoreDb, "planners", "ugg_knightsbridge");
+                await setDoc(docRef, {
+                    events,
+                    dailyOrders,
+                    shifts,
+                    noteTags,
+                    notes,
+                    geminiApiKey,
+                    geminiVoiceName,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+                updateSyncBadge("cloud", "Cloud");
+            } catch (err) {
+                console.error("Cloud push failed:", err);
+                updateSyncBadge("local", "Local");
+            }
+        }
+
+        function unlockPlannerUI(enableCloud = false) {
+            $("auth-lock-screen")?.classList.add("hidden");
+            $("app-header")?.classList.remove("hidden");
+            $("app-main")?.classList.remove("hidden");
+            if (enableCloud && firebaseConfigured) {
+                startCloudListener();
+            } else {
+                updateSyncBadge("local", "Local");
+            }
+            renderCalendar();
+            renderShiftsCalendar();
+            renderNotesWorkspace();
+        }
+
+        async function lockPlannerUI() {
+            stopLiveVoiceSession();
+            closeShiftsDayPopover();
+            if (unsubscribeCloud) {
+                unsubscribeCloud();
+                unsubscribeCloud = null;
+            }
+            cloudReady = false;
+            if (firebaseAuth) {
+                try { await signOut(firebaseAuth); } catch (_) { }
+            }
+            $("app-header")?.classList.add("hidden");
+            $("app-main")?.classList.add("hidden");
+            $("auth-lock-screen")?.classList.remove("hidden");
+            const pwInput = $("auth-password-input");
+            if (pwInput) {
+                pwInput.value = "";
+                setTimeout(() => pwInput.focus(), 40);
+            }
+        }
+
+        async function handleAuthUnlockSubmit(e) {
+            e.preventDefault();
+            const pw = $("auth-password-input")?.value || "";
+            const errEl = $("auth-error-msg");
+            const btn = $("auth-unlock-btn");
+            const btnText = $("auth-unlock-btn-text");
+            errEl?.classList.add("hidden");
+
+            if (!pw) return;
+
+            if (!firebaseConfigured || !firebaseAuth) {
+                unlockPlannerUI(false);
+                return;
+            }
+
+            if (btn) btn.disabled = true;
+            if (btnText) btnText.textContent = "Unlocking...";
+
+            try {
+                await signInWithEmailAndPassword(firebaseAuth, STORE_AUTH_EMAIL, pw);
+                unlockPlannerUI(true);
+            } catch (err) {
+                console.error("Unlock failed:", err);
+                if (errEl) {
+                    errEl.textContent = "Incorrect password. Please try again.";
+                    errEl.classList.remove("hidden");
+                }
+            } finally {
+                if (btn) btn.disabled = false;
+                if (btnText) btnText.textContent = "Unlock Planner";
+            }
+        }
+
+        // =========================================================================
+        // MAIN CALENDAR GRID, DAY INSPECTOR & MONTH POPOVER
         // =========================================================================
         function createEventOccurrences(title, startDate, endDate, color, recurrence) {
             const colorKey = normalizeColorKey(color);
@@ -2514,7 +3248,7 @@
             grid.innerHTML = "";
 
             const firstDay = new Date(activeYear, activeMonthIndex, 1);
-            const startOffset = (firstDay.getDay() + 6) % 7; // Monday = 0
+            const startOffset = (firstDay.getDay() + 6) % 7;
             const gridStart = new Date(activeYear, activeMonthIndex, 1 - startOffset);
 
             const lastDay = new Date(activeYear, activeMonthIndex + 1, 0);
@@ -2566,8 +3300,9 @@
                     if (isToday) {
                         dayBadge.className = "is-today-badge w-6 h-6 rounded-full bg-zinc-950 text-white text-[11px] sm:text-xs font-bold flex items-center justify-center shadow-2xs";
                     } else {
-                        dayBadge.className = `w-6 h-6 rounded-full text-[11px] sm:text-xs font-semibold flex items-center justify-center ${isCurrentMonth ? "text-zinc-800" : "text-zinc-400"
-                            }`;
+                        dayBadge.className = `w-6 h-6 rounded-full text-[11px] sm:text-xs font-semibold flex items-center justify-center ${
+                            isCurrentMonth ? "text-zinc-800" : "text-zinc-400"
+                        }`;
                     }
                     headerRow.appendChild(dayBadge);
                     cell.appendChild(headerRow);
@@ -2628,7 +3363,7 @@
 
             renderSelectedDayInspector();
             if (!isBriefingCollapsed) {
-                generateAiScheduleBriefing(false);
+                generateAiScheduleBriefing();
             }
         }
 
@@ -2706,9 +3441,6 @@
             });
         }
 
-        // =========================================================================
-        // MONTH / YEAR PICKER POPOVER
-        // =========================================================================
         function toggleMonthYearPopover(forceState) {
             const popover = $("month-year-popover");
             const chevron = $("month-year-chevron");
@@ -2763,9 +3495,6 @@
             }
         }
 
-        // =========================================================================
-        // EVENT ADD / EDIT / DELETE MODALS
-        // =========================================================================
         function renderColorSwatches(selectedColor) {
             const container = $("color-picker-options");
             const nameLabel = $("selected-color-name");
@@ -2781,8 +3510,9 @@
                 const btn = document.createElement("button");
                 btn.type = "button";
                 const isSelected = key === activeKey;
-                btn.className = `w-7 h-7 rounded-full ${meta.swatch} transition flex items-center justify-center ${isSelected ? "ring-2 ring-offset-2 ring-zinc-950 scale-110" : "opacity-85 hover:opacity-100 hover:scale-105"
-                    }`;
+                btn.className = `w-7 h-7 rounded-full ${meta.swatch} transition flex items-center justify-center ${
+                    isSelected ? "ring-2 ring-offset-2 ring-zinc-950 scale-110" : "opacity-85 hover:opacity-100 hover:scale-105"
+                }`;
                 btn.title = meta.name;
                 if (isSelected) {
                     btn.innerHTML = `<i class="fa-solid fa-check text-[10px] ${key === "yellow" || key === "lime" ? "text-zinc-950" : "text-white"}"></i>`;
@@ -2823,7 +3553,7 @@
         }
 
         function closeEventModal() {
-            $("event-modal").classList.add("hidden");
+            $("event-modal")?.classList.add("hidden");
         }
 
         function handleEventFormSubmit(e) {
@@ -2899,9 +3629,7 @@
                     };
                 }
                 if (pending.seriesId && ev.seriesId === pending.seriesId) {
-                    if (scope === "all") {
-                        return { ...ev, color: pending.color };
-                    }
+                    if (scope === "all") return { ...ev, color: pending.color };
                     if (scope === "following" && ev.startDate >= pending.targetStartDate) {
                         return { ...ev, color: pending.color };
                     }
@@ -2910,13 +3638,7 @@
             });
 
             commitAllData();
-            showToast(
-                scope === "all"
-                    ? "Color updated for all events in series"
-                    : scope === "following"
-                        ? "Color updated for this and following events"
-                        : "Color updated for this day"
-            );
+            showToast("Color updated");
         }
 
         function handleDeleteClick() {
@@ -2927,7 +3649,7 @@
             closeEventModal();
             if (ev.seriesId) {
                 pendingDeleteEventId = ev.id;
-                $("delete-recurring-modal").classList.remove("hidden");
+                $("delete-recurring-modal")?.classList.remove("hidden");
             } else {
                 events = events.filter((item) => item.id !== id);
                 commitAllData();
@@ -2937,7 +3659,7 @@
 
         function executeRecurringDelete(scope) {
             const target = events.find((item) => item.id === pendingDeleteEventId);
-            $("delete-recurring-modal").classList.add("hidden");
+            $("delete-recurring-modal")?.classList.add("hidden");
             pendingDeleteEventId = null;
             if (!target) return;
 
@@ -2956,13 +3678,13 @@
         // SETTINGS MODAL & JSON BACKUP / RESTORE
         // =========================================================================
         function openSettingsModal() {
-            $("ai-voice-select").value = geminiVoiceName || "Aoede";
-            $("ai-api-key-input").value = geminiApiKey || "";
-            $("settings-modal").classList.remove("hidden");
+            if ($("ai-voice-select")) $("ai-voice-select").value = geminiVoiceName || "Aoede";
+            if ($("ai-api-key-input")) $("ai-api-key-input").value = geminiApiKey || "";
+            $("settings-modal")?.classList.remove("hidden");
         }
 
         function closeSettingsModal() {
-            $("settings-modal").classList.add("hidden");
+            $("settings-modal")?.classList.add("hidden");
         }
 
         function exportBackupJson() {
@@ -2971,6 +3693,7 @@
                 store: "UGG Knightsbridge",
                 events,
                 dailyOrders,
+                shifts,
                 noteTags,
                 notes
             };
@@ -2997,6 +3720,9 @@
                     if (parsed.dailyOrders && typeof parsed.dailyOrders === "object") {
                         dailyOrders = parsed.dailyOrders;
                     }
+                    if (Array.isArray(parsed.shifts)) {
+                        shifts = parsed.shifts.map(normalizeShiftItem);
+                    }
                     if (Array.isArray(parsed.noteTags) && parsed.noteTags.length > 0) {
                         noteTags = parsed.noteTags.map((t) => ({
                             id: String(t.id),
@@ -3010,7 +3736,7 @@
                     }
                     commitAllData();
                     closeSettingsModal();
-                    showToast(`Restored ${events.length} event(s) & ${notes.length} note(s)`);
+                    showToast(`Restored ${events.length} event(s), ${shifts.length} shift(s) & ${notes.length} note(s)`);
                 } catch (_) {
                     showToast("Invalid JSON backup file", true);
                 } finally {
@@ -3025,7 +3751,7 @@
                 showToast("Enter your Gemini API key first to preview voices", true);
                 return;
             }
-            const chosenVoice = $("ai-voice-select").value || "Aoede";
+            const chosenVoice = $("ai-voice-select")?.value || "Aoede";
             const label = $("preview-ai-voice-label");
             const btn = $("preview-ai-voice-btn");
             if (btn) btn.disabled = true;
@@ -3035,7 +3761,7 @@
                 const ai = new GoogleGenAI({ apiKey: geminiApiKey });
                 const resp = await ai.models.generateContent({
                     model: "gemini-2.5-flash-preview-tts",
-                    contents: [{ parts: [{ text: `Hello! I'm ${chosenVoice}, ready to help with your UGG Knightsbridge schedule and notes.` }] }],
+                    contents: [{ parts: [{ text: `Hello! I'm ${chosenVoice}, ready to help with your UGG Knightsbridge schedule, shifts, and notes.` }] }],
                     config: {
                         responseModalities: [Modality.AUDIO],
                         speechConfig: {
@@ -3046,9 +3772,7 @@
                     }
                 });
                 const b64 = resp?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-                if (b64) {
-                    await playPcm24kBase64(b64);
-                }
+                if (b64) await playPcm24kBase64(b64);
             } catch (err) {
                 console.error("Voice preview error:", err);
                 showToast("Could not preview voice — check API key", true);
@@ -3154,7 +3878,7 @@
         }
 
         // =========================================================================
-        // AI SCHEDULE & NOTES ENGINE + GEMINI MULTIMODAL LIVE VOICE
+        // AI ASSISTANT & GEMINI MULTIMODAL LIVE VOICE
         // =========================================================================
         const aiEngine = {
             recognition: null,
@@ -3224,31 +3948,37 @@
         function buildScheduleContext() {
             const now = new Date();
             const todayStr = formatDateKey(now);
-            const sorted = [...events].sort((a, b) => a.startDate.localeCompare(b.startDate));
-            const formatted = sorted.map((ev) => ({
-                id: ev.id,
-                title: ev.title,
-                startDate: ev.startDate,
-                endDate: ev.endDate || ev.startDate,
-                dayOfWeek: WEEKDAYS_FULL[parseDateKey(ev.startDate).getDay()],
-                ukDate: formatEuropeanDate(ev.startDate),
-                color: ev.color || "blue",
-                recurrence: ev.recurrence || "none"
-            }));
+            const sortedEvents = [...events].sort((a, b) => a.startDate.localeCompare(b.startDate));
+            const sortedShifts = [...shifts].sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime));
             return {
                 todayIso: todayStr,
                 todayFormatted: formatHumanDate(todayStr),
                 selectedDateIso: selectedDateKey || todayStr,
+                selectedShiftDateIso: selectedShiftDateKey || todayStr,
                 activeTab: activeWorkspaceTab,
-                totalEvents: formatted.length,
-                events: formatted,
-                totalNotes: notes.length,
+                events: sortedEvents.map((ev) => ({
+                    id: ev.id,
+                    title: ev.title,
+                    startDate: ev.startDate,
+                    endDate: ev.endDate || ev.startDate,
+                    dayOfWeek: WEEKDAYS_FULL[parseDateKey(ev.startDate).getDay()],
+                    color: ev.color || "blue",
+                    recurrence: ev.recurrence || "none"
+                })),
+                shifts: sortedShifts.map((sh) => ({
+                    id: sh.id,
+                    date: sh.date,
+                    dayOfWeek: WEEKDAYS_FULL[parseDateKey(sh.date).getDay()],
+                    startTime: sh.startTime,
+                    endTime: sh.endTime,
+                    label: sh.label || "",
+                    color: sh.color || "indigo"
+                })),
                 notes: notes.map((n) => ({
                     id: n.id,
                     title: n.title,
                     content: n.content,
                     category: n.category,
-                    color: n.color,
                     pinned: n.pinned
                 }))
             };
@@ -3281,9 +4011,7 @@
             }
             if (qDate) {
                 const onDate = events.filter((ev) => ev.startDate <= qDate && (ev.endDate || ev.startDate) >= qDate);
-                if (onDate.length === 1) {
-                    return events.findIndex((ev) => ev.id === onDate[0].id);
-                }
+                if (onDate.length === 1) return events.findIndex((ev) => ev.id === onDate[0].id);
             }
             return -1;
         }
@@ -3319,10 +4047,7 @@
             }
 
             if (name === "create_event") {
-                if (!args.title || !args.startDate) {
-                    return { success: false, error: "Title and startDate are required." };
-                }
-
+                if (!args.title || !args.startDate) return { success: false, error: "Title and startDate are required." };
                 const created = createEventOccurrences(
                     args.title,
                     args.startDate,
@@ -3339,38 +4064,9 @@
                 return { success: true, createdCount: created.length, createdEvents: created };
             }
 
-            if (name === "create_multiple_events") {
-                const list = Array.isArray(args.events) ? args.events : [];
-                if (!list.length) {
-                    return { success: false, error: "No events provided." };
-                }
-                let totalCreated = 0;
-                const allCreated = [];
-                for (const item of list) {
-                    if (!item?.title || !item?.startDate) continue;
-                    const created = createEventOccurrences(
-                        item.title,
-                        item.startDate,
-                        item.endDate || item.startDate,
-                        item.color || "blue",
-                        item.recurrence || "none"
-                    );
-                    events.push(...created);
-                    allCreated.push(...created);
-                    totalCreated += created.length;
-                    selectedDateKey = item.startDate;
-                    const dt = parseDateKey(item.startDate);
-                    activeYear = dt.getFullYear();
-                    activeMonthIndex = dt.getMonth();
-                }
-                if (!deferCommit) commitAllData();
-                return { success: true, createdCount: totalCreated, createdEvents: allCreated };
-            }
-
             if (name === "update_event") {
                 const idx = resolveTargetEventIndex({ id: args.id, title: args.matchTitle || args.title, date: args.matchDate });
                 if (idx === -1) return { success: false, error: "Matching event not found." };
-
                 const current = events[idx];
                 const newColor = args.color ? normalizeColorKey(args.color) : current.color;
                 events[idx] = {
@@ -3380,9 +4076,6 @@
                     endDate: args.newEndDate || args.endDate || args.newStartDate || current.endDate,
                     color: newColor
                 };
-                if (args.updateSeries && current.seriesId && args.color) {
-                    events = events.map((ev) => (ev.seriesId === current.seriesId ? { ...ev, color: newColor } : ev));
-                }
                 if (!deferCommit) commitAllData();
                 return { success: true, updatedEvent: events[idx] };
             }
@@ -3390,7 +4083,6 @@
             if (name === "delete_event") {
                 const idx = resolveTargetEventIndex({ id: args.id, title: args.title, date: args.date });
                 if (idx === -1) return { success: false, error: "Matching event not found." };
-
                 const removed = events[idx];
                 if (args.deleteSeries && removed.seriesId) {
                     events = events.filter((ev) => ev.seriesId !== removed.seriesId);
@@ -3401,25 +4093,76 @@
                 return { success: true, deletedEvent: removed };
             }
 
-            // --- NOTES AI TOOLS ---
+            if (name === "list_shifts") {
+                let list = [...shifts].sort((a, b) => a.date.localeCompare(b.date));
+                if (args.startDate) {
+                    const end = args.endDate || args.startDate;
+                    list = list.filter((sh) => sh.date >= args.startDate && sh.date <= end);
+                }
+                return { count: list.length, shifts: list };
+            }
+
+            if (name === "create_shift") {
+                if (!args.date) return { success: false, error: "Shift date is required." };
+                const startTime = args.startTime || "09:00";
+                const endTime = args.endTime || "18:00";
+                const color = args.color === "amber" ? "amber" : "indigo";
+                const created = createShiftOccurrences(args.date, startTime, endTime, args.label || "", args.recurrence || "none", color);
+                shifts.push(...created);
+                selectedShiftDateKey = args.date;
+                const dt = parseDateKey(args.date);
+                shiftsActiveYear = dt.getFullYear();
+                shiftsActiveMonthIndex = dt.getMonth();
+                if (!deferCommit) commitAllData();
+                return { success: true, createdCount: created.length, createdShifts: created };
+            }
+
+            if (name === "update_shift") {
+                let idx = -1;
+                if (args.id) idx = shifts.findIndex((s) => s.id === args.id);
+                if (idx === -1 && args.date) idx = shifts.findIndex((s) => s.date === args.date);
+                if (idx === -1) return { success: false, error: "Matching shift not found." };
+                const current = shifts[idx];
+                shifts[idx] = {
+                    ...current,
+                    date: args.newDate || current.date,
+                    startTime: args.startTime || current.startTime,
+                    endTime: args.endTime || current.endTime,
+                    label: typeof args.label === "string" ? args.label : current.label,
+                    color: args.color ? (args.color === "amber" ? "amber" : "indigo") : current.color
+                };
+                if (!deferCommit) commitAllData();
+                return { success: true, updatedShift: shifts[idx] };
+            }
+
+            if (name === "delete_shift") {
+                if (args.id) {
+                    const idx = shifts.findIndex((s) => s.id === args.id);
+                    if (idx !== -1) {
+                        const removed = shifts.splice(idx, 1)[0];
+                        if (!deferCommit) commitAllData();
+                        return { success: true, deletedShift: removed };
+                    }
+                }
+                if (args.date) {
+                    const before = shifts.length;
+                    shifts = shifts.filter((s) => s.date !== args.date);
+                    if (shifts.length < before) {
+                        if (!deferCommit) commitAllData();
+                        return { success: true, deletedCount: before - shifts.length };
+                    }
+                }
+                return { success: false, error: "Matching shift not found." };
+            }
+
             if (name === "list_notes") {
-                let list = [...notes];
-                if (args.category && args.category !== "all") {
-                    list = list.filter((n) => n.category === args.category);
-                }
-                if (args.keyword) {
-                    const kw = String(args.keyword).toLowerCase();
-                    list = list.filter((n) => n.title.toLowerCase().includes(kw) || n.content.toLowerCase().includes(kw));
-                }
-                return { count: list.length, notes: list };
+                return { count: notes.length, notes };
             }
 
             if (name === "create_note") {
                 const title = String(args.title || "").trim();
                 const content = String(args.content || "").trim();
-                if (!title && !content) {
-                    return { success: false, error: "Note title or content is required." };
-                }
+                if (!title && !content) return { success: false, error: "Note title or content is required." };
                 const newNote = normalizeNoteItem({
                     title: title || content.split("\n")[0].slice(0, 48),
                     content,
@@ -3430,7 +4173,6 @@
                 });
                 notes.unshift(newNote);
                 if (!deferCommit) commitAllData();
-                showToast(`Note saved: "${newNote.title}"`);
                 return { success: true, createdNote: newNote };
             }
 
@@ -3438,19 +4180,12 @@
                 const idx = resolveTargetNoteIndex({ id: args.id, title: args.matchTitle || args.title });
                 if (idx === -1) return { success: false, error: "Matching note not found." };
                 const current = notes[idx];
-                let updatedContent = current.content;
-                if (args.appendContent) {
-                    updatedContent = current.content ? `${current.content}\n${args.appendContent}` : String(args.appendContent);
-                } else if (typeof args.newContent === "string") {
-                    updatedContent = args.newContent;
-                }
                 notes[idx] = {
                     ...current,
                     title: args.newTitle || current.title,
-                    content: updatedContent,
-                    category: args.category ? resolveValidTagId(args.category) : current.category,
-                    color: NOTE_TINTS[args.color] ? args.color : current.color,
-                    pinned: typeof args.pinned === "boolean" ? args.pinned : current.pinned,
+                    content: args.appendContent
+                        ? (current.content ? `${current.content}\n${args.appendContent}` : String(args.appendContent))
+                        : (typeof args.newContent === "string" ? args.newContent : current.content),
                     updatedAt: new Date().toISOString()
                 };
                 if (!deferCommit) commitAllData();
@@ -3467,7 +4202,7 @@
 
             if (name === "end_call") {
                 aiEngine.live.pendingHangup = true;
-                return { success: true, status: "Will hang up right after your farewell reply." };
+                return { success: true };
             }
 
             return { success: false, error: `Unknown tool: ${name}` };
@@ -3513,90 +4248,57 @@
             try {
                 const ai = new GoogleGenAI({ apiKey: geminiApiKey });
                 const ctx = buildScheduleContext();
-                const systemInstruction = `You are the UGG Knightsbridge Store Planner AI Assistant. Today is ${ctx.todayFormatted} (${ctx.todayIso}). Active view tab: ${ctx.activeTab}.
-Current schedule JSON: ${JSON.stringify(ctx.events)}
+                const systemInstruction = `You are the UGG Knightsbridge Store Planner AI Assistant. Today is ${ctx.todayFormatted} (${ctx.todayIso}). Active tab: ${ctx.activeTab}.
+Current events JSON: ${JSON.stringify(ctx.events)}
+Current shifts JSON: ${JSON.stringify(ctx.shifts)}
 Current notes JSON: ${JSON.stringify(ctx.notes)}
 
-Analyze the user's request and respond with valid JSON ONLY matching:
+Respond with valid JSON ONLY:
 {
   "reply": "Clear, concise natural language answer in English",
   "actions": [
     {
-      "action": "create_event" | "update_event" | "delete_event" | "create_note" | "update_note" | "delete_note",
+      "action": "create_event" | "update_event" | "delete_event" | "create_shift" | "update_shift" | "delete_shift" | "create_note" | "update_note" | "delete_note",
       "params": { ... }
     }
   ]
 }
-IMPORTANT:
-- You manage BOTH calendar events AND the Notes section!
-- Whenever the user asks to take a note, jot something down, create a checklist/to-do list, save a reminder/thought without a specific calendar date, or organize notes, use "create_note" (or "update_note" to append to an existing note).
-- Format checklist items inside note content using "- [ ] Item" lines so they render as interactive checkboxes.
-- If the user asks to add, update, or delete MULTIPLE events or notes, include ONE item in the "actions" array for EACH item!
-- If the user is only asking a question or querying the schedule/notes, set "actions": [].
-- For create_event params: { "title": string, "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "blue"|"green"|"yellow"|"red"|"orange"|"lime"|"purple"|"pink"|"cyan"|"black", "recurrence": "none"|"daily"|"weekly"|"biweekly"|"monthly"|"yearly" }.
-- For update_event params: { "id": string, "matchTitle": string, "matchDate": "YYYY-MM-DD", "newTitle": string, "newStartDate": "YYYY-MM-DD", "newEndDate": "YYYY-MM-DD", "color": string, "updateSeries": boolean }.
-- For delete_event params: { "id": string, "title": string, "date": "YYYY-MM-DD", "deleteSeries": boolean }.
-- For create_note params: { "title": string, "content": string, "category": "general"|"tasks"|"visual"|"stock"|"team", "color": "default"|"blue"|"amber"|"emerald"|"purple"|"rose", "pinned": boolean }.
-- For update_note params: { "id": string, "matchTitle": string, "newTitle": string, "newContent": string, "appendContent": string, "category": string, "color": string, "pinned": boolean }.
-- For delete_note params: { "id": string, "title": string }.`;
+Rules:
+- For shifts, use 24-hour HH:MM times (presets: 08:00-17:00, 09:00-18:00, 10:00-19:00, 11:00-20:00, 11:30-20:30, or custom HH:MM). Use color "indigo" for standard shifts and "amber" when the user mentions a shift swap or shift change.
+- create_shift params: { "date": "YYYY-MM-DD", "startTime": "HH:MM", "endTime": "HH:MM", "label": string, "color": "indigo"|"amber", "recurrence": "none"|"daily"|"weekly"|"biweekly" }.
+- update_shift params: { "id": string, "date": "YYYY-MM-DD", "newDate": "YYYY-MM-DD", "startTime": "HH:MM", "endTime": "HH:MM", "label": string, "color": "indigo"|"amber" }.
+- delete_shift params: { "id": string, "date": "YYYY-MM-DD" }.
+- create_event params: { "title": string, "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "blue"|"green"|"yellow"|"red"|"orange"|"lime"|"purple"|"pink"|"cyan"|"black", "recurrence": "none"|"daily"|"weekly"|"biweekly"|"monthly"|"yearly" }.
+- update_event params: { "id": string, "matchTitle": string, "matchDate": "YYYY-MM-DD", "newTitle": string, "newStartDate": "YYYY-MM-DD", "newEndDate": "YYYY-MM-DD", "color": string }.
+- delete_event params: { "id": string, "title": string, "date": "YYYY-MM-DD", "deleteSeries": boolean }.
+- create_note params: { "title": string, "content": string, "category": "general"|"tasks"|"visual"|"stock"|"team", "color": "default"|"blue"|"amber"|"emerald"|"purple"|"rose", "pinned": boolean }.`;
 
-                let response;
-                try {
-                    response = await ai.models.generateContent({
-                        model: "gemini-2.5-flash",
-                        contents: promptText,
-                        config: {
-                            systemInstruction,
-                            responseMimeType: "application/json"
-                        }
-                    });
-                } catch (primaryErr) {
-                    console.warn("Primary model failed, retrying with gemini-3-flash-preview:", primaryErr);
-                    response = await ai.models.generateContent({
-                        model: "gemini-3-flash-preview",
-                        contents: promptText,
-                        config: {
-                            systemInstruction,
-                            responseMimeType: "application/json"
-                        }
-                    });
-                }
+                const response = await ai.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: promptText,
+                    config: {
+                        systemInstruction,
+                        responseMimeType: "application/json"
+                    }
+                });
 
-                const raw = response?.text || "{}";
-                const parsed = parseAiJsonResponse(raw);
-
-                const actionItems = Array.isArray(parsed.actions)
-                    ? parsed.actions
-                    : parsed.action && parsed.action !== "none"
-                        ? [{ action: parsed.action, params: parsed.params || {} }]
-                        : [];
+                const parsed = parseAiJsonResponse(response?.text || "{}");
+                const actionItems = Array.isArray(parsed.actions) ? parsed.actions : [];
 
                 if (actionItems.length > 0) {
-                    const errors = [];
                     let mutated = false;
                     for (const item of actionItems) {
                         if (!item?.action || item.action === "none") continue;
                         const res = executeAiToolAction(item.action, item.params || {}, true);
-                        if (res.success) {
-                            mutated = true;
-                        } else if (res.error) {
-                            errors.push(res.error);
-                        }
+                        if (res.success) mutated = true;
                     }
-                    if (mutated) {
-                        commitAllData();
-                    }
-                    if (errors.length > 0 && !mutated) {
-                        appendTranscriptBubble("ai", `I couldn't complete that: ${errors.join("; ")}`, false);
-                        return;
-                    }
+                    if (mutated) commitAllData();
                 }
 
                 appendTranscriptBubble("ai", parsed.reply || "Done.", false);
             } catch (err) {
                 console.error("AI command failed:", err);
-                const detail = err?.message ? ` (${err.message})` : "";
-                appendTranscriptBubble("ai", `Sorry, I couldn't process that request${detail}. Check your Gemini API key in Settings.`, false);
+                appendTranscriptBubble("ai", "Sorry, I couldn't process that request. Check your Gemini API key in Settings.", false);
             } finally {
                 if (submitBtn) {
                     submitBtn.disabled = false;
@@ -3746,9 +4448,6 @@ IMPORTANT:
             return /\b(bye|goodbye|bye bye|see you|see ya|that's it|thats it|that is it|that's all|thats all|all done|i'm done|im done|we're done|were done|nothing else|hang up|end call)\b/.test(cleaned);
         }
 
-        // =========================================================================
-        // GEMINI MULTIMODAL LIVE VOICE SESSION
-        // =========================================================================
         async function startLiveVoiceSession() {
             if (!geminiApiKey) {
                 openSettingsModal();
@@ -3762,13 +4461,9 @@ IMPORTANT:
             const triggerBtn = $("ai-live-call-btn");
 
             try {
-                if (panelEl) panelEl.classList.remove("hidden");
+                panelEl?.classList.remove("hidden");
                 if (statusEl) statusEl.textContent = "Requesting mic...";
-                if (triggerBtn) triggerBtn.classList.add("opacity-50", "pointer-events-none");
-
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    throw new Error("Microphone access requires HTTPS or localhost.");
-                }
+                triggerBtn?.classList.add("opacity-50", "pointer-events-none");
 
                 const live = aiEngine.live;
                 live.active = true;
@@ -3777,12 +4472,7 @@ IMPORTANT:
                 live.userTurnText = "";
 
                 live.mediaStream = await navigator.mediaDevices.getUserMedia({
-                    audio: {
-                        channelCount: 1,
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        autoGainControl: true
-                    }
+                    audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true }
                 });
 
                 if (statusEl) statusEl.textContent = "Connecting...";
@@ -3795,142 +4485,52 @@ IMPORTANT:
                     functionDeclarations: [
                         {
                             name: "list_events",
-                            description: "List scheduled events, optionally filtered by startDate, endDate (YYYY-MM-DD), or title keyword.",
-                            parameters: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    startDate: { type: Type.STRING, description: "Filter start date YYYY-MM-DD" },
-                                    endDate: { type: Type.STRING, description: "Filter end date YYYY-MM-DD" },
-                                    keyword: { type: Type.STRING, description: "Optional title keyword" }
-                                }
-                            }
+                            description: "List scheduled calendar events.",
+                            parameters: { type: Type.OBJECT, properties: { startDate: { type: Type.STRING }, endDate: { type: Type.STRING }, keyword: { type: Type.STRING } } }
                         },
                         {
                             name: "create_event",
-                            description: "Create a single all-day or multi-day event on the planner.",
-                            parameters: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    title: { type: Type.STRING, description: "Event title" },
-                                    startDate: { type: Type.STRING, description: "Start date YYYY-MM-DD" },
-                                    endDate: { type: Type.STRING, description: "End date YYYY-MM-DD" },
-                                    color: { type: Type.STRING, description: "Color key: blue, green, yellow, red, orange, lime, purple, pink, cyan, or black" },
-                                    recurrence: { type: Type.STRING, description: "none, daily, weekly, biweekly, monthly, or yearly" }
-                                },
-                                required: ["title", "startDate"]
-                            }
-                        },
-                        {
-                            name: "create_multiple_events",
-                            description: "Create multiple events at once in a single call.",
-                            parameters: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    events: {
-                                        type: Type.ARRAY,
-                                        items: {
-                                            type: Type.OBJECT,
-                                            properties: {
-                                                title: { type: Type.STRING },
-                                                startDate: { type: Type.STRING },
-                                                endDate: { type: Type.STRING },
-                                                color: { type: Type.STRING },
-                                                recurrence: { type: Type.STRING }
-                                            },
-                                            required: ["title", "startDate"]
-                                        }
-                                    }
-                                },
-                                required: ["events"]
-                            }
-                        },
-                        {
-                            name: "update_event",
-                            description: "Update an existing event's title, dates, or color.",
-                            parameters: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    id: { type: Type.STRING },
-                                    matchTitle: { type: Type.STRING },
-                                    matchDate: { type: Type.STRING },
-                                    newTitle: { type: Type.STRING },
-                                    newStartDate: { type: Type.STRING },
-                                    newEndDate: { type: Type.STRING },
-                                    color: { type: Type.STRING },
-                                    updateSeries: { type: Type.BOOLEAN }
-                                }
-                            }
+                            description: "Create a calendar event.",
+                            parameters: { type: Type.OBJECT, properties: { title: { type: Type.STRING }, startDate: { type: Type.STRING }, endDate: { type: Type.STRING }, color: { type: Type.STRING }, recurrence: { type: Type.STRING } }, required: ["title", "startDate"] }
                         },
                         {
                             name: "delete_event",
-                            description: "Delete an event from the schedule.",
-                            parameters: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    id: { type: Type.STRING },
-                                    title: { type: Type.STRING },
-                                    date: { type: Type.STRING },
-                                    deleteSeries: { type: Type.BOOLEAN }
-                                }
-                            }
+                            description: "Delete a calendar event.",
+                            parameters: { type: Type.OBJECT, properties: { id: { type: Type.STRING }, title: { type: Type.STRING }, date: { type: Type.STRING }, deleteSeries: { type: Type.BOOLEAN } } }
+                        },
+                        {
+                            name: "list_shifts",
+                            description: "List scheduled work shifts.",
+                            parameters: { type: Type.OBJECT, properties: { startDate: { type: Type.STRING }, endDate: { type: Type.STRING } } }
+                        },
+                        {
+                            name: "create_shift",
+                            description: "Schedule a shift in 24h HH:MM format. Use color 'amber' if it is a shift swap or shift change, otherwise 'indigo'.",
+                            parameters: { type: Type.OBJECT, properties: { date: { type: Type.STRING }, startTime: { type: Type.STRING }, endTime: { type: Type.STRING }, label: { type: Type.STRING }, color: { type: Type.STRING }, recurrence: { type: Type.STRING } }, required: ["date", "startTime", "endTime"] }
+                        },
+                        {
+                            name: "update_shift",
+                            description: "Update an existing shift's time, label, or color ('indigo' for standard, 'amber' for shift swap/change).",
+                            parameters: { type: Type.OBJECT, properties: { id: { type: Type.STRING }, date: { type: Type.STRING }, newDate: { type: Type.STRING }, startTime: { type: Type.STRING }, endTime: { type: Type.STRING }, label: { type: Type.STRING }, color: { type: Type.STRING } } }
+                        },
+                        {
+                            name: "delete_shift",
+                            description: "Delete a shift by id or date.",
+                            parameters: { type: Type.OBJECT, properties: { id: { type: Type.STRING }, date: { type: Type.STRING } } }
                         },
                         {
                             name: "list_notes",
-                            description: "List existing notes in the Notes tab, optionally filtered by category or keyword.",
-                            parameters: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    category: { type: Type.STRING, description: "all, general, tasks, visual, stock, or team" },
-                                    keyword: { type: Type.STRING, description: "Optional search keyword" }
-                                }
-                            }
+                            description: "List notes.",
+                            parameters: { type: Type.OBJECT, properties: {} }
                         },
                         {
                             name: "create_note",
-                            description: "Create a new note or checklist in the Notes tab whenever the user wants to jot down ideas, tasks, reminders, or store notes.",
-                            parameters: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    title: { type: Type.STRING, description: "Short clear title for the note" },
-                                    content: { type: Type.STRING, description: "Note body. Use '- [ ] item' lines for checklist items." },
-                                    category: { type: Type.STRING, description: "general, tasks, visual, stock, or team" },
-                                    color: { type: Type.STRING, description: "default, blue, amber, emerald, purple, or rose" },
-                                    pinned: { type: Type.BOOLEAN, description: "Whether to pin this note" }
-                                },
-                                required: ["title"]
-                            }
-                        },
-                        {
-                            name: "update_note",
-                            description: "Update an existing note's title, content, category, or append new lines/checklist items to it.",
-                            parameters: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    id: { type: Type.STRING },
-                                    matchTitle: { type: Type.STRING },
-                                    newTitle: { type: Type.STRING },
-                                    newContent: { type: Type.STRING },
-                                    appendContent: { type: Type.STRING, description: "Text or checklist lines to append to the existing note" },
-                                    category: { type: Type.STRING },
-                                    color: { type: Type.STRING },
-                                    pinned: { type: Type.BOOLEAN }
-                                }
-                            }
-                        },
-                        {
-                            name: "delete_note",
-                            description: "Delete a note from the Notes tab.",
-                            parameters: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    id: { type: Type.STRING },
-                                    title: { type: Type.STRING }
-                                }
-                            }
+                            description: "Create a note or checklist.",
+                            parameters: { type: Type.OBJECT, properties: { title: { type: Type.STRING }, content: { type: Type.STRING }, category: { type: Type.STRING } }, required: ["title"] }
                         },
                         {
                             name: "end_call",
-                            description: "Automatically hang up and end the voice conversation when the user says goodbye, 'bye', 'that's it', 'that's all', or indicates they are finished.",
+                            description: "End the voice session when the user says goodbye.",
                             parameters: { type: Type.OBJECT, properties: {} }
                         }
                     ]
@@ -3938,154 +4538,82 @@ IMPORTANT:
 
                 const liveConfig = {
                     responseModalities: [Modality.AUDIO],
-                    speechConfig: {
-                        voiceConfig: {
-                            prebuiltVoiceConfig: { voiceName: geminiVoiceName || "Aoede" }
-                        }
-                    },
+                    speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: geminiVoiceName || "Aoede" } } },
                     inputAudioTranscription: {},
                     outputAudioTranscription: {},
                     tools,
-                    systemInstruction: `You are the UGG Knightsbridge Store Planner voice assistant. Today is ${ctx.todayFormatted} (${ctx.todayIso}).
-CRITICAL LANGUAGE RULE: The user is ALWAYS speaking English. Both your spoken responses and all speech-to-text transcripts MUST be strictly in English (Latin alphabet only). Never interpret background noise or accents as Welsh, Spanish, Portuguese, French, or any other language.
-You manage both the Calendar schedule AND the Notes tab!
-- Always call list_events when checking the calendar schedule, and list_notes when checking notes.
-- Whenever the user asks you to take a note, save a thought, create a to-do list, or add items to a note, call create_note (or update_note with appendContent if adding to an existing note). Format to-do items as "- [ ] item".
-- When the user asks to add multiple calendar events at once, use create_multiple_events (or call create_event once per event).
-CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "that's all", "I'm done", or indicates they are finished, say a brief friendly goodbye in English and IMMEDIATELY call end_call to hang up automatically.`
+                    systemInstruction: `You are the UGG Knightsbridge Store Planner voice assistant. Today is ${ctx.todayFormatted} (${ctx.todayIso}). Speak strictly in English. Always use 24-hour times for shifts (08:00-17:00, 09:00-18:00, 10:00-19:00, 11:00-20:00, 11:30-20:30), and use color 'amber' when a shift is swapped or changed (otherwise 'indigo'). Call end_call after saying goodbye.`
                 };
 
-                const connectLiveWithModel = (modelName) => ai.live.connect({
-                    model: modelName,
+                live.sessionPromise = ai.live.connect({
+                    model: "gemini-2.5-flash-native-audio-preview-12-2025",
                     config: liveConfig,
                     callbacks: {
-                        onopen: () => {
-                            if (statusEl) statusEl.textContent = "Listening...";
-                        },
+                        onopen: () => { if (statusEl) statusEl.textContent = "Listening..."; },
                         onmessage: async (message) => {
                             const serverContent = message?.serverContent;
                             if (serverContent?.interrupted) {
                                 interruptLivePlayback();
                                 finalizeTranscriptTurn();
                             }
-
                             if (serverContent?.inputTranscription?.text) {
                                 const chunk = serverContent.inputTranscription.text;
                                 live.userTurnText += chunk;
                                 appendTranscriptBubble("user", chunk, true);
-                                if (isFarewellUtterance(live.userTurnText)) {
-                                    live.pendingHangup = true;
-                                }
+                                if (isFarewellUtterance(live.userTurnText)) live.pendingHangup = true;
                             }
-
                             if (serverContent?.outputTranscription?.text) {
                                 appendTranscriptBubble("ai", serverContent.outputTranscription.text, true);
                             }
-
                             const parts = serverContent?.modelTurn?.parts || [];
                             for (const part of parts) {
-                                if (part?.inlineData?.data) {
-                                    queueLiveAudioChunk(part.inlineData.data);
-                                }
+                                if (part?.inlineData?.data) queueLiveAudioChunk(part.inlineData.data);
                             }
-
                             if (message?.toolCall?.functionCalls?.length) {
                                 const responses = [];
                                 for (const fc of message.toolCall.functionCalls) {
                                     const result = executeAiToolAction(fc.name, fc.args || {}, true);
-                                    responses.push({
-                                        id: fc.id,
-                                        name: fc.name,
-                                        response: result
-                                    });
+                                    responses.push({ id: fc.id, name: fc.name, response: result });
                                 }
                                 commitAllData();
                                 try {
                                     const sess = await live.sessionPromise;
                                     sess.sendToolResponse({ functionResponses: responses });
-                                } catch (err) {
-                                    console.error("Failed sending tool response:", err);
-                                }
-
-                                if (live.pendingHangup) {
-                                    const remainingMs = live.playCtx
-                                        ? Math.max(0, (live.nextPlayTime - live.playCtx.currentTime) * 1000)
-                                        : 0;
-                                    setTimeout(() => {
-                                        if (aiEngine.live.active) {
-                                            stopLiveVoiceSession();
-                                        }
-                                    }, Math.max(1200, remainingMs + 500));
-                                }
+                                } catch (_) { }
                             }
-
                             if (serverContent?.turnComplete) {
                                 const saidFarewell = isFarewellUtterance(live.userTurnText);
                                 live.userTurnText = "";
                                 finalizeTranscriptTurn();
-
                                 if (live.pendingHangup || saidFarewell) {
-                                    const remainingMs = live.playCtx
-                                        ? Math.max(0, (live.nextPlayTime - live.playCtx.currentTime) * 1000)
-                                        : 0;
-                                    setTimeout(() => {
-                                        if (aiEngine.live.active) {
-                                            stopLiveVoiceSession();
-                                        }
-                                    }, remainingMs + 450);
+                                    setTimeout(() => { if (aiEngine.live.active) stopLiveVoiceSession(); }, 1000);
                                 }
                             }
                         },
-                        onerror: (err) => {
-                            console.error("Gemini Live error:", err);
-                            const msg = err?.message || "Live voice connection error";
-                            showToast(msg, true);
-                            stopLiveVoiceSession();
-                        },
-                        onclose: (ev) => {
-                            if (ev?.reason && live.active) {
-                                showToast(`Voice closed: ${ev.reason}`, true);
-                            }
-                            stopLiveVoiceSession();
-                        }
+                        onerror: () => stopLiveVoiceSession(),
+                        onclose: () => stopLiveVoiceSession()
                     }
                 });
-
-                try {
-                    live.sessionPromise = connectLiveWithModel("gemini-3.1-flash-live-preview");
-                    live.session = await live.sessionPromise;
-                } catch (primaryLiveErr) {
-                    console.warn("Primary Live model failed, falling back to gemini-2.5-flash-native-audio-preview-12-2025:", primaryLiveErr);
-                    live.sessionPromise = connectLiveWithModel("gemini-2.5-flash-native-audio-preview-12-2025");
-                    live.session = await live.sessionPromise;
-                }
+                live.session = await live.sessionPromise;
 
                 live.audioCtx = new Ctx({ sampleRate: 16000 });
-                if (live.audioCtx.state === "suspended") {
-                    await live.audioCtx.resume();
-                }
+                if (live.audioCtx.state === "suspended") await live.audioCtx.resume();
                 const source = live.audioCtx.createMediaStreamSource(live.mediaStream);
                 const actualRate = live.audioCtx.sampleRate || 16000;
-
                 const processor = live.audioCtx.createScriptProcessor(4096, 1, 1);
                 live.processor = processor;
                 processor.onaudioprocess = (ev) => {
                     if (!live.active || live.muted) return;
                     const b64 = float32ToBase64Pcm16(ev.inputBuffer.getChannelData(0), actualRate);
                     live.sessionPromise?.then((sess) => {
-                        try {
-                            sess.sendRealtimeInput({
-                                audio: { data: b64, mimeType: "audio/pcm;rate=16000" }
-                            });
-                        } catch (_) { }
+                        try { sess.sendRealtimeInput({ audio: { data: b64, mimeType: "audio/pcm;rate=16000" } }); } catch (_) { }
                     });
                 };
                 source.connect(processor);
                 processor.connect(live.audioCtx.destination);
             } catch (err) {
                 console.error("Failed starting Live Voice:", err);
-                const reason = err?.message || "Could not start Live Voice — check mic & API key";
-                showToast(reason, true);
+                showToast("Could not start Live Voice — check mic & API key", true);
                 stopLiveVoiceSession();
             }
         }
@@ -4099,26 +4627,11 @@ CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "th
             finalizeTranscriptTurn();
             interruptLivePlayback();
 
-            if (live.processor) {
-                try { live.processor.disconnect(); } catch (_) { }
-                live.processor = null;
-            }
-            if (live.audioCtx) {
-                live.audioCtx.close().catch(() => { });
-                live.audioCtx = null;
-            }
-            if (live.playCtx) {
-                live.playCtx.close().catch(() => { });
-                live.playCtx = null;
-            }
-            if (live.mediaStream) {
-                live.mediaStream.getTracks().forEach((t) => t.stop());
-                live.mediaStream = null;
-            }
-            if (live.session) {
-                try { live.session.close(); } catch (_) { }
-                live.session = null;
-            }
+            if (live.processor) { try { live.processor.disconnect(); } catch (_) { } live.processor = null; }
+            if (live.audioCtx) { live.audioCtx.close().catch(() => { }); live.audioCtx = null; }
+            if (live.playCtx) { live.playCtx.close().catch(() => { }); live.playCtx = null; }
+            if (live.mediaStream) { live.mediaStream.getTracks().forEach((t) => t.stop()); live.mediaStream = null; }
+            if (live.session) { try { live.session.close(); } catch (_) { } live.session = null; }
             live.sessionPromise = null;
 
             $("live-call-panel")?.classList.add("hidden");
@@ -4138,9 +4651,7 @@ CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "th
                     ? "fa-solid fa-microphone-slash text-[11px] text-amber-300"
                     : "fa-solid fa-microphone text-[11px]";
             }
-            if (statusEl) {
-                statusEl.textContent = live.muted ? "Muted" : "Listening...";
-            }
+            if (statusEl) statusEl.textContent = live.muted ? "Muted" : "Listening...";
         }
 
         // =========================================================================
@@ -4148,27 +4659,90 @@ CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "th
         // =========================================================================
         async function initApp() {
             selectedDateKey = formatDateKey(new Date());
+            selectedShiftDateKey = formatDateKey(new Date());
             loadLocalData();
             initFirebaseServices();
 
-            // Boot locked; unlockPlannerUI(true) runs after Firebase sign-in
+            // Start on the authentication lock screen
             $("auth-lock-screen")?.classList.remove("hidden");
             $("app-header")?.classList.add("hidden");
             $("app-main")?.classList.add("hidden");
             setTimeout(() => $("auth-password-input")?.focus(), 40);
 
-            // Workspace View Tabs (Calendar <-> Notes)
+            // Workspace View Tabs (Calendar <-> Shifts <-> Notes)
             $("tab-calendar-btn")?.addEventListener("click", () => switchWorkspaceTab("calendar"));
+            $("tab-shifts-btn")?.addEventListener("click", () => switchWorkspaceTab("shifts"));
             $("tab-notes-btn")?.addEventListener("click", () => switchWorkspaceTab("notes"));
 
-            // Context-aware primary header "+ New Event / + New Note" button
-            $("primary-action-btn")?.addEventListener("click", () => {
-                if (activeWorkspaceTab === "notes") {
-                    openAddNoteModal({ type: quickComposerType });
-                } else {
-                    openAddEventModal(selectedDateKey);
-                }
+            // Shifts Calendar Navigation, Day Popover & Modal listeners
+            $("selected-shifts-add-btn")?.addEventListener("click", () => openAddShiftModal(selectedShiftDateKey));
+            $("close-shifts-popover-btn")?.addEventListener("click", (e) => {
+                e.stopPropagation();
+                closeShiftsDayPopover();
             });
+            document.querySelectorAll("#shifts-day-popover [data-quick-shift]").forEach((btn) => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const preset = btn.getAttribute("data-quick-shift");
+                    quickAssignShift(activeShiftsPopoverDateKey || selectedShiftDateKey, preset);
+                });
+            });
+            $("shifts-prev-month-btn")?.addEventListener("click", () => {
+                closeShiftsDayPopover();
+                shiftsActiveMonthIndex--;
+                if (shiftsActiveMonthIndex < 0) {
+                    shiftsActiveMonthIndex = 11;
+                    shiftsActiveYear--;
+                }
+                renderShiftsCalendar();
+            });
+            $("shifts-next-month-btn")?.addEventListener("click", () => {
+                closeShiftsDayPopover();
+                shiftsActiveMonthIndex++;
+                if (shiftsActiveMonthIndex > 11) {
+                    shiftsActiveMonthIndex = 0;
+                    shiftsActiveYear++;
+                }
+                renderShiftsCalendar();
+            });
+            $("shifts-today-btn")?.addEventListener("click", () => {
+                closeShiftsDayPopover();
+                const now = new Date();
+                shiftsActiveYear = now.getFullYear();
+                shiftsActiveMonthIndex = now.getMonth();
+                selectedShiftDateKey = formatDateKey(now);
+                renderShiftsCalendar();
+            });
+            $("shifts-month-year-picker-trigger")?.addEventListener("click", (e) => {
+                e.stopPropagation();
+                closeShiftsDayPopover();
+                toggleShiftsMonthYearPopover();
+            });
+            $("shifts-picker-jump-today-btn")?.addEventListener("click", () => {
+                const now = new Date();
+                shiftsActiveYear = now.getFullYear();
+                shiftsActiveMonthIndex = now.getMonth();
+                selectedShiftDateKey = formatDateKey(now);
+                toggleShiftsMonthYearPopover(false);
+                renderShiftsCalendar();
+            });
+
+            document.querySelectorAll("#shift-preset-grid [data-shift-preset]").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const key = btn.getAttribute("data-shift-preset");
+                    setShiftPresetSelection(key);
+                });
+            });
+            document.querySelectorAll("#shift-color-grid [data-shift-color]").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const colorKey = btn.getAttribute("data-shift-color");
+                    setShiftColorSelection(colorKey);
+                });
+            });
+            $("close-shift-modal-btn")?.addEventListener("click", closeShiftModal);
+            $("cancel-shift-modal-btn")?.addEventListener("click", closeShiftModal);
+            $("shift-form")?.addEventListener("submit", handleShiftFormSubmit);
+            $("delete-shift-btn")?.addEventListener("click", handleDeleteShiftClick);
 
             // Notes workspace listeners
             $("notes-new-inline-btn")?.addEventListener("click", () => openAddNoteModal({ type: quickComposerType }));
@@ -4289,7 +4863,6 @@ CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "th
                 renderCalendar();
             });
 
-            // Touch swipe left/right on calendar to navigate months on mobile
             const calendarTouchArea = $("calendar-touch-area");
             if (calendarTouchArea) {
                 let touchStartX = 0;
@@ -4338,7 +4911,7 @@ CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "th
                 renderCalendar();
             });
 
-            // Month / Year Popover
+            // Month / Year Popovers & Outside Click Closers
             $("month-year-picker-trigger")?.addEventListener("click", (e) => {
                 e.stopPropagation();
                 toggleMonthYearPopover();
@@ -4356,6 +4929,15 @@ CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "th
                 const trigger = $("month-year-picker-trigger");
                 if (isMonthYearPopoverOpen && popover && !popover.contains(e.target) && !trigger?.contains(e.target)) {
                     toggleMonthYearPopover(false);
+                }
+                const shiftsPopover = $("shifts-month-year-popover");
+                const shiftsTrigger = $("shifts-month-year-picker-trigger");
+                if (isShiftsMonthYearPopoverOpen && shiftsPopover && !shiftsPopover.contains(e.target) && !shiftsTrigger?.contains(e.target)) {
+                    toggleShiftsMonthYearPopover(false);
+                }
+                const dayPopover = $("shifts-day-popover");
+                if (activeShiftsPopoverDateKey && dayPopover && !dayPopover.contains(e.target)) {
+                    closeShiftsDayPopover();
                 }
             });
 
