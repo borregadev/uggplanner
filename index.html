@@ -36,6 +36,12 @@
         }
     </script>
     <style>
+        /* Reserve scrollbar space permanently so switching between Calendar and Notes never shifts the header */
+        html {
+            overflow-y: scroll;
+            scrollbar-gutter: stable;
+        }
+
         /* Unified base typography & crisp tabular numerals */
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -299,7 +305,7 @@
                     </label>
                     <div class="relative">
                         <input type="password" id="auth-password-input" required autocomplete="current-password"
-                            placeholder="Enter password..."
+                            placeholder="Password"
                             class="w-full pl-3.5 pr-10 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
                         <button type="button" id="auth-toggle-password-btn" aria-label="Show password"
                             title="Show password"
@@ -332,53 +338,68 @@
     <!-- Top Application Header -->
     <header id="app-header"
         class="hidden no-print sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-b border-zinc-200/80">
-        <div class="max-w-[1440px] mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2 sm:gap-3">
+        <div class="max-w-[1440px] mx-auto px-3 sm:px-6 py-2.5 sm:py-0 sm:h-16 flex flex-wrap sm:grid sm:grid-cols-[1fr_auto_1fr] items-center justify-between gap-2 sm:gap-3">
             <!-- Brand & Storage Status -->
-            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0 justify-self-start order-1">
                 <div
                     class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-zinc-950 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
                     <i class="fa-regular fa-calendar-check text-sm sm:text-base"></i>
                 </div>
-                <div class="flex-shrink-0">
-                    <h1 class="text-[13px] sm:text-base font-bold text-zinc-950 tracking-tight whitespace-nowrap">UGG
+                <div class="min-w-0">
+                    <h1 class="text-[13px] sm:text-base font-bold text-zinc-950 tracking-tight truncate">UGG
                         Knightsbridge</h1>
                 </div>
                 <button type="button" id="cloud-sync-pill"
-                    class="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-zinc-100 hover:bg-zinc-200/70 border border-zinc-200/80 text-[11px] font-medium text-zinc-600 transition flex-shrink-0"
+                    class="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-100 hover:bg-zinc-200/70 border border-zinc-200/80 text-[11px] font-medium text-zinc-600 transition flex-shrink-0"
                     title="Storage sync status">
                     <span id="cloud-sync-dot" class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
-                    <span id="cloud-sync-text" class="hidden sm:inline">Local</span>
+                    <span id="cloud-sync-text">Local</span>
+                </button>
+            </div>
+
+            <!-- Workspace Tab Switcher (Second row on mobile so it never overlaps, centered on desktop) -->
+            <div class="w-full sm:w-auto order-3 sm:order-2 grid grid-cols-2 bg-zinc-100/90 p-1 rounded-xl border border-zinc-200/80 flex-shrink-0 justify-self-center" role="tablist" aria-label="Workspace view">
+                <button type="button" id="tab-calendar-btn" role="tab" aria-selected="true"
+                    class="px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center justify-center gap-1.5">
+                    <i class="fa-regular fa-calendar text-[11px] w-3.5 text-center"></i>
+                    <span>Calendar</span>
+                </button>
+                <button type="button" id="tab-notes-btn" role="tab" aria-selected="false"
+                    class="px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center justify-center gap-1.5">
+                    <i class="fa-regular fa-note-sticky text-[11px] w-3.5 text-center"></i>
+                    <span>Notes</span>
+                    <span id="notes-tab-count" class="hidden px-1.5 py-0.2 rounded-full bg-zinc-200/90 text-zinc-700 text-[10px] font-bold">0</span>
                 </button>
             </div>
 
             <!-- Right Actions -->
-            <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
+            <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0 justify-self-end order-2 sm:order-3">
                 <div class="inline-flex items-center bg-zinc-100/90 p-1 rounded-xl border border-zinc-200/80">
-                    <button type="button" onclick="window.print()"
-                        class="px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 hover:bg-white transition inline-flex items-center gap-1.5"
+                    <button type="button" id="print-btn" onclick="window.print()"
+                        class="w-7 sm:w-8 lg:w-auto lg:px-3 h-7 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 hover:bg-white transition inline-flex items-center justify-center gap-1.5"
                         title="Print A4 Landscape">
-                        <i class="fa-solid fa-print text-xs"></i>
-                        <span class="hidden sm:inline">Print</span>
+                        <i class="fa-solid fa-print text-xs w-3.5 text-center"></i>
+                        <span class="hidden lg:inline">Print</span>
                     </button>
                     <button type="button" id="settings-btn"
-                        class="px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 hover:bg-white transition inline-flex items-center gap-1.5"
+                        class="w-7 sm:w-8 lg:w-auto lg:px-3 h-7 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 hover:bg-white transition inline-flex items-center justify-center gap-1.5"
                         title="Settings & Backup">
-                        <i class="fa-solid fa-gear text-xs"></i>
-                        <span class="hidden sm:inline">Settings</span>
+                        <i class="fa-solid fa-gear text-xs w-3.5 text-center"></i>
+                        <span class="hidden lg:inline">Settings</span>
                     </button>
                     <button type="button" id="lock-planner-btn"
-                        class="px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 hover:bg-white transition inline-flex items-center gap-1.5"
+                        class="w-7 sm:w-8 lg:w-auto lg:px-3 h-7 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 hover:bg-white transition inline-flex items-center justify-center gap-1.5"
                         title="Lock Planner">
-                        <i class="fa-solid fa-lock text-xs"></i>
-                        <span class="hidden sm:inline">Lock</span>
+                        <i class="fa-solid fa-lock text-xs w-3.5 text-center"></i>
+                        <span class="hidden lg:inline">Lock</span>
                     </button>
                 </div>
 
-                <button type="button" id="add-event-btn"
-                    class="inline-flex items-center gap-1.5 px-2.5 sm:px-4 py-2 bg-zinc-950 hover:bg-zinc-800 active:scale-[0.99] text-white text-xs font-semibold rounded-xl shadow-xs transition"
+                <button type="button" id="primary-action-btn"
+                    class="inline-flex items-center justify-center gap-1.5 w-8 sm:w-[116px] h-8 sm:h-9 bg-zinc-950 hover:bg-zinc-800 active:scale-[0.99] text-white text-xs font-semibold rounded-xl shadow-xs transition flex-shrink-0"
                     title="New Event">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span class="hidden sm:inline">New Event</span>
+                    <i class="fa-solid fa-plus text-xs w-3 text-center"></i>
+                    <span id="primary-action-label" class="hidden sm:inline">New Event</span>
                 </button>
             </div>
         </div>
@@ -388,8 +409,10 @@
     <main id="app-main" class="hidden page-container flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 py-5 sm:py-6">
         <div class="workspace-grid grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
 
-            <!-- Primary Calendar Column -->
+            <!-- Primary Left Column (Switches cleanly between Calendar View & Notes View) -->
             <div class="calendar-primary-col lg:col-span-8 xl:col-span-9 flex flex-col gap-5">
+
+                <!-- 1. CALENDAR VIEW -->
                 <section id="calendar-touch-area"
                     class="calendar-shell bg-white rounded-3xl border border-zinc-200/85 shadow-soft overflow-hidden">
                     <!-- Month Navigation Bar -->
@@ -459,13 +482,110 @@
                         class="calendar-grid grid grid-cols-[28px_repeat(7,minmax(0,1fr))] sm:grid-cols-[36px_repeat(7,minmax(0,1fr))]">
                     </div>
                 </section>
+
+                <!-- 2. NOTES WORKSPACE VIEW (Swapped in place of Calendar when Notes tab is active) -->
+                <section id="notes-workspace-view"
+                    class="hidden no-print bg-white rounded-3xl border border-zinc-200/85 shadow-soft overflow-hidden">
+                    <!-- Notes Header & Search Bar -->
+                    <div class="px-4 sm:px-6 py-4 border-b border-zinc-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5">
+                            <h2 class="text-base sm:text-lg font-bold text-zinc-950 tracking-tight">Notes &amp; To-Dos</h2>
+                            <span id="notes-total-badge"
+                                class="px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600 text-[11px] font-semibold">0</span>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <div class="relative flex-1 sm:w-56">
+                                <i class="fa-solid fa-magnifying-glass text-[11px] text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                <input type="text" id="notes-search-input" placeholder="Search..."
+                                    class="w-full pl-8 pr-3 py-1.5 bg-zinc-50 border border-zinc-200/90 rounded-xl text-xs text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
+                            </div>
+                            <button type="button" id="notes-new-inline-btn"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-semibold rounded-xl transition flex-shrink-0">
+                                <i class="fa-solid fa-plus text-[10px]"></i>
+                                <span>Add Note</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Category Filter Pills -->
+                    <div class="px-4 sm:px-6 py-2.5 bg-zinc-50/70 border-b border-zinc-200/70 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar" id="notes-category-filters"></div>
+                        <button type="button" id="toggle-tag-manager-btn"
+                            class="px-2.5 py-1 rounded-full text-[11px] font-semibold text-zinc-600 hover:text-zinc-950 hover:bg-zinc-200/70 border border-zinc-200/80 bg-white transition inline-flex items-center gap-1 flex-shrink-0"
+                            title="Create or delete tags">
+                            <i class="fa-solid fa-tag text-[9.5px]"></i>
+                            <span>Tags</span>
+                        </button>
+                    </div>
+
+                    <!-- Inline Tag Manager Drawer (Create / Delete Tags) -->
+                    <div id="note-tag-manager-drawer" class="hidden px-4 sm:px-6 py-3 bg-zinc-50 border-b border-zinc-200/70 space-y-2.5">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                            <input type="text" id="new-note-tag-input" maxlength="24" placeholder="New tag name..."
+                                class="flex-1 sm:max-w-xs px-3 py-1.5 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
+                            <div class="flex items-center gap-2">
+                                <div id="new-tag-color-swatches" class="flex items-center gap-1.5"></div>
+                                <button type="button" id="create-note-tag-btn"
+                                    class="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-semibold rounded-xl transition flex-shrink-0">
+                                    Add Tag
+                                </button>
+                            </div>
+                        </div>
+                        <div id="manage-tags-list" class="flex flex-wrap items-center gap-1.5"></div>
+                    </div>
+
+                    <!-- Quick Scratchpad Composer -->
+                    <form id="quick-note-form" class="px-4 sm:px-6 py-3.5 border-b border-zinc-100 bg-white space-y-2.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="inline-flex items-center bg-zinc-100 p-0.5 rounded-lg border border-zinc-200/80" role="group" aria-label="Quick entry type">
+                                <button type="button" id="quick-type-note-btn"
+                                    class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center gap-1.5">
+                                    <i class="fa-regular fa-note-sticky text-[10px]"></i>
+                                    <span>Text Note</span>
+                                </button>
+                                <button type="button" id="quick-type-checklist-btn"
+                                    class="px-2.5 py-1 rounded-md text-[11px] font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center gap-1.5">
+                                    <i class="fa-regular fa-square-check text-[10px]"></i>
+                                    <span>Checklist</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="quick-note-title" placeholder="Title"
+                                class="sm:w-1/3 px-3 py-2 bg-zinc-50 border border-zinc-200/90 rounded-xl text-xs font-medium text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
+                            <div class="flex-1 flex items-center gap-2">
+                                <input type="text" id="quick-note-body" placeholder="Write a note..."
+                                    class="flex-1 px-3 py-2 bg-zinc-50 border border-zinc-200/90 rounded-xl text-xs text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
+                                <select id="quick-note-category" aria-label="Note category"
+                                    class="px-2.5 py-2 bg-zinc-50 border border-zinc-200/90 rounded-xl text-xs font-medium text-zinc-700 focus:bg-white focus:outline-none focus:border-zinc-950 transition">
+                                    <option value="general">General</option>
+                                    <option value="tasks">To-Do</option>
+                                    <option value="visual">Visual</option>
+                                    <option value="stock">Stock</option>
+                                    <option value="team">Team</option>
+                                </select>
+                                <button type="submit"
+                                    class="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold rounded-xl transition flex-shrink-0">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Notes Grid -->
+                    <div id="notes-grid-container" class="p-4 sm:p-6">
+                        <div id="notes-cards-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                    </div>
+                </section>
+
             </div>
 
             <!-- Right Inspector & AI Assistant Column -->
             <aside class="no-print lg:col-span-4 xl:col-span-3 flex flex-col gap-5">
 
-                <!-- Selected Day Inspector Card -->
-                <section class="bg-white rounded-3xl border border-zinc-200/85 shadow-soft p-5">
+                <!-- Selected Day Inspector Card (Shown on Calendar tab) -->
+                <section id="selected-day-card" class="bg-white rounded-3xl border border-zinc-200/85 shadow-soft p-5">
                     <div class="flex items-center justify-between gap-2 pb-3.5 border-b border-zinc-100">
                         <div class="min-w-0">
                             <span
@@ -483,13 +603,33 @@
                     <div id="selected-day-list" class="mt-3.5 space-y-2"></div>
                 </section>
 
-                <!-- AI Schedule Assistant & Live Voice Card -->
+                <!-- Pinned Notes Quick Card (Shown on Notes tab) -->
+                <section id="pinned-notes-card" class="hidden bg-white rounded-3xl border border-zinc-200/85 shadow-soft p-5">
+                    <div class="flex items-center justify-between gap-2 pb-3.5 border-b border-zinc-100">
+                        <div class="min-w-0">
+                            <span class="block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Quick Focus</span>
+                            <h2 class="text-sm font-bold text-zinc-950 truncate mt-0.5">Pinned Notes</h2>
+                        </div>
+                        <button type="button" id="pinned-card-new-btn"
+                            class="w-8 h-8 rounded-xl bg-zinc-100 hover:bg-zinc-950 text-zinc-700 hover:text-white flex items-center justify-center transition flex-shrink-0"
+                            title="Create new note">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                        </button>
+                    </div>
+                    <div id="pinned-notes-list" class="mt-3.5 space-y-2"></div>
+                </section>
+
+                <!-- AI Schedule & Notes Assistant Card -->
                 <section class="bg-white rounded-3xl border border-zinc-200/85 shadow-soft p-5">
                     <div class="flex items-center justify-between gap-2 mb-3.5">
                         <div class="flex items-center gap-2">
                             <div
-                                class="w-7 h-7 rounded-lg bg-zinc-950 text-white flex items-center justify-center text-xs">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                class="w-7 h-7 rounded-lg bg-zinc-950 text-white flex items-center justify-center shadow-2xs">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M11 2L13.1 7.9L19 10L13.1 12.1L11 18L8.9 12.1L3 10L8.9 7.9L11 2Z" />
+                                    <path class="animate-pulse" d="M18.5 14L19.4 16.6L22 17.5L19.4 18.4L18.5 21L17.6 18.4L15 17.5L17.6 16.6L18.5 14Z" />
+                                    <circle cx="19" cy="5" r="1.15" class="opacity-85" />
+                                </svg>
                             </div>
                             <h2 class="text-sm font-bold text-zinc-950 tracking-tight">AI Assistant</h2>
                         </div>
@@ -524,7 +664,7 @@
                     <!-- Command Input Form -->
                     <form id="ai-command-form" class="relative flex items-center gap-1.5">
                         <div class="relative flex-1 min-w-0">
-                            <input type="text" id="ai-command-input" placeholder="Ask or add event(s)..."
+                            <input type="text" id="ai-command-input" placeholder="Ask or add..."
                                 class="w-full pl-3.5 pr-9 py-2.5 bg-zinc-50 border border-zinc-200/90 rounded-xl text-xs text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
                             <button type="button" id="ai-voice-btn"
                                 class="absolute inset-y-0 right-0 px-2.5 text-zinc-400 hover:text-zinc-800 flex items-center justify-center transition"
@@ -664,7 +804,7 @@
                     <label for="event-title"
                         class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Event
                         Title</label>
-                    <input type="text" id="event-title" required placeholder="e.g. Visual Merchandising Walkthrough"
+                    <input type="text" id="event-title" required placeholder="Event title"
                         class="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
                 </div>
 
@@ -721,6 +861,130 @@
                         <button type="submit"
                             class="px-5 py-2.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold transition">
                             Save Event
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add / Edit Note Modal -->
+    <div id="note-modal"
+        class="hidden no-print fixed inset-0 bg-zinc-950/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float border border-zinc-200 w-full max-w-lg overflow-hidden p-6">
+            <div class="flex items-center justify-between pb-4 border-b border-zinc-100">
+                <h3 id="note-modal-title" class="font-semibold text-zinc-950 text-[15px] tracking-tight">New Note</h3>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" id="note-modal-pin-btn"
+                        class="w-8 h-8 rounded-xl border border-zinc-200 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 flex items-center justify-center transition"
+                        title="Pin note to top">
+                        <i class="fa-solid fa-thumbtack text-xs"></i>
+                    </button>
+                    <button type="button" id="close-note-modal-btn"
+                        class="text-zinc-400 hover:text-zinc-800 rounded-xl hover:bg-zinc-100 transition w-8 h-8 flex items-center justify-center">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <form id="note-form" class="mt-5 space-y-4">
+                <input type="hidden" id="note-id">
+                <input type="hidden" id="note-pinned" value="false">
+                <input type="hidden" id="note-color" value="default">
+                <input type="hidden" id="note-type" value="note">
+
+                <!-- Entry Mode Switcher (Text Note vs. Interactive Checklist) -->
+                <div class="flex items-center justify-between gap-2">
+                    <div class="grid grid-cols-2 bg-zinc-100 p-1 rounded-xl border border-zinc-200/80 w-full sm:w-auto" role="group" aria-label="Note format">
+                        <button type="button" id="modal-type-note-btn"
+                            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center justify-center gap-1.5">
+                            <i class="fa-regular fa-note-sticky text-[11px]"></i>
+                            <span>Text Note</span>
+                        </button>
+                        <button type="button" id="modal-type-checklist-btn"
+                            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center justify-center gap-1.5">
+                            <i class="fa-regular fa-square-check text-[11px]"></i>
+                            <span>Checklist</span>
+                        </button>
+                    </div>
+                    <span id="modal-checklist-progress" class="hidden text-[11px] font-semibold text-zinc-500">0/0 done</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="sm:col-span-2">
+                        <label for="note-title"
+                            class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Title</label>
+                        <input type="text" id="note-title" required placeholder="Title"
+                            class="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
+                    </div>
+                    <div>
+                        <label for="note-category"
+                            class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">Category</label>
+                        <select id="note-category"
+                            class="w-full px-3 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
+                            <option value="general">General</option>
+                            <option value="tasks">To-Do &amp; Tasks</option>
+                            <option value="visual">Visual &amp; Floor</option>
+                            <option value="stock">Stock &amp; Deliveries</option>
+                            <option value="team">Team &amp; Handover</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Standard Text Note Editor -->
+                <div id="note-text-editor-wrap">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="note-content"
+                            class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Content</label>
+                        <button type="button" id="convert-to-checklist-btn"
+                            class="text-[11px] font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center gap-1">
+                            <i class="fa-regular fa-square-check text-[10px]"></i>
+                            <span>Convert lines to checklist</span>
+                        </button>
+                    </div>
+                    <textarea id="note-content" rows="6" placeholder="Content..."
+                        class="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm leading-relaxed focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition resize-y"></textarea>
+                </div>
+
+                <!-- Interactive Checklist Builder -->
+                <div id="note-checklist-editor-wrap" class="hidden space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Checklist Items</span>
+                        <button type="button" id="clear-completed-items-btn"
+                            class="hidden text-[11px] font-semibold text-zinc-500 hover:text-rose-600 transition">
+                            Clear checked
+                        </button>
+                    </div>
+                    <div id="modal-checklist-items" class="space-y-1.5 max-h-56 overflow-y-auto clean-scroll pr-0.5"></div>
+                    <div class="flex items-center gap-2 pt-1">
+                        <input type="text" id="modal-new-checklist-item" placeholder="New item..."
+                            class="flex-1 px-3.5 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-xs text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
+                        <button type="button" id="modal-add-checklist-item-btn"
+                            class="px-3 py-2 bg-zinc-100 hover:bg-zinc-200/80 text-zinc-800 border border-zinc-200 rounded-xl text-xs font-semibold transition flex-shrink-0">
+                            <i class="fa-solid fa-plus text-[10px]"></i> Add
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">Card Tint</span>
+                    <div id="note-color-swatches" class="flex items-center gap-2"></div>
+                </div>
+
+                <div class="flex items-center justify-between gap-2 pt-4 border-t border-zinc-100">
+                    <button type="button" id="delete-note-btn"
+                        class="hidden px-3.5 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-semibold transition">
+                        Delete
+                    </button>
+                    <div class="flex items-center gap-2 ml-auto">
+                        <button type="button" id="cancel-note-modal-btn"
+                            class="px-4 py-2.5 border border-zinc-200 text-zinc-600 rounded-xl text-xs font-semibold hover:bg-zinc-50 transition">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-5 py-2.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold transition">
+                            Save
                         </button>
                     </div>
                 </div>
@@ -866,7 +1130,7 @@
                             Remove Key
                         </button>
                     </div>
-                    <input type="password" id="ai-api-key-input" placeholder="AIzaSy..."
+                    <input type="password" id="ai-api-key-input" placeholder="API key"
                         class="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
                     <p class="text-[11px] text-zinc-500 leading-relaxed">
                         Saved locally in your browser (and synced if Firebase is configured).
@@ -876,7 +1140,7 @@
                 <!-- 3. JSON Backup & Restore -->
                 <div class="pt-4 border-t border-zinc-100 space-y-2.5">
                     <span class="block text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
-                        Schedule Backup
+                        Schedule &amp; Notes Backup
                     </span>
                     <div class="grid grid-cols-2 gap-2.5">
                         <button type="button" id="save-backup-btn"
@@ -932,6 +1196,8 @@
         const STORAGE_KEY = "ugg_knightsbridge_events_v1";
         const LEGACY_STORAGE_KEYS = ["ugg_knightsbridge_planner_events", "ugg_planner_events"];
         const DAILY_ORDER_STORAGE_KEY = "ugg_knightsbridge_daily_orders_v1";
+        const NOTES_STORAGE_KEY = "ugg_knightsbridge_notes_v1";
+        const NOTE_TAGS_STORAGE_KEY = "ugg_knightsbridge_note_tags_v1";
         const AI_KEY_STORAGE_KEY = "ugg_knightsbridge_gemini_key_v1";
         const AI_VOICE_STORAGE_KEY = "ugg_knightsbridge_gemini_voice_v1";
 
@@ -981,14 +1247,50 @@
             black: { name: "Black", swatch: "bg-zinc-900", pill: "bg-zinc-900 text-white border-zinc-950 hover:bg-zinc-800", dot: "bg-zinc-900" }
         };
 
+        const DEFAULT_NOTE_TAGS = [
+            { id: "general", label: "General", styleKey: "zinc", builtIn: true },
+            { id: "tasks", label: "To-Do", styleKey: "blue", builtIn: false },
+            { id: "visual", label: "Visual", styleKey: "purple", builtIn: false },
+            { id: "stock", label: "Stock", styleKey: "emerald", builtIn: false },
+            { id: "team", label: "Team", styleKey: "amber", builtIn: false }
+        ];
+
+        const TAG_BADGE_STYLES = {
+            zinc: { name: "Slate", badge: "bg-zinc-100 text-zinc-700 border-zinc-200/80", swatch: "bg-zinc-400" },
+            blue: { name: "Blue", badge: "bg-blue-50 text-blue-700 border-blue-200/80", swatch: "bg-blue-500" },
+            purple: { name: "Purple", badge: "bg-purple-50 text-purple-700 border-purple-200/80", swatch: "bg-purple-500" },
+            emerald: { name: "Green", badge: "bg-emerald-50 text-emerald-700 border-emerald-200/80", swatch: "bg-emerald-500" },
+            amber: { name: "Amber", badge: "bg-amber-50 text-amber-800 border-amber-200/80", swatch: "bg-amber-500" },
+            rose: { name: "Rose", badge: "bg-rose-50 text-rose-700 border-rose-200/80", swatch: "bg-rose-500" },
+            cyan: { name: "Cyan", badge: "bg-cyan-50 text-cyan-700 border-cyan-200/80", swatch: "bg-cyan-500" }
+        };
+
+        const NOTE_TINTS = {
+            default: { name: "White", card: "bg-zinc-50/75 hover:bg-white border-zinc-200/85", swatch: "bg-white border border-zinc-300" },
+            blue: { name: "Sky", card: "bg-blue-50/55 hover:bg-blue-50/80 border-blue-200/80", swatch: "bg-blue-200" },
+            amber: { name: "Sand", card: "bg-amber-50/65 hover:bg-amber-50/90 border-amber-200/80", swatch: "bg-amber-200" },
+            emerald: { name: "Sage", card: "bg-emerald-50/55 hover:bg-emerald-50/80 border-emerald-200/80", swatch: "bg-emerald-200" },
+            purple: { name: "Lavender", card: "bg-purple-50/55 hover:bg-purple-50/80 border-purple-200/80", swatch: "bg-purple-200" },
+            rose: { name: "Blush", card: "bg-rose-50/55 hover:bg-rose-50/80 border-rose-200/80", swatch: "bg-rose-200" }
+        };
+
         const $ = (id) => document.getElementById(id);
 
         const initialToday = new Date();
+        let activeWorkspaceTab = "calendar"; // "calendar" | "notes"
         let activeYear = initialToday.getFullYear();
         let activeMonthIndex = initialToday.getMonth();
         let selectedDateKey = null;
         let events = [];
         let dailyOrders = {};
+        let notes = [];
+        let noteTags = [...DEFAULT_NOTE_TAGS];
+        let selectedNewTagStyle = "blue";
+        let activeNoteCategoryFilter = "all";
+        let noteSearchQuery = "";
+        let quickComposerType = "note"; // "note" | "checklist"
+        let modalNoteType = "note"; // "note" | "checklist"
+        let modalChecklistDraft = [];
         let pendingDeleteEventId = null;
         let pendingColorEdit = null;
         let isMonthYearPopoverOpen = false;
@@ -1009,6 +1311,54 @@
         let geminiApiKey = cleanApiKey(safeStorage.getItem(AI_KEY_STORAGE_KEY));
         let geminiVoiceName = safeStorage.getItem(AI_VOICE_STORAGE_KEY) || "Aoede";
         if (!VALID_VOICES.includes(geminiVoiceName)) geminiVoiceName = "Aoede";
+
+        // =========================================================================
+        // WORKSPACE TAB SWITCHER (CALENDAR <-> NOTES)
+        // =========================================================================
+        function switchWorkspaceTab(tabName) {
+            activeWorkspaceTab = tabName === "notes" ? "notes" : "calendar";
+            const isNotes = activeWorkspaceTab === "notes";
+
+            const calTabBtn = $("tab-calendar-btn");
+            const notesTabBtn = $("tab-notes-btn");
+            const calArea = $("calendar-touch-area");
+            const notesArea = $("notes-workspace-view");
+            const dayCard = $("selected-day-card");
+            const pinnedCard = $("pinned-notes-card");
+            const primaryBtn = $("primary-action-btn");
+            const primaryLabel = $("primary-action-label");
+
+            if (calTabBtn && notesTabBtn) {
+                if (isNotes) {
+                    calTabBtn.className = "px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center justify-center gap-1.5";
+                    calTabBtn.setAttribute("aria-selected", "false");
+                    notesTabBtn.className = "px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center justify-center gap-1.5";
+                    notesTabBtn.setAttribute("aria-selected", "true");
+                } else {
+                    calTabBtn.className = "px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center justify-center gap-1.5";
+                    calTabBtn.setAttribute("aria-selected", "true");
+                    notesTabBtn.className = "px-2.5 sm:px-4 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center justify-center gap-1.5";
+                    notesTabBtn.setAttribute("aria-selected", "false");
+                }
+            }
+
+            calArea?.classList.toggle("hidden", isNotes);
+            notesArea?.classList.toggle("hidden", !isNotes);
+            dayCard?.classList.toggle("hidden", isNotes);
+            pinnedCard?.classList.toggle("hidden", !isNotes);
+            $("print-btn")?.classList.toggle("hidden", isNotes);
+
+            if (primaryBtn && primaryLabel) {
+                primaryLabel.textContent = isNotes ? "New Note" : "New Event";
+                primaryBtn.title = isNotes ? "New Note" : "New Event";
+            }
+
+            if (isNotes) {
+                renderNotesWorkspace();
+            } else {
+                renderCalendar();
+            }
+        }
 
         // =========================================================================
         // AUTHENTICATION, LOCK SCREEN & CLOUD SYNC
@@ -1039,6 +1389,23 @@
             }
         }
 
+        function updateSyncBadge(status, label) {
+            const dot = $("cloud-sync-dot");
+            const text = $("cloud-sync-text");
+            if (text && label) text.textContent = label;
+            if (dot) {
+                if (status === "synced") {
+                    dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+                } else if (status === "syncing") {
+                    dot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse";
+                } else if (status === "error") {
+                    dot.className = "w-1.5 h-1.5 rounded-full bg-rose-500";
+                } else {
+                    dot.className = "w-1.5 h-1.5 rounded-full bg-zinc-400";
+                }
+            }
+        }
+
         function unlockPlannerUI(useCloud) {
             $("auth-lock-screen")?.classList.add("hidden");
             $("app-header")?.classList.remove("hidden");
@@ -1050,7 +1417,7 @@
             const toggleIcon = $("auth-toggle-password-icon");
             if (toggleIcon) toggleIcon.className = "fa-regular fa-eye text-sm";
 
-            loadLocalEvents();
+            loadLocalData();
             if (useCloud && firestoreDb) {
                 startCloudListener();
             } else {
@@ -1058,6 +1425,7 @@
                 updateSyncBadge("local", "Local");
             }
             renderCalendar();
+            renderNotesWorkspace();
         }
 
         async function lockPlannerUI() {
@@ -1128,23 +1496,74 @@
             }
         }
 
-        function updateSyncBadge(status, label) {
-            const dot = $("cloud-sync-dot");
-            const text = $("cloud-sync-text");
-            if (!dot || !text) return;
-            text.textContent = label;
-            if (status === "synced") {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
-            } else if (status === "syncing") {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse";
-            } else if (status === "error") {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-rose-500";
-            } else {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-zinc-400";
-            }
+        function getTagMeta(tagId) {
+            const found = noteTags.find((t) => t.id === tagId) || noteTags[0] || DEFAULT_NOTE_TAGS[0];
+            const style = TAG_BADGE_STYLES[found.styleKey] || TAG_BADGE_STYLES.zinc;
+            return { id: found.id, label: found.label, badge: style.badge, builtIn: Boolean(found.builtIn) };
         }
 
-        function loadLocalEvents() {
+        function resolveValidTagId(rawTag) {
+            if (!rawTag) return "general";
+            const q = String(rawTag).trim().toLowerCase();
+            const byId = noteTags.find((t) => t.id.toLowerCase() === q);
+            if (byId) return byId.id;
+            const byLabel = noteTags.find((t) => t.label.toLowerCase() === q);
+            if (byLabel) return byLabel.id;
+            return "general";
+        }
+
+        function normalizeNoteItem(raw) {
+            const contentStr = String(raw.content || "");
+            const hasChecklistSyntax = /^\s*-\s*\[[ xX]\]/m.test(contentStr);
+            const resolvedType = raw.type === "checklist" || (!raw.type && hasChecklistSyntax) ? "checklist" : "note";
+            return {
+                id: raw.id || `note_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                title: String(raw.title || "Untitled Note").trim(),
+                type: resolvedType,
+                content: contentStr,
+                category: resolveValidTagId(raw.category),
+                color: NOTE_TINTS[raw.color] ? raw.color : "default",
+                pinned: Boolean(raw.pinned),
+                updatedAt: raw.updatedAt || new Date().toISOString()
+            };
+        }
+
+        function parseContentToChecklist(contentStr) {
+            const lines = String(contentStr || "").split("\n").map((l) => l.trim()).filter(Boolean);
+            if (lines.length === 0) return [{ text: "", checked: false }];
+            return lines.map((line) => {
+                const checkedMatch = line.match(/^\s*-\s*\[[xX]\]\s*(.*)$/);
+                if (checkedMatch) return { text: checkedMatch[1], checked: true };
+                const uncheckedMatch = line.match(/^\s*-\s*\[\s\]\s*(.*)$/);
+                if (uncheckedMatch) return { text: uncheckedMatch[1], checked: false };
+                return { text: line.replace(/^[-*•]\s+/, ""), checked: false };
+            });
+        }
+
+        function serializeChecklistToContent(items) {
+            return (items || [])
+                .map((item) => ({ text: String(item.text || "").trim(), checked: Boolean(item.checked) }))
+                .filter((item) => item.text.length > 0)
+                .map((item) => `- [${item.checked ? "x" : " "}] ${item.text}`)
+                .join("\n");
+        }
+
+        function getChecklistStats(contentStr) {
+            const lines = String(contentStr || "").split("\n");
+            let total = 0;
+            let done = 0;
+            lines.forEach((line) => {
+                if (/^\s*-\s*\[\s\]\s*/.test(line)) {
+                    total++;
+                } else if (/^\s*-\s*\[[xX]\]\s*/.test(line)) {
+                    total++;
+                    done++;
+                }
+            });
+            return { total, done };
+        }
+
+        function loadLocalData() {
             try {
                 let raw = safeStorage.getItem(STORAGE_KEY);
                 if (!raw) {
@@ -1163,23 +1582,46 @@
 
                 const orderRaw = safeStorage.getItem(DAILY_ORDER_STORAGE_KEY);
                 dailyOrders = orderRaw ? JSON.parse(orderRaw) : {};
+
+                const tagsRaw = safeStorage.getItem(NOTE_TAGS_STORAGE_KEY);
+                if (tagsRaw) {
+                    const parsedTags = JSON.parse(tagsRaw);
+                    if (Array.isArray(parsedTags) && parsedTags.length > 0) {
+                        noteTags = parsedTags.map((t) => ({
+                            id: String(t.id),
+                            label: String(t.label || t.id).trim(),
+                            styleKey: TAG_BADGE_STYLES[t.styleKey] ? t.styleKey : "zinc",
+                            builtIn: t.id === "general"
+                        }));
+                    }
+                } else {
+                    noteTags = [...DEFAULT_NOTE_TAGS];
+                }
+
+                const notesRaw = safeStorage.getItem(NOTES_STORAGE_KEY);
+                const parsedNotes = notesRaw ? JSON.parse(notesRaw) : [];
+                notes = Array.isArray(parsedNotes) ? parsedNotes.map(normalizeNoteItem) : [];
             } catch (err) {
-                console.error("Failed loading local events:", err);
+                console.error("Failed loading local data:", err);
                 events = [];
                 dailyOrders = {};
+                noteTags = [...DEFAULT_NOTE_TAGS];
+                notes = [];
             }
         }
 
-        function saveLocalEvents() {
+        function saveLocalData() {
             try {
                 safeStorage.setItem(STORAGE_KEY, JSON.stringify(events));
                 safeStorage.setItem(DAILY_ORDER_STORAGE_KEY, JSON.stringify(dailyOrders));
+                safeStorage.setItem(NOTE_TAGS_STORAGE_KEY, JSON.stringify(noteTags));
+                safeStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
             } catch (err) {
-                console.error("Failed saving local events:", err);
+                console.error("Failed saving local data:", err);
             }
         }
 
-        async function pushEventsToCloud() {
+        async function pushDataToCloud() {
             if (!cloudReady || !firestoreDb) return;
             updateSyncBadge("syncing", "Syncing...");
             try {
@@ -1189,6 +1631,8 @@
                     {
                         events,
                         dailyOrders,
+                        noteTags,
+                        notes,
                         geminiApiKey: geminiApiKey || "",
                         geminiVoiceName: geminiVoiceName || "Aoede",
                         updatedAt: new Date().toISOString()
@@ -1220,6 +1664,17 @@
                         if (data.dailyOrders && typeof data.dailyOrders === "object") {
                             dailyOrders = data.dailyOrders;
                         }
+                        if (Array.isArray(data.noteTags) && data.noteTags.length > 0) {
+                            noteTags = data.noteTags.map((t) => ({
+                                id: String(t.id),
+                                label: String(t.label || t.id).trim(),
+                                styleKey: TAG_BADGE_STYLES[t.styleKey] ? t.styleKey : "zinc",
+                                builtIn: t.id === "general"
+                            }));
+                        }
+                        if (Array.isArray(data.notes)) {
+                            notes = data.notes.map(normalizeNoteItem);
+                        }
                         if (typeof data.geminiApiKey === "string" && cleanApiKey(data.geminiApiKey)) {
                             geminiApiKey = cleanApiKey(data.geminiApiKey);
                             safeStorage.setItem(AI_KEY_STORAGE_KEY, geminiApiKey);
@@ -1228,10 +1683,11 @@
                             geminiVoiceName = data.geminiVoiceName;
                             safeStorage.setItem(AI_VOICE_STORAGE_KEY, geminiVoiceName);
                         }
-                        saveLocalEvents();
+                        saveLocalData();
                         renderCalendar();
-                    } else if (events.length > 0) {
-                        pushEventsToCloud();
+                        renderNotesWorkspace();
+                    } else if (events.length > 0 || notes.length > 0) {
+                        pushDataToCloud();
                     }
                     updateSyncBadge("synced", "Cloud");
                 },
@@ -1243,11 +1699,12 @@
             );
         }
 
-        function commitEvents() {
-            saveLocalEvents();
+        function commitAllData() {
+            saveLocalData();
             renderCalendar();
+            renderNotesWorkspace();
             if (cloudReady) {
-                pushEventsToCloud();
+                pushDataToCloud();
             }
         }
 
@@ -1283,6 +1740,18 @@
             return `${WEEKDAYS_FULL[dt.getDay()]}, ${dt.getDate()} ${MONTHS_SHORT[dt.getMonth()]} ${dt.getFullYear()}`;
         }
 
+        function formatRelativeTimestamp(isoStr) {
+            if (!isoStr) return "Just now";
+            const dt = new Date(isoStr);
+            if (Number.isNaN(dt.getTime())) return "Recently";
+            const diffMin = Math.floor((Date.now() - dt.getTime()) / 60000);
+            if (diffMin < 1) return "Just now";
+            if (diffMin < 60) return `${diffMin}m ago`;
+            const diffHr = Math.floor(diffMin / 60);
+            if (diffHr < 24) return `${diffHr}h ago`;
+            return `${dt.getDate()} ${MONTHS_SHORT[dt.getMonth()]}`;
+        }
+
         function getFiscalWeekNumber(dateObj) {
             const d = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
             const dayNum = d.getUTCDay() || 7;
@@ -1316,6 +1785,648 @@
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#39;");
+        }
+
+        // =========================================================================
+        // NOTES WORKSPACE RENDERING, CHECKLISTS & MODAL CRUD
+        // =========================================================================
+        function updateNotesBadgeCount() {
+            const badge = $("notes-tab-count");
+            const totalBadge = $("notes-total-badge");
+            if (badge) {
+                badge.textContent = String(notes.length);
+                badge.classList.toggle("hidden", notes.length === 0);
+            }
+            if (totalBadge) {
+                totalBadge.textContent = String(notes.length);
+            }
+        }
+
+        function toggleNoteChecklistLine(noteId, lineIndex) {
+            const idx = notes.findIndex((n) => n.id === noteId);
+            if (idx === -1) return;
+            const lines = notes[idx].content.split("\n");
+            if (lineIndex < 0 || lineIndex >= lines.length) return;
+
+            const line = lines[lineIndex];
+            if (/^\s*-\s*\[\s\]\s*/.test(line)) {
+                lines[lineIndex] = line.replace(/^(\s*-\s*)\[\s\]/, "$1[x]");
+            } else if (/^\s*-\s*\[[xX]\]\s*/.test(line)) {
+                lines[lineIndex] = line.replace(/^(\s*-\s*)\[[xX]\]/, "$1[ ]");
+            }
+            notes[idx].content = lines.join("\n");
+            notes[idx].updatedAt = new Date().toISOString();
+            commitAllData();
+        }
+
+        function renderFormattedNoteBody(note) {
+            const lines = String(note.content || "").split("\n");
+            return lines.map((line, idx) => {
+                const uncheckedMatch = line.match(/^\s*-\s*\[\s\]\s*(.*)$/);
+                if (uncheckedMatch) {
+                    return `<label class="flex items-start gap-2 py-0.5 cursor-pointer group/chk" data-note-chk="${note.id}" data-line-idx="${idx}">
+                        <input type="checkbox" class="mt-0.5 rounded border-zinc-300 text-zinc-950 focus:ring-0 cursor-pointer">
+                        <span class="text-xs text-zinc-700 leading-snug">${escapeHtml(uncheckedMatch[1])}</span>
+                    </label>`;
+                }
+                const checkedMatch = line.match(/^\s*-\s*\[[xX]\]\s*(.*)$/);
+                if (checkedMatch) {
+                    return `<label class="flex items-start gap-2 py-0.5 cursor-pointer group/chk" data-note-chk="${note.id}" data-line-idx="${idx}">
+                        <input type="checkbox" checked class="mt-0.5 rounded border-zinc-300 text-zinc-950 focus:ring-0 cursor-pointer">
+                        <span class="text-xs text-zinc-400 line-through leading-snug">${escapeHtml(checkedMatch[1])}</span>
+                    </label>`;
+                }
+                if (!line.trim()) {
+                    return `<div class="h-2"></div>`;
+                }
+                return `<p class="text-xs text-zinc-600 leading-relaxed whitespace-pre-wrap">${escapeHtml(line)}</p>`;
+            }).join("");
+        }
+
+        function renderNotesWorkspace() {
+            updateNotesBadgeCount();
+            syncNoteTagControls();
+            const grid = $("notes-cards-grid");
+            const pinnedList = $("pinned-notes-list");
+            if (!grid) return;
+
+            // Sort: pinned first, then most recently updated
+            const sorted = [...notes].sort((a, b) => {
+                if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+                return String(b.updatedAt || "").localeCompare(String(a.updatedAt || ""));
+            });
+
+            // Render right-rail Pinned Notes card
+            if (pinnedList) {
+                const pinnedItems = sorted.filter((n) => n.pinned);
+                if (pinnedItems.length === 0) {
+                    pinnedList.innerHTML = `<p class="text-xs text-zinc-400 py-3 text-center bg-zinc-50/70 rounded-2xl border border-dashed border-zinc-200/80">Pin important notes to keep them here.</p>`;
+                } else {
+                    pinnedList.innerHTML = "";
+                    pinnedItems.forEach((note) => {
+                        const catMeta = getTagMeta(note.category);
+                        const item = document.createElement("div");
+                        item.className = "p-2.5 rounded-2xl bg-zinc-50/90 hover:bg-zinc-100/80 border border-zinc-200/70 transition cursor-pointer";
+                        item.addEventListener("click", () => openEditNoteModal(note.id));
+                        item.innerHTML = `
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <p class="text-xs font-semibold text-zinc-900 truncate">${escapeHtml(note.title)}</p>
+                                <span class="px-1.5 py-0.5 rounded-md border text-[9.5px] font-semibold flex-shrink-0 ${catMeta.badge}">${escapeHtml(catMeta.label)}</span>
+                            </div>
+                            <p class="text-[11px] text-zinc-500 line-clamp-2">${escapeHtml(note.content || "No additional details")}</p>
+                        `;
+                        pinnedList.appendChild(item);
+                    });
+                }
+            }
+
+            // Filter by category and search query
+            const q = noteSearchQuery.toLowerCase().trim();
+            const filtered = sorted.filter((note) => {
+                if (activeNoteCategoryFilter !== "all" && note.category !== activeNoteCategoryFilter) return false;
+                if (q) {
+                    const tagLabel = getTagMeta(note.category).label;
+                    const hay = `${note.title} ${note.content} ${note.category} ${tagLabel}`.toLowerCase();
+                    if (!hay.includes(q)) return false;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                grid.className = "block";
+                grid.innerHTML = `
+                    <div class="py-12 px-4 text-center bg-zinc-50/70 rounded-2xl border border-dashed border-zinc-200">
+                        <div class="w-10 h-10 rounded-2xl bg-white border border-zinc-200/80 text-zinc-400 flex items-center justify-center mx-auto mb-3">
+                            <i class="fa-regular fa-note-sticky text-base"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-zinc-800">${notes.length === 0 ? "No notes yet" : "No matching notes"}</p>
+                        <p class="text-[11px] text-zinc-500 mt-1 max-w-xs mx-auto">
+                            ${notes.length === 0
+                                ? "Use the scratchpad above, click Add Note, or tell the AI Assistant to take a note for you."
+                                : "Try clearing your search or switching tag filters."}
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.className = "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4";
+            grid.innerHTML = "";
+
+            filtered.forEach((note) => {
+                const tint = NOTE_TINTS[note.color] || NOTE_TINTS.default;
+                const catMeta = getTagMeta(note.category);
+                const chkStats = getChecklistStats(note.content);
+                const progressPill = chkStats.total > 0
+                    ? `<span class="px-2 py-0.5 rounded-md border text-[10px] font-semibold inline-flex items-center gap-1 ${chkStats.done === chkStats.total ? "bg-emerald-50 text-emerald-700 border-emerald-200/80" : "bg-white/80 text-zinc-600 border-zinc-200/80"}">
+                        <i class="fa-regular fa-square-check text-[9.5px]"></i>
+                        <span>${chkStats.done}/${chkStats.total}</span>
+                       </span>`
+                    : "";
+
+                const card = document.createElement("article");
+                card.className = `rounded-2xl border p-4 flex flex-col justify-between gap-3 shadow-2xs transition cursor-pointer group ${tint.card}`;
+                card.addEventListener("click", () => openEditNoteModal(note.id));
+
+                card.innerHTML = `
+                    <div class="space-y-2.5 min-w-0">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex items-center flex-wrap gap-1.5">
+                                <span class="px-2 py-0.5 rounded-md border text-[10px] font-semibold ${catMeta.badge}">${escapeHtml(catMeta.label)}</span>
+                                ${progressPill}
+                            </div>
+                            <button type="button" data-pin-toggle="${note.id}"
+                                class="w-7 h-7 -mr-1 -mt-1 rounded-lg flex items-center justify-center transition ${note.pinned ? "text-zinc-950 bg-black/5" : "text-zinc-300 opacity-0 group-hover:opacity-100 hover:text-zinc-700 hover:bg-black/5"}"
+                                title="${note.pinned ? "Unpin note" : "Pin note"}">
+                                <i class="fa-solid fa-thumbtack text-[11px]"></i>
+                            </button>
+                        </div>
+                        <h3 class="text-sm font-bold text-zinc-950 leading-snug break-words">${escapeHtml(note.title)}</h3>
+                        <div class="space-y-0.5 break-words">${renderFormattedNoteBody(note)}</div>
+                    </div>
+                    <div class="pt-2.5 border-t border-black/5 flex items-center justify-between text-[10.5px] text-zinc-400">
+                        <span>Updated ${formatRelativeTimestamp(note.updatedAt)}</span>
+                        <span class="opacity-0 group-hover:opacity-100 text-zinc-600 font-medium transition">Edit</span>
+                    </div>
+                `;
+
+                const pinBtn = card.querySelector("[data-pin-toggle]");
+                if (pinBtn) {
+                    pinBtn.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        const idx = notes.findIndex((n) => n.id === note.id);
+                        if (idx !== -1) {
+                            notes[idx].pinned = !notes[idx].pinned;
+                            commitAllData();
+                        }
+                    });
+                }
+
+                // Interactive checklist toggle without opening modal
+                card.querySelectorAll("[data-note-chk]").forEach((lbl) => {
+                    lbl.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        const lineIdx = Number(lbl.getAttribute("data-line-idx"));
+                        toggleNoteChecklistLine(note.id, lineIdx);
+                    });
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        function syncNoteTagControls() {
+            if (activeNoteCategoryFilter !== "all" && !noteTags.some((t) => t.id === activeNoteCategoryFilter)) {
+                activeNoteCategoryFilter = "all";
+            }
+
+            // 1. Filter bar pills
+            const filterBar = $("notes-category-filters");
+            if (filterBar) {
+                filterBar.innerHTML = "";
+                const allBtn = document.createElement("button");
+                allBtn.type = "button";
+                allBtn.className = activeNoteCategoryFilter === "all"
+                    ? "px-3 py-1 rounded-full text-xs font-semibold bg-zinc-950 text-white transition flex-shrink-0"
+                    : "px-3 py-1 rounded-full text-xs font-medium text-zinc-600 hover:bg-zinc-200/70 transition flex-shrink-0";
+                allBtn.textContent = "All";
+                allBtn.addEventListener("click", () => {
+                    activeNoteCategoryFilter = "all";
+                    renderNotesWorkspace();
+                });
+                filterBar.appendChild(allBtn);
+
+                noteTags.forEach((tag) => {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    const isActive = activeNoteCategoryFilter === tag.id;
+                    btn.className = isActive
+                        ? "px-3 py-1 rounded-full text-xs font-semibold bg-zinc-950 text-white transition flex-shrink-0"
+                        : "px-3 py-1 rounded-full text-xs font-medium text-zinc-600 hover:bg-zinc-200/70 transition flex-shrink-0";
+                    btn.textContent = tag.label;
+                    btn.addEventListener("click", () => {
+                        activeNoteCategoryFilter = tag.id;
+                        renderNotesWorkspace();
+                    });
+                    filterBar.appendChild(btn);
+                });
+            }
+
+            // 2. Quick composer & Note modal dropdowns
+            [$("quick-note-category"), $("note-category")].forEach((sel) => {
+                if (!sel) return;
+                const prevVal = sel.value;
+                sel.innerHTML = "";
+                noteTags.forEach((tag) => {
+                    const opt = document.createElement("option");
+                    opt.value = tag.id;
+                    opt.textContent = tag.label;
+                    sel.appendChild(opt);
+                });
+                sel.value = noteTags.some((t) => t.id === prevVal) ? prevVal : (noteTags[0]?.id || "general");
+            });
+
+            // 3. Tag manager swatches & removable tag pills
+            const swatchesEl = $("new-tag-color-swatches");
+            if (swatchesEl) {
+                swatchesEl.innerHTML = "";
+                Object.entries(TAG_BADGE_STYLES).forEach(([key, meta]) => {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    const isSel = key === selectedNewTagStyle;
+                    btn.className = `w-5 h-5 rounded-full ${meta.swatch} transition ${isSel ? "ring-2 ring-offset-1 ring-zinc-950 scale-110" : "opacity-75 hover:opacity-100"}`;
+                    btn.title = meta.name;
+                    btn.addEventListener("click", () => {
+                        selectedNewTagStyle = key;
+                        syncNoteTagControls();
+                    });
+                    swatchesEl.appendChild(btn);
+                });
+            }
+
+            const manageList = $("manage-tags-list");
+            if (manageList) {
+                manageList.innerHTML = "";
+                noteTags.forEach((tag) => {
+                    const style = TAG_BADGE_STYLES[tag.styleKey] || TAG_BADGE_STYLES.zinc;
+                    const chip = document.createElement("span");
+                    chip.className = `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-semibold ${style.badge}`;
+                    chip.innerHTML = `<span>${escapeHtml(tag.label)}</span>`;
+                    if (!tag.builtIn) {
+                        const delBtn = document.createElement("button");
+                        delBtn.type = "button";
+                        delBtn.className = "hover:text-rose-600 transition leading-none";
+                        delBtn.title = `Delete ${tag.label}`;
+                        delBtn.innerHTML = `<i class="fa-solid fa-xmark text-[10px]"></i>`;
+                        delBtn.addEventListener("click", () => deleteNoteTag(tag.id));
+                        chip.appendChild(delBtn);
+                    }
+                    manageList.appendChild(chip);
+                });
+            }
+        }
+
+        function createNoteTag(rawLabel, styleKey = selectedNewTagStyle) {
+            const label = String(rawLabel || "").trim();
+            if (!label) return null;
+            const existing = noteTags.find((t) => t.label.toLowerCase() === label.toLowerCase());
+            if (existing) {
+                showToast(`Tag "${existing.label}" already exists`);
+                return existing;
+            }
+            const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "") || "tag";
+            const id = `${slug}_${Date.now().toString(36).slice(-4)}`;
+            const newTag = {
+                id,
+                label,
+                styleKey: TAG_BADGE_STYLES[styleKey] ? styleKey : "blue",
+                builtIn: false
+            };
+            noteTags.push(newTag);
+            commitAllData();
+            showToast(`Tag "${label}" added`);
+            return newTag;
+        }
+
+        function deleteNoteTag(tagId) {
+            if (!tagId || tagId === "general") return;
+            const target = noteTags.find((t) => t.id === tagId);
+            if (!target) return;
+            noteTags = noteTags.filter((t) => t.id !== tagId);
+            notes = notes.map((n) => (n.category === tagId ? { ...n, category: "general" } : n));
+            if (activeNoteCategoryFilter === tagId) activeNoteCategoryFilter = "all";
+            commitAllData();
+            showToast(`Tag "${target.label}" deleted`);
+        }
+
+        function setQuickComposerType(type) {
+            quickComposerType = type === "checklist" ? "checklist" : "note";
+            const isChecklist = quickComposerType === "checklist";
+            const noteBtn = $("quick-type-note-btn");
+            const chkBtn = $("quick-type-checklist-btn");
+            const titleInput = $("quick-note-title");
+            const bodyInput = $("quick-note-body");
+            const catSelect = $("quick-note-category");
+
+            if (noteBtn && chkBtn) {
+                noteBtn.className = !isChecklist
+                    ? "px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center gap-1.5"
+                    : "px-2.5 py-1 rounded-md text-[11px] font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center gap-1.5";
+                chkBtn.className = isChecklist
+                    ? "px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center gap-1.5"
+                    : "px-2.5 py-1 rounded-md text-[11px] font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center gap-1.5";
+            }
+
+            if (titleInput) {
+                titleInput.placeholder = "Title";
+            }
+            if (bodyInput) {
+                bodyInput.placeholder = isChecklist
+                    ? "Tasks..."
+                    : "Write a note...";
+            }
+            if (catSelect && isChecklist && catSelect.value === "general" && noteTags.some((t) => t.id === "tasks")) {
+                catSelect.value = "tasks";
+            }
+        }
+
+        function setModalNoteType(type, syncFromOther = true) {
+            const nextType = type === "checklist" ? "checklist" : "note";
+            const prevType = modalNoteType;
+            modalNoteType = nextType;
+            if ($("note-type")) $("note-type").value = nextType;
+
+            const isChecklist = nextType === "checklist";
+            const noteBtn = $("modal-type-note-btn");
+            const chkBtn = $("modal-type-checklist-btn");
+            const textWrap = $("note-text-editor-wrap");
+            const chkWrap = $("note-checklist-editor-wrap");
+            const progressEl = $("modal-checklist-progress");
+
+            if (noteBtn && chkBtn) {
+                noteBtn.className = !isChecklist
+                    ? "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center justify-center gap-1.5"
+                    : "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center justify-center gap-1.5";
+                chkBtn.className = isChecklist
+                    ? "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 shadow-2xs transition inline-flex items-center justify-center gap-1.5"
+                    : "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 hover:text-zinc-950 transition inline-flex items-center justify-center gap-1.5";
+            }
+
+            if (syncFromOther && prevType !== nextType) {
+                if (isChecklist) {
+                    modalChecklistDraft = parseContentToChecklist($("note-content")?.value || "");
+                } else {
+                    const serialized = serializeChecklistToContent(modalChecklistDraft);
+                    if ($("note-content")) $("note-content").value = serialized;
+                }
+            }
+
+            textWrap?.classList.toggle("hidden", isChecklist);
+            chkWrap?.classList.toggle("hidden", !isChecklist);
+            progressEl?.classList.toggle("hidden", !isChecklist);
+
+            if (isChecklist) {
+                if ($("note-category") && $("note-category").value === "general") {
+                    $("note-category").value = "tasks";
+                }
+                renderModalChecklistItems();
+            }
+        }
+
+        function renderModalChecklistItems() {
+            const container = $("modal-checklist-items");
+            const progressEl = $("modal-checklist-progress");
+            const clearBtn = $("clear-completed-items-btn");
+            if (!container) return;
+
+            if (modalChecklistDraft.length === 0) {
+                modalChecklistDraft.push({ text: "", checked: false });
+            }
+
+            const validItems = modalChecklistDraft.filter((i) => i.text.trim().length > 0);
+            const doneCount = validItems.filter((i) => i.checked).length;
+            if (progressEl) {
+                progressEl.textContent = `${doneCount}/${validItems.length} done`;
+            }
+            clearBtn?.classList.toggle("hidden", doneCount === 0);
+
+            container.innerHTML = "";
+            modalChecklistDraft.forEach((item, idx) => {
+                const row = document.createElement("div");
+                row.className = "flex items-center gap-2 bg-zinc-50 border border-zinc-200/90 rounded-xl px-2.5 py-1.5";
+
+                const chk = document.createElement("input");
+                chk.type = "checkbox";
+                chk.checked = Boolean(item.checked);
+                chk.className = "rounded border-zinc-300 text-zinc-950 focus:ring-0 cursor-pointer flex-shrink-0";
+                chk.addEventListener("change", () => {
+                    modalChecklistDraft[idx].checked = chk.checked;
+                    renderModalChecklistItems();
+                });
+
+                const inp = document.createElement("input");
+                inp.type = "text";
+                inp.value = item.text;
+                inp.placeholder = "Item...";
+                inp.className = `flex-1 bg-transparent text-xs focus:outline-none ${item.checked ? "line-through text-zinc-400" : "text-zinc-900"}`;
+                inp.addEventListener("input", () => {
+                    modalChecklistDraft[idx].text = inp.value;
+                    const vItems = modalChecklistDraft.filter((i) => i.text.trim().length > 0);
+                    const dCount = vItems.filter((i) => i.checked).length;
+                    if (progressEl) progressEl.textContent = `${dCount}/${vItems.length} done`;
+                });
+                inp.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        modalChecklistDraft.splice(idx + 1, 0, { text: "", checked: false });
+                        renderModalChecklistItems();
+                        setTimeout(() => {
+                            const inputs = container.querySelectorAll('input[type="text"]');
+                            inputs[idx + 1]?.focus();
+                        }, 10);
+                    } else if (e.key === "Backspace" && inp.value === "" && modalChecklistDraft.length > 1) {
+                        e.preventDefault();
+                        modalChecklistDraft.splice(idx, 1);
+                        renderModalChecklistItems();
+                        setTimeout(() => {
+                            const inputs = container.querySelectorAll('input[type="text"]');
+                            inputs[Math.max(0, idx - 1)]?.focus();
+                        }, 10);
+                    }
+                });
+
+                const delBtn = document.createElement("button");
+                delBtn.type = "button";
+                delBtn.className = "w-6 h-6 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition flex-shrink-0";
+                delBtn.title = "Remove item";
+                delBtn.innerHTML = `<i class="fa-solid fa-xmark text-[10px]"></i>`;
+                delBtn.addEventListener("click", () => {
+                    modalChecklistDraft.splice(idx, 1);
+                    renderModalChecklistItems();
+                });
+
+                row.appendChild(chk);
+                row.appendChild(inp);
+                row.appendChild(delBtn);
+                container.appendChild(row);
+            });
+        }
+
+        function renderNoteTintSwatches(selectedTint) {
+            const container = $("note-color-swatches");
+            const hiddenInput = $("note-color");
+            if (!container) return;
+            const active = NOTE_TINTS[selectedTint] ? selectedTint : "default";
+            if (hiddenInput) hiddenInput.value = active;
+
+            container.innerHTML = "";
+            Object.entries(NOTE_TINTS).forEach(([key, meta]) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                const isSel = key === active;
+                btn.className = `w-7 h-7 rounded-full ${meta.swatch} transition flex items-center justify-center ${isSel ? "ring-2 ring-offset-2 ring-zinc-950 scale-110" : "hover:scale-105"}`;
+                btn.title = meta.name;
+                if (isSel) {
+                    btn.innerHTML = `<i class="fa-solid fa-check text-[10px] text-zinc-900"></i>`;
+                }
+                btn.addEventListener("click", () => renderNoteTintSwatches(key));
+                container.appendChild(btn);
+            });
+        }
+
+        function updateNoteModalPinState(isPinned) {
+            const hidden = $("note-pinned");
+            const btn = $("note-modal-pin-btn");
+            if (hidden) hidden.value = isPinned ? "true" : "false";
+            if (btn) {
+                btn.className = isPinned
+                    ? "w-8 h-8 rounded-xl bg-zinc-950 text-white flex items-center justify-center transition"
+                    : "w-8 h-8 rounded-xl border border-zinc-200 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 flex items-center justify-center transition";
+            }
+        }
+
+        function openAddNoteModal(prefill = {}) {
+            syncNoteTagControls();
+            $("note-modal-title").textContent = prefill.type === "checklist" ? "New Checklist" : "New Note";
+            $("note-id").value = "";
+            $("note-title").value = prefill.title || "";
+            $("note-content").value = prefill.content || "";
+            const defaultCat = prefill.category
+                ? resolveValidTagId(prefill.category)
+                : (prefill.type === "checklist" && noteTags.some((t) => t.id === "tasks") ? "tasks" : (noteTags[0]?.id || "general"));
+            $("note-category").value = defaultCat;
+            $("delete-note-btn").classList.add("hidden");
+            updateNoteModalPinState(Boolean(prefill.pinned));
+            renderNoteTintSwatches(prefill.color || "default");
+
+            const initialType = prefill.type === "checklist" ? "checklist" : "note";
+            modalChecklistDraft = initialType === "checklist" ? parseContentToChecklist(prefill.content || "") : [];
+            setModalNoteType(initialType, false);
+
+            $("note-modal").classList.remove("hidden");
+            setTimeout(() => $("note-title")?.focus(), 40);
+        }
+
+        function openEditNoteModal(noteId) {
+            const note = notes.find((n) => n.id === noteId);
+            if (!note) return;
+            syncNoteTagControls();
+            const isChecklist = note.type === "checklist" || /^\s*-\s*\[[ xX]\]/m.test(note.content || "");
+            $("note-modal-title").textContent = isChecklist ? "Edit Checklist" : "Edit Note";
+            $("note-id").value = note.id;
+            $("note-title").value = note.title;
+            $("note-content").value = note.content;
+            $("note-category").value = resolveValidTagId(note.category);
+            $("delete-note-btn").classList.remove("hidden");
+            updateNoteModalPinState(Boolean(note.pinned));
+            renderNoteTintSwatches(note.color || "default");
+
+            modalChecklistDraft = isChecklist ? parseContentToChecklist(note.content) : [];
+            setModalNoteType(isChecklist ? "checklist" : "note", false);
+
+            $("note-modal").classList.remove("hidden");
+        }
+
+        function closeNoteModal() {
+            $("note-modal").classList.add("hidden");
+        }
+
+        function handleNoteFormSubmit(e) {
+            e.preventDefault();
+            const id = $("note-id").value;
+            const title = $("note-title").value.trim();
+            const type = modalNoteType === "checklist" ? "checklist" : "note";
+            const content = type === "checklist"
+                ? serializeChecklistToContent(modalChecklistDraft)
+                : $("note-content").value;
+            const category = $("note-category").value;
+            const color = $("note-color").value;
+            const pinned = $("note-pinned").value === "true";
+
+            if (!title) return;
+
+            if (id) {
+                const idx = notes.findIndex((n) => n.id === id);
+                if (idx !== -1) {
+                    notes[idx] = {
+                        ...notes[idx],
+                        title,
+                        type,
+                        content,
+                        category: resolveValidTagId(category),
+                        color: NOTE_TINTS[color] ? color : "default",
+                        pinned,
+                        updatedAt: new Date().toISOString()
+                    };
+                }
+                showToast(type === "checklist" ? "Checklist updated" : "Note updated");
+            } else {
+                notes.unshift(normalizeNoteItem({
+                    title,
+                    type,
+                    content,
+                    category: resolveValidTagId(category),
+                    color,
+                    pinned,
+                    updatedAt: new Date().toISOString()
+                }));
+                showToast(type === "checklist" ? "Checklist saved" : "Note saved");
+            }
+
+            closeNoteModal();
+            commitAllData();
+        }
+
+        function handleQuickNoteSubmit(e) {
+            e.preventDefault();
+            const titleInput = $("quick-note-title");
+            const bodyInput = $("quick-note-body");
+            const catSelect = $("quick-note-category");
+            const rawTitle = titleInput?.value.trim() || "";
+            const rawBody = bodyInput?.value.trim() || "";
+            if (!rawTitle && !rawBody) return;
+
+            const isChecklist = quickComposerType === "checklist";
+            let finalTitle = rawTitle;
+            let finalContent = rawBody;
+
+            if (isChecklist) {
+                const parts = rawBody
+                    .split(/[\n,]+/)
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+                finalTitle = rawTitle || (parts[0] ? parts[0].slice(0, 48) : "Checklist");
+                finalContent = parts.length > 0
+                    ? parts.map((item) => `- [ ] ${item}`).join("\n")
+                    : `- [ ] ${finalTitle}`;
+            } else {
+                finalTitle = rawTitle || rawBody.split("\n")[0].slice(0, 48);
+                finalContent = rawTitle ? rawBody : (rawBody.length > 48 ? rawBody : "");
+            }
+
+            notes.unshift(normalizeNoteItem({
+                title: finalTitle,
+                type: isChecklist ? "checklist" : "note",
+                content: finalContent,
+                category: catSelect?.value || (isChecklist ? "tasks" : "general"),
+                color: "default",
+                pinned: false,
+                updatedAt: new Date().toISOString()
+            }));
+
+            if (titleInput) titleInput.value = "";
+            if (bodyInput) bodyInput.value = "";
+            commitAllData();
+            showToast(isChecklist ? "Checklist added" : "Note added");
+        }
+
+        function handleDeleteNoteClick() {
+            const id = $("note-id").value;
+            if (!id) return;
+            notes = notes.filter((n) => n.id !== id);
+            closeNoteModal();
+            commitAllData();
+            showToast("Note deleted");
         }
 
         // =========================================================================
@@ -1391,7 +2502,7 @@
             if (idx === -1 || targetIdx < 0 || targetIdx >= ids.length) return;
             [ids[idx], ids[targetIdx]] = [ids[targetIdx], ids[idx]];
             dailyOrders[dateKey] = ids;
-            commitEvents();
+            commitAllData();
         }
 
         function renderCalendar() {
@@ -1447,7 +2558,6 @@
                         openAddEventModal(cellKey);
                     });
 
-                    // Day header row with fixed h-6 so today's circle never shifts events down
                     const headerRow = document.createElement("div");
                     headerRow.className = "h-6 flex items-center justify-between px-0.5 flex-shrink-0";
 
@@ -1462,7 +2572,6 @@
                     headerRow.appendChild(dayBadge);
                     cell.appendChild(headerRow);
 
-                    // Events stack
                     const eventsWrap = document.createElement("div");
                     eventsWrap.className = "flex flex-col gap-1 min-w-0 flex-1";
                     const dayEvents = getEventsForDate(cellKey);
@@ -1505,7 +2614,7 @@
                                 ids.splice(fromIdx, 1);
                                 ids.splice(toIdx, 0, draggedEventId);
                                 dailyOrders[cellKey] = ids;
-                                commitEvents();
+                                commitAllData();
                             }
                         });
 
@@ -1770,7 +2879,7 @@
             }
 
             closeEventModal();
-            commitEvents();
+            commitAllData();
         }
 
         function executeRecurringColorUpdate(scope) {
@@ -1800,7 +2909,7 @@
                 return ev;
             });
 
-            commitEvents();
+            commitAllData();
             showToast(
                 scope === "all"
                     ? "Color updated for all events in series"
@@ -1821,7 +2930,7 @@
                 $("delete-recurring-modal").classList.remove("hidden");
             } else {
                 events = events.filter((item) => item.id !== id);
-                commitEvents();
+                commitAllData();
                 showToast("Event deleted");
             }
         }
@@ -1839,7 +2948,7 @@
             } else if (scope === "all") {
                 events = events.filter((item) => item.seriesId !== target.seriesId);
             }
-            commitEvents();
+            commitAllData();
             showToast("Event(s) deleted");
         }
 
@@ -1861,7 +2970,9 @@
                 exportedAt: new Date().toISOString(),
                 store: "UGG Knightsbridge",
                 events,
-                dailyOrders
+                dailyOrders,
+                noteTags,
+                notes
             };
             const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
             const url = URL.createObjectURL(blob);
@@ -1886,9 +2997,20 @@
                     if (parsed.dailyOrders && typeof parsed.dailyOrders === "object") {
                         dailyOrders = parsed.dailyOrders;
                     }
-                    commitEvents();
+                    if (Array.isArray(parsed.noteTags) && parsed.noteTags.length > 0) {
+                        noteTags = parsed.noteTags.map((t) => ({
+                            id: String(t.id),
+                            label: String(t.label || t.id).trim(),
+                            styleKey: TAG_BADGE_STYLES[t.styleKey] ? t.styleKey : "zinc",
+                            builtIn: t.id === "general"
+                        }));
+                    }
+                    if (Array.isArray(parsed.notes)) {
+                        notes = parsed.notes.map(normalizeNoteItem);
+                    }
+                    commitAllData();
                     closeSettingsModal();
-                    showToast(`Restored ${events.length} event(s)`);
+                    showToast(`Restored ${events.length} event(s) & ${notes.length} note(s)`);
                 } catch (_) {
                     showToast("Invalid JSON backup file", true);
                 } finally {
@@ -1913,7 +3035,7 @@
                 const ai = new GoogleGenAI({ apiKey: geminiApiKey });
                 const resp = await ai.models.generateContent({
                     model: "gemini-2.5-flash-preview-tts",
-                    contents: [{ parts: [{ text: `Hello! I'm ${chosenVoice}, ready to help with your UGG Knightsbridge schedule.` }] }],
+                    contents: [{ parts: [{ text: `Hello! I'm ${chosenVoice}, ready to help with your UGG Knightsbridge schedule and notes.` }] }],
                     config: {
                         responseModalities: [Modality.AUDIO],
                         speechConfig: {
@@ -1984,12 +3106,10 @@
                     .join("");
             };
 
-            // 1. Today: every event active on todayStr
             const todayEvents = getEventsForDate(todayStr);
             renderBulletList(todayListEl, todayEvents, "Nothing scheduled today.");
 
-            // 2. Rest of This Week: tomorrow through Sunday of the current week
-            const dayOfWeek = (now.getDay() + 6) % 7; // Mon = 0 .. Sun = 6
+            const dayOfWeek = (now.getDay() + 6) % 7;
             const tomorrow = new Date(now);
             tomorrow.setDate(now.getDate() + 1);
             const tomorrowStr = formatDateKey(tomorrow);
@@ -2012,7 +3132,6 @@
                 : [];
             renderBulletList(thisWeekEl, restWeekEvents, "Clear for the rest of the week.", tomorrowStr, endThisWeekStr);
 
-            // 3. Next Week: Monday through Sunday of next week
             const startNextWeek = new Date(endOfThisWeek);
             startNextWeek.setDate(endOfThisWeek.getDate() + 1);
             const endNextWeek = new Date(startNextWeek);
@@ -2035,7 +3154,7 @@
         }
 
         // =========================================================================
-        // AI SCHEDULE ENGINE & GEMINI MULTIMODAL LIVE VOICE
+        // AI SCHEDULE & NOTES ENGINE + GEMINI MULTIMODAL LIVE VOICE
         // =========================================================================
         const aiEngine = {
             recognition: null,
@@ -2120,8 +3239,18 @@
                 todayIso: todayStr,
                 todayFormatted: formatHumanDate(todayStr),
                 selectedDateIso: selectedDateKey || todayStr,
+                activeTab: activeWorkspaceTab,
                 totalEvents: formatted.length,
-                events: formatted
+                events: formatted,
+                totalNotes: notes.length,
+                notes: notes.map((n) => ({
+                    id: n.id,
+                    title: n.title,
+                    content: n.content,
+                    category: n.category,
+                    color: n.color,
+                    pinned: n.pinned
+                }))
             };
         }
 
@@ -2159,6 +3288,21 @@
             return -1;
         }
 
+        function resolveTargetNoteIndex({ id, title }) {
+            if (id) {
+                const exactIdx = notes.findIndex((n) => n.id === id);
+                if (exactIdx !== -1) return exactIdx;
+            }
+            const qTitle = (title || "").toLowerCase().trim();
+            if (qTitle) {
+                const exact = notes.findIndex((n) => n.title.toLowerCase() === qTitle);
+                if (exact !== -1) return exact;
+                const partial = notes.findIndex((n) => n.title.toLowerCase().includes(qTitle) || n.content.toLowerCase().includes(qTitle));
+                if (partial !== -1) return partial;
+            }
+            return -1;
+        }
+
         function executeAiToolAction(name, args = {}, deferCommit = false) {
             if (name === "list_events") {
                 const ctx = buildScheduleContext();
@@ -2191,7 +3335,7 @@
                 const dt = parseDateKey(args.startDate);
                 activeYear = dt.getFullYear();
                 activeMonthIndex = dt.getMonth();
-                if (!deferCommit) commitEvents();
+                if (!deferCommit) commitAllData();
                 return { success: true, createdCount: created.length, createdEvents: created };
             }
 
@@ -2219,7 +3363,7 @@
                     activeYear = dt.getFullYear();
                     activeMonthIndex = dt.getMonth();
                 }
-                if (!deferCommit) commitEvents();
+                if (!deferCommit) commitAllData();
                 return { success: true, createdCount: totalCreated, createdEvents: allCreated };
             }
 
@@ -2239,7 +3383,7 @@
                 if (args.updateSeries && current.seriesId && args.color) {
                     events = events.map((ev) => (ev.seriesId === current.seriesId ? { ...ev, color: newColor } : ev));
                 }
-                if (!deferCommit) commitEvents();
+                if (!deferCommit) commitAllData();
                 return { success: true, updatedEvent: events[idx] };
             }
 
@@ -2253,8 +3397,72 @@
                 } else {
                     events.splice(idx, 1);
                 }
-                if (!deferCommit) commitEvents();
+                if (!deferCommit) commitAllData();
                 return { success: true, deletedEvent: removed };
+            }
+
+            // --- NOTES AI TOOLS ---
+            if (name === "list_notes") {
+                let list = [...notes];
+                if (args.category && args.category !== "all") {
+                    list = list.filter((n) => n.category === args.category);
+                }
+                if (args.keyword) {
+                    const kw = String(args.keyword).toLowerCase();
+                    list = list.filter((n) => n.title.toLowerCase().includes(kw) || n.content.toLowerCase().includes(kw));
+                }
+                return { count: list.length, notes: list };
+            }
+
+            if (name === "create_note") {
+                const title = String(args.title || "").trim();
+                const content = String(args.content || "").trim();
+                if (!title && !content) {
+                    return { success: false, error: "Note title or content is required." };
+                }
+                const newNote = normalizeNoteItem({
+                    title: title || content.split("\n")[0].slice(0, 48),
+                    content,
+                    category: resolveValidTagId(args.category),
+                    color: args.color || "default",
+                    pinned: Boolean(args.pinned),
+                    updatedAt: new Date().toISOString()
+                });
+                notes.unshift(newNote);
+                if (!deferCommit) commitAllData();
+                showToast(`Note saved: "${newNote.title}"`);
+                return { success: true, createdNote: newNote };
+            }
+
+            if (name === "update_note") {
+                const idx = resolveTargetNoteIndex({ id: args.id, title: args.matchTitle || args.title });
+                if (idx === -1) return { success: false, error: "Matching note not found." };
+                const current = notes[idx];
+                let updatedContent = current.content;
+                if (args.appendContent) {
+                    updatedContent = current.content ? `${current.content}\n${args.appendContent}` : String(args.appendContent);
+                } else if (typeof args.newContent === "string") {
+                    updatedContent = args.newContent;
+                }
+                notes[idx] = {
+                    ...current,
+                    title: args.newTitle || current.title,
+                    content: updatedContent,
+                    category: args.category ? resolveValidTagId(args.category) : current.category,
+                    color: NOTE_TINTS[args.color] ? args.color : current.color,
+                    pinned: typeof args.pinned === "boolean" ? args.pinned : current.pinned,
+                    updatedAt: new Date().toISOString()
+                };
+                if (!deferCommit) commitAllData();
+                return { success: true, updatedNote: notes[idx] };
+            }
+
+            if (name === "delete_note") {
+                const idx = resolveTargetNoteIndex({ id: args.id, title: args.title });
+                if (idx === -1) return { success: false, error: "Matching note not found." };
+                const removed = notes.splice(idx, 1)[0];
+                if (!deferCommit) commitAllData();
+                return { success: true, deletedNote: removed };
             }
 
             if (name === "end_call") {
@@ -2305,26 +3513,32 @@
             try {
                 const ai = new GoogleGenAI({ apiKey: geminiApiKey });
                 const ctx = buildScheduleContext();
-                const systemInstruction = `You are the UGG Knightsbridge Store Planner AI Assistant. Today is ${ctx.todayFormatted} (${ctx.todayIso}).
+                const systemInstruction = `You are the UGG Knightsbridge Store Planner AI Assistant. Today is ${ctx.todayFormatted} (${ctx.todayIso}). Active view tab: ${ctx.activeTab}.
 Current schedule JSON: ${JSON.stringify(ctx.events)}
+Current notes JSON: ${JSON.stringify(ctx.notes)}
 
 Analyze the user's request and respond with valid JSON ONLY matching:
 {
   "reply": "Clear, concise natural language answer in English",
   "actions": [
     {
-      "action": "create_event" | "update_event" | "delete_event",
+      "action": "create_event" | "update_event" | "delete_event" | "create_note" | "update_note" | "delete_note",
       "params": { ... }
     }
   ]
 }
 IMPORTANT:
-- If the user asks to add, update, or delete MULTIPLE events (e.g., 2, 3, or a whole list of events on different days or the same day), include ONE item in the "actions" array for EACH event!
-- If the user is only asking a question or querying the schedule, set "actions": [].
+- You manage BOTH calendar events AND the Notes section!
+- Whenever the user asks to take a note, jot something down, create a checklist/to-do list, save a reminder/thought without a specific calendar date, or organize notes, use "create_note" (or "update_note" to append to an existing note).
+- Format checklist items inside note content using "- [ ] Item" lines so they render as interactive checkboxes.
+- If the user asks to add, update, or delete MULTIPLE events or notes, include ONE item in the "actions" array for EACH item!
+- If the user is only asking a question or querying the schedule/notes, set "actions": [].
 - For create_event params: { "title": string, "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "blue"|"green"|"yellow"|"red"|"orange"|"lime"|"purple"|"pink"|"cyan"|"black", "recurrence": "none"|"daily"|"weekly"|"biweekly"|"monthly"|"yearly" }.
 - For update_event params: { "id": string, "matchTitle": string, "matchDate": "YYYY-MM-DD", "newTitle": string, "newStartDate": "YYYY-MM-DD", "newEndDate": "YYYY-MM-DD", "color": string, "updateSeries": boolean }.
 - For delete_event params: { "id": string, "title": string, "date": "YYYY-MM-DD", "deleteSeries": boolean }.
-- When asked what events are scheduled, list ALL matching events clearly without omitting any.`;
+- For create_note params: { "title": string, "content": string, "category": "general"|"tasks"|"visual"|"stock"|"team", "color": "default"|"blue"|"amber"|"emerald"|"purple"|"rose", "pinned": boolean }.
+- For update_note params: { "id": string, "matchTitle": string, "newTitle": string, "newContent": string, "appendContent": string, "category": string, "color": string, "pinned": boolean }.
+- For delete_note params: { "id": string, "title": string }.`;
 
                 let response;
                 try {
@@ -2351,7 +3565,6 @@ IMPORTANT:
                 const raw = response?.text || "{}";
                 const parsed = parseAiJsonResponse(raw);
 
-                // Support both multi-action array ("actions") and single-action fallback ("action")
                 const actionItems = Array.isArray(parsed.actions)
                     ? parsed.actions
                     : parsed.action && parsed.action !== "none"
@@ -2371,7 +3584,7 @@ IMPORTANT:
                         }
                     }
                     if (mutated) {
-                        commitEvents();
+                        commitAllData();
                     }
                     if (errors.length > 0 && !mutated) {
                         appendTranscriptBubble("ai", `I couldn't complete that: ${errors.join("; ")}`, false);
@@ -2662,6 +3875,60 @@ IMPORTANT:
                             }
                         },
                         {
+                            name: "list_notes",
+                            description: "List existing notes in the Notes tab, optionally filtered by category or keyword.",
+                            parameters: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    category: { type: Type.STRING, description: "all, general, tasks, visual, stock, or team" },
+                                    keyword: { type: Type.STRING, description: "Optional search keyword" }
+                                }
+                            }
+                        },
+                        {
+                            name: "create_note",
+                            description: "Create a new note or checklist in the Notes tab whenever the user wants to jot down ideas, tasks, reminders, or store notes.",
+                            parameters: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    title: { type: Type.STRING, description: "Short clear title for the note" },
+                                    content: { type: Type.STRING, description: "Note body. Use '- [ ] item' lines for checklist items." },
+                                    category: { type: Type.STRING, description: "general, tasks, visual, stock, or team" },
+                                    color: { type: Type.STRING, description: "default, blue, amber, emerald, purple, or rose" },
+                                    pinned: { type: Type.BOOLEAN, description: "Whether to pin this note" }
+                                },
+                                required: ["title"]
+                            }
+                        },
+                        {
+                            name: "update_note",
+                            description: "Update an existing note's title, content, category, or append new lines/checklist items to it.",
+                            parameters: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    id: { type: Type.STRING },
+                                    matchTitle: { type: Type.STRING },
+                                    newTitle: { type: Type.STRING },
+                                    newContent: { type: Type.STRING },
+                                    appendContent: { type: Type.STRING, description: "Text or checklist lines to append to the existing note" },
+                                    category: { type: Type.STRING },
+                                    color: { type: Type.STRING },
+                                    pinned: { type: Type.BOOLEAN }
+                                }
+                            }
+                        },
+                        {
+                            name: "delete_note",
+                            description: "Delete a note from the Notes tab.",
+                            parameters: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    id: { type: Type.STRING },
+                                    title: { type: Type.STRING }
+                                }
+                            }
+                        },
+                        {
                             name: "end_call",
                             description: "Automatically hang up and end the voice conversation when the user says goodbye, 'bye', 'that's it', 'that's all', or indicates they are finished.",
                             parameters: { type: Type.OBJECT, properties: {} }
@@ -2681,8 +3948,10 @@ IMPORTANT:
                     tools,
                     systemInstruction: `You are the UGG Knightsbridge Store Planner voice assistant. Today is ${ctx.todayFormatted} (${ctx.todayIso}).
 CRITICAL LANGUAGE RULE: The user is ALWAYS speaking English. Both your spoken responses and all speech-to-text transcripts MUST be strictly in English (Latin alphabet only). Never interpret background noise or accents as Welsh, Spanish, Portuguese, French, or any other language.
-Always call list_events when checking the schedule so you never miss any event.
-When the user asks to add multiple events at once, use create_multiple_events (or call create_event once per event).
+You manage both the Calendar schedule AND the Notes tab!
+- Always call list_events when checking the calendar schedule, and list_notes when checking notes.
+- Whenever the user asks you to take a note, save a thought, create a to-do list, or add items to a note, call create_note (or update_note with appendContent if adding to an existing note). Format to-do items as "- [ ] item".
+- When the user asks to add multiple calendar events at once, use create_multiple_events (or call create_event once per event).
 CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "that's all", "I'm done", or indicates they are finished, say a brief friendly goodbye in English and IMMEDIATELY call end_call to hang up automatically.`
                 };
 
@@ -2730,7 +3999,7 @@ CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "th
                                         response: result
                                     });
                                 }
-                                commitEvents();
+                                commitAllData();
                                 try {
                                     const sess = await live.sessionPromise;
                                     sess.sendToolResponse({ functionResponses: responses });
@@ -2879,20 +4148,106 @@ CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "th
         // =========================================================================
         async function initApp() {
             selectedDateKey = formatDateKey(new Date());
-            loadLocalEvents();
+            loadLocalData();
+            initFirebaseServices();
 
-            const hasFirebase = initFirebaseServices();
-            if (hasFirebase && firebaseAuth) {
-                try {
-                    await signOut(firebaseAuth);
-                } catch (_) { }
-            }
-
-            // Always start locked on fresh page load/refresh until password is entered
+            // Boot locked; unlockPlannerUI(true) runs after Firebase sign-in
+            $("auth-lock-screen")?.classList.remove("hidden");
             $("app-header")?.classList.add("hidden");
             $("app-main")?.classList.add("hidden");
-            $("auth-lock-screen")?.classList.remove("hidden");
             setTimeout(() => $("auth-password-input")?.focus(), 40);
+
+            // Workspace View Tabs (Calendar <-> Notes)
+            $("tab-calendar-btn")?.addEventListener("click", () => switchWorkspaceTab("calendar"));
+            $("tab-notes-btn")?.addEventListener("click", () => switchWorkspaceTab("notes"));
+
+            // Context-aware primary header "+ New Event / + New Note" button
+            $("primary-action-btn")?.addEventListener("click", () => {
+                if (activeWorkspaceTab === "notes") {
+                    openAddNoteModal({ type: quickComposerType });
+                } else {
+                    openAddEventModal(selectedDateKey);
+                }
+            });
+
+            // Notes workspace listeners
+            $("notes-new-inline-btn")?.addEventListener("click", () => openAddNoteModal({ type: quickComposerType }));
+            $("pinned-card-new-btn")?.addEventListener("click", () => openAddNoteModal({ pinned: true, type: quickComposerType }));
+            $("quick-type-note-btn")?.addEventListener("click", () => setQuickComposerType("note"));
+            $("quick-type-checklist-btn")?.addEventListener("click", () => setQuickComposerType("checklist"));
+            $("quick-note-form")?.addEventListener("submit", handleQuickNoteSubmit);
+            $("notes-search-input")?.addEventListener("input", (e) => {
+                noteSearchQuery = e.target.value || "";
+                renderNotesWorkspace();
+            });
+            $("toggle-tag-manager-btn")?.addEventListener("click", () => {
+                const drawer = $("note-tag-manager-drawer");
+                const isHidden = drawer?.classList.toggle("hidden");
+                if (!isHidden) {
+                    syncNoteTagControls();
+                    $("new-note-tag-input")?.focus();
+                }
+            });
+            $("create-note-tag-btn")?.addEventListener("click", () => {
+                const input = $("new-note-tag-input");
+                if (!input) return;
+                const created = createNoteTag(input.value, selectedNewTagStyle);
+                if (created) input.value = "";
+            });
+            $("new-note-tag-input")?.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    $("create-note-tag-btn")?.click();
+                }
+            });
+
+            // Note & Checklist modal listeners
+            $("modal-type-note-btn")?.addEventListener("click", () => {
+                $("note-modal-title").textContent = $("note-id").value ? "Edit Note" : "New Note";
+                setModalNoteType("note", true);
+            });
+            $("modal-type-checklist-btn")?.addEventListener("click", () => {
+                $("note-modal-title").textContent = $("note-id").value ? "Edit Checklist" : "New Checklist";
+                setModalNoteType("checklist", true);
+            });
+            $("convert-to-checklist-btn")?.addEventListener("click", () => {
+                $("note-modal-title").textContent = $("note-id").value ? "Edit Checklist" : "New Checklist";
+                setModalNoteType("checklist", true);
+            });
+            $("modal-add-checklist-item-btn")?.addEventListener("click", () => {
+                const input = $("modal-new-checklist-item");
+                const val = input?.value.trim() || "";
+                if (val) {
+                    if (modalChecklistDraft.length === 1 && !modalChecklistDraft[0].text.trim()) {
+                        modalChecklistDraft[0] = { text: val, checked: false };
+                    } else {
+                        modalChecklistDraft.push({ text: val, checked: false });
+                    }
+                    input.value = "";
+                } else {
+                    modalChecklistDraft.push({ text: "", checked: false });
+                }
+                renderModalChecklistItems();
+                input?.focus();
+            });
+            $("modal-new-checklist-item")?.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    $("modal-add-checklist-item-btn")?.click();
+                }
+            });
+            $("clear-completed-items-btn")?.addEventListener("click", () => {
+                modalChecklistDraft = modalChecklistDraft.filter((i) => !i.checked);
+                renderModalChecklistItems();
+            });
+            $("close-note-modal-btn")?.addEventListener("click", closeNoteModal);
+            $("cancel-note-modal-btn")?.addEventListener("click", closeNoteModal);
+            $("note-form")?.addEventListener("submit", handleNoteFormSubmit);
+            $("delete-note-btn")?.addEventListener("click", handleDeleteNoteClick);
+            $("note-modal-pin-btn")?.addEventListener("click", () => {
+                const currentlyPinned = $("note-pinned")?.value === "true";
+                updateNoteModalPinState(!currentlyPinned);
+            });
 
             // Lock Screen & Header Lock listeners
             $("auth-unlock-form")?.addEventListener("submit", handleAuthUnlockSubmit);
@@ -2913,8 +4268,7 @@ CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "th
             });
             $("lock-planner-btn")?.addEventListener("click", lockPlannerUI);
 
-            // Header & Navigation controls
-            $("add-event-btn")?.addEventListener("click", () => openAddEventModal(selectedDateKey));
+            // Calendar Navigation controls
             $("selected-day-add-btn")?.addEventListener("click", () => openAddEventModal(selectedDateKey));
 
             $("prev-month-btn")?.addEventListener("click", () => {
@@ -2956,7 +4310,6 @@ CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "th
                     const elapsed = Date.now() - touchStartTime;
                     touchStartTime = 0;
 
-                    // Trigger month navigation on clear horizontal swipe
                     if (elapsed < 700 && Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.4) {
                         if (dx < 0) {
                             activeMonthIndex++;
@@ -3048,7 +4401,7 @@ CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "th
                 geminiApiKey = "";
                 safeStorage.removeItem(AI_KEY_STORAGE_KEY);
                 if ($("ai-api-key-input")) $("ai-api-key-input").value = "";
-                if (cloudReady) pushEventsToCloud();
+                if (cloudReady) pushDataToCloud();
                 showToast("Gemini API key removed");
             });
 
@@ -3060,7 +4413,7 @@ CRITICAL HANG-UP RULE: Whenever the user says "bye", "goodbye", "that's it", "th
                 geminiVoiceName = VALID_VOICES.includes(voiceVal) ? voiceVal : "Aoede";
                 safeStorage.setItem(AI_KEY_STORAGE_KEY, geminiApiKey);
                 safeStorage.setItem(AI_VOICE_STORAGE_KEY, geminiVoiceName);
-                if (cloudReady) pushEventsToCloud();
+                if (cloudReady) pushDataToCloud();
                 closeSettingsModal();
                 showToast("Settings saved");
             });
