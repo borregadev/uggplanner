@@ -524,7 +524,7 @@
                     <!-- Command Input Form -->
                     <form id="ai-command-form" class="relative flex items-center gap-1.5">
                         <div class="relative flex-1 min-w-0">
-                            <input type="text" id="ai-command-input" placeholder="Ask or add event..."
+                            <input type="text" id="ai-command-input" placeholder="Ask or add event(s)..."
                                 class="w-full pl-3.5 pr-9 py-2.5 bg-zinc-50 border border-zinc-200/90 rounded-xl text-xs text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-950 transition">
                             <button type="button" id="ai-voice-btn"
                                 class="absolute inset-y-0 right-0 px-2.5 text-zinc-400 hover:text-zinc-800 flex items-center justify-center transition"
@@ -2159,7 +2159,7 @@
             return -1;
         }
 
-        function executeAiToolAction(name, args = {}) {
+        function executeAiToolAction(name, args = {}, deferCommit = false) {
             if (name === "list_events") {
                 const ctx = buildScheduleContext();
                 let list = ctx.events;
@@ -2191,8 +2191,36 @@
                 const dt = parseDateKey(args.startDate);
                 activeYear = dt.getFullYear();
                 activeMonthIndex = dt.getMonth();
-                commitEvents();
+                if (!deferCommit) commitEvents();
                 return { success: true, createdCount: created.length, createdEvents: created };
+            }
+
+            if (name === "create_multiple_events") {
+                const list = Array.isArray(args.events) ? args.events : [];
+                if (!list.length) {
+                    return { success: false, error: "No events provided." };
+                }
+                let totalCreated = 0;
+                const allCreated = [];
+                for (const item of list) {
+                    if (!item?.title || !item?.startDate) continue;
+                    const created = createEventOccurrences(
+                        item.title,
+                        item.startDate,
+                        item.endDate || item.startDate,
+                        item.color || "blue",
+                        item.recurrence || "none"
+                    );
+                    events.push(...created);
+                    allCreated.push(...created);
+                    totalCreated += created.length;
+                    selectedDateKey = item.startDate;
+                    const dt = parseDateKey(item.startDate);
+                    activeYear = dt.getFullYear();
+                    activeMonthIndex = dt.getMonth();
+                }
+                if (!deferCommit) commitEvents();
+                return { success: true, createdCount: totalCreated, createdEvents: allCreated };
             }
 
             if (name === "update_event") {
@@ -2211,7 +2239,7 @@
                 if (args.updateSeries && current.seriesId && args.color) {
                     events = events.map((ev) => (ev.seriesId === current.seriesId ? { ...ev, color: newColor } : ev));
                 }
-                commitEvents();
+                if (!deferCommit) commitEvents();
                 return { success: true, updatedEvent: events[idx] };
             }
 
@@ -2225,7 +2253,7 @@
                 } else {
                     events.splice(idx, 1);
                 }
-                commitEvents();
+                if (!deferCommit) commitEvents();
                 return { success: true, deletedEvent: removed };
             }
 
@@ -2283,13 +2311,20 @@ Current schedule JSON: ${JSON.stringify(ctx.events)}
 Analyze the user's request and respond with valid JSON ONLY matching:
 {
   "reply": "Clear, concise natural language answer in English",
-  "action": "none" | "create_event" | "update_event" | "delete_event",
-  "params": { ... }
+  "actions": [
+    {
+      "action": "create_event" | "update_event" | "delete_event",
+      "params": { ... }
+    }
+  ]
 }
-For create_event params: { "title": string, "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "blue"|"green"|"yellow"|"red"|"orange"|"lime"|"purple"|"pink"|"cyan"|"black", "recurrence": "none"|"daily"|"weekly"|"biweekly"|"monthly"|"yearly" }.
-For update_event params: { "id": string, "matchTitle": string, "matchDate": "YYYY-MM-DD", "newTitle": string, "newStartDate": "YYYY-MM-DD", "newEndDate": "YYYY-MM-DD", "color": string, "updateSeries": boolean }.
-For delete_event params: { "id": string, "title": string, "date": "YYYY-MM-DD", "deleteSeries": boolean }.
-When asked what events are scheduled, list ALL matching events clearly without omitting any.`;
+IMPORTANT:
+- If the user asks to add, update, or delete MULTIPLE events (e.g., 2, 3, or a whole list of events on different days or the same day), include ONE item in the "actions" array for EACH event!
+- If the user is only asking a question or querying the schedule, set "actions": [].
+- For create_event params: { "title": string, "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "color": "blue"|"green"|"yellow"|"red"|"orange"|"lime"|"purple"|"pink"|"cyan"|"black", "recurrence": "none"|"daily"|"weekly"|"biweekly"|"monthly"|"yearly" }.
+- For update_event params: { "id": string, "matchTitle": string, "matchDate": "YYYY-MM-DD", "newTitle": string, "newStartDate": "YYYY-MM-DD", "newEndDate": "YYYY-MM-DD", "color": string, "updateSeries": boolean }.
+- For delete_event params: { "id": string, "title": string, "date": "YYYY-MM-DD", "deleteSeries": boolean }.
+- When asked what events are scheduled, list ALL matching events clearly without omitting any.`;
 
                 let response;
                 try {
@@ -2315,13 +2350,35 @@ When asked what events are scheduled, list ALL matching events clearly without o
 
                 const raw = response?.text || "{}";
                 const parsed = parseAiJsonResponse(raw);
-                if (parsed.action && parsed.action !== "none") {
-                    const res = executeAiToolAction(parsed.action, parsed.params || {});
-                    if (!res.success && res.error) {
-                        appendTranscriptBubble("ai", `I couldn't complete that: ${res.error}`, false);
+
+                // Support both multi-action array ("actions") and single-action fallback ("action")
+                const actionItems = Array.isArray(parsed.actions)
+                    ? parsed.actions
+                    : parsed.action && parsed.action !== "none"
+                        ? [{ action: parsed.action, params: parsed.params || {} }]
+                        : [];
+
+                if (actionItems.length > 0) {
+                    const errors = [];
+                    let mutated = false;
+                    for (const item of actionItems) {
+                        if (!item?.action || item.action === "none") continue;
+                        const res = executeAiToolAction(item.action, item.params || {}, true);
+                        if (res.success) {
+                            mutated = true;
+                        } else if (res.error) {
+                            errors.push(res.error);
+                        }
+                    }
+                    if (mutated) {
+                        commitEvents();
+                    }
+                    if (errors.length > 0 && !mutated) {
+                        appendTranscriptBubble("ai", `I couldn't complete that: ${errors.join("; ")}`, false);
                         return;
                     }
                 }
+
                 appendTranscriptBubble("ai", parsed.reply || "Done.", false);
             } catch (err) {
                 console.error("AI command failed:", err);
@@ -2539,7 +2596,7 @@ When asked what events are scheduled, list ALL matching events clearly without o
                         },
                         {
                             name: "create_event",
-                            description: "Create a new all-day event on the planner.",
+                            description: "Create a single all-day event on the planner.",
                             parameters: {
                                 type: Type.OBJECT,
                                 properties: {
@@ -2550,6 +2607,31 @@ When asked what events are scheduled, list ALL matching events clearly without o
                                     recurrence: { type: Type.STRING, description: "none, daily, weekly, biweekly, monthly, or yearly" }
                                 },
                                 required: ["title", "startDate"]
+                            }
+                        },
+                        {
+                            name: "create_multiple_events",
+                            description: "Create multiple all-day events at once on the planner.",
+                            parameters: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    events: {
+                                        type: Type.ARRAY,
+                                        description: "Array of events to create",
+                                        items: {
+                                            type: Type.OBJECT,
+                                            properties: {
+                                                title: { type: Type.STRING },
+                                                startDate: { type: Type.STRING, description: "YYYY-MM-DD" },
+                                                endDate: { type: Type.STRING, description: "YYYY-MM-DD" },
+                                                color: { type: Type.STRING, description: "blue, green, yellow, red, orange, lime, purple, pink, cyan, or black" },
+                                                recurrence: { type: Type.STRING, description: "none, daily, weekly, biweekly, monthly, or yearly" }
+                                            },
+                                            required: ["title", "startDate"]
+                                        }
+                                    }
+                                },
+                                required: ["events"]
                             }
                         },
                         {
@@ -2603,6 +2685,7 @@ When asked what events are scheduled, list ALL matching events clearly without o
                     systemInstruction: `You are the UGG Knightsbridge Store Planner voice assistant. Today is ${ctx.todayFormatted} (${ctx.todayIso}).
 CRITICAL LANGUAGE RULE: The user is ALWAYS speaking English. Both your spoken responses and all speech-to-text transcripts MUST be strictly in English (Latin alphabet only). Never interpret background noise or accents as Welsh, Spanish, Portuguese, French, or any other language.
 Always call list_events when checking the schedule so you never miss any event.
+When the user asks to add multiple events at once, use create_multiple_events (or call create_event once per event).
 When the user says goodbye, thank you, thanks, cheers, or that's it, say a brief friendly goodbye in English and call end_call.`
                 };
 
@@ -2640,13 +2723,14 @@ When the user says goodbye, thank you, thanks, cheers, or that's it, say a brief
                             if (message?.toolCall?.functionCalls?.length) {
                                 const responses = [];
                                 for (const fc of message.toolCall.functionCalls) {
-                                    const result = executeAiToolAction(fc.name, fc.args || {});
+                                    const result = executeAiToolAction(fc.name, fc.args || {}, true);
                                     responses.push({
                                         id: fc.id,
                                         name: fc.name,
                                         response: result
                                     });
                                 }
+                                commitEvents();
                                 try {
                                     const sess = await live.sessionPromise;
                                     sess.sendToolResponse({ functionResponses: responses });
