@@ -229,26 +229,31 @@
                 word-break: break-word !important;
                 overflow-wrap: break-word !important;
                 hyphens: auto !important;
-                line-height: 1.15 !important;
-                max-height: calc(2 * 1.15em + 4px) !important;
-                font-size: 8.5px !important;
+                line-height: 1.25 !important;
+                max-height: calc(2 * 1.25em + 8px) !important;
+                padding: 4px 6px !important;
+                border-radius: 6px !important;
+                font-size: 9.5px !important;
                 font-weight: 600 !important;
-                letter-spacing: -0.015em !important;
+                letter-spacing: -0.01em !important;
             }
 
             .mobile-shift-pill {
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: flex-start !important;
+                gap: 1px !important;
                 white-space: normal !important;
                 overflow: visible !important;
                 text-overflow: clip !important;
                 word-break: normal !important;
                 overflow-wrap: break-word !important;
-                line-height: 1.15 !important;
-                font-size: 8.5px !important;
+                padding: 4px 6px !important;
+                border-radius: 6px !important;
+                line-height: 1.22 !important;
+                font-size: 9.5px !important;
                 font-weight: 600 !important;
-                letter-spacing: -0.02em !important;
+                letter-spacing: -0.01em !important;
             }
         }
 
@@ -3361,7 +3366,7 @@
 
                     const cell = document.createElement("div");
                     cell.className = [
-                        "day-cell border-r border-b border-zinc-200/70 p-0.5 sm:p-1.5 min-h-[82px] sm:min-h-[112px] flex flex-col gap-0.5 sm:gap-1 transition cursor-pointer relative",
+                        "day-cell border-r border-b border-zinc-200/70 p-1 sm:p-1.5 min-h-[82px] sm:min-h-[112px] flex flex-col gap-0.5 sm:gap-1 transition cursor-pointer relative",
                         isCurrentMonth ? "bg-white hover:bg-zinc-50/90" : "bg-zinc-50/50 text-zinc-400 hover:bg-zinc-100/50",
                         isSelected ? "ring-2 ring-inset ring-zinc-950/85 bg-zinc-50/60" : ""
                     ].join(" ");
@@ -3389,16 +3394,16 @@
                     }
                     headerRow.appendChild(dayBadge);
                     cell.appendChild(headerRow);
-
+                    // Events stack
                     const eventsWrap = document.createElement("div");
-                    eventsWrap.className = "flex flex-col gap-1 min-w-0 flex-1";
+                    eventsWrap.className = "flex flex-col gap-1.5 sm:gap-1 min-w-0 flex-1";
                     const dayEvents = getEventsForDate(cellKey);
 
                     dayEvents.forEach((ev) => {
                         const cMeta = COLOR_PALETTE[normalizeColorKey(ev.color)] || COLOR_PALETTE.blue;
                         const pill = document.createElement("button");
                         pill.type = "button";
-                        pill.className = `event-pill mobile-two-line-pill w-full text-left px-1 sm:px-2 py-[3px] sm:py-1 rounded-[4px] sm:rounded-md border text-[8.5px] sm:text-[11px] font-semibold sm:font-medium leading-tight sm:truncate shadow-2xs transition cursor-pointer ${cMeta.pill}`;
+                        pill.className = `event-pill mobile-two-line-pill w-full text-left px-1.5 sm:px-2 py-1 rounded-md border text-[9.5px] sm:text-[11px] font-semibold sm:font-medium leading-snug sm:leading-tight sm:truncate shadow-2xs transition cursor-pointer ${cMeta.pill}`;
                         pill.textContent = ev.title;
                         pill.title = ev.title;
 
