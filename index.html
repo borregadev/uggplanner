@@ -74,6 +74,14 @@
                 display: none !important;
             }
 
+            /* Only print the active visible workspace; hide inactive tabs or popovers */
+            section.hidden,
+            #shifts-day-popover,
+            #month-year-popover,
+            #shifts-month-year-popover {
+                display: none !important;
+            }
+
             .page-container {
                 padding: 0 !important;
                 margin: 0 !important;
@@ -101,7 +109,7 @@
                 gap: 0 !important;
             }
 
-            .calendar-shell {
+            .calendar-shell:not(.hidden) {
                 width: 100% !important;
                 height: 100% !important;
                 min-height: 0 !important;
@@ -3423,17 +3431,113 @@
             renderSelectedDayInspector();
         }
 
-        function moveSelectedDayEvent(dateKey, eventId, delta) {
-            const orderedIds = getEventsForDate(dateKey).map((item) => item.id);
-            const currentIndex = orderedIds.indexOf(eventId);
-            if (currentIndex === -1) return;
-            const targetIndex = currentIndex + delta;
-            if (targetIndex < 0 || targetIndex >= orderedIds.length) return;
+        function attachSelectedDayDragReorder(listEl, dateKey) {
+            let dragState = null;
 
-            const [movedId] = orderedIds.splice(currentIndex, 1);
-            orderedIds.splice(targetIndex, 0, movedId);
-            dailyOrders[dateKey] = orderedIds;
-            commitAllData();
+            const cleanup = () => {
+                if (!dragState) return;
+                const { row, placeholder, prevTransition } = dragState;
+                row.style.position = "";
+                row.style.top = "";
+                row.style.left = "";
+                row.style.width = "";
+                row.style.zIndex = "";
+                row.style.pointerEvents = "";
+                row.style.boxShadow = "";
+                row.style.transform = "";
+                row.style.transition = prevTransition || "";
+                row.classList.remove("ring-2", "ring-zinc-950/20", "bg-white");
+                if (placeholder && placeholder.parentNode) {
+                    placeholder.parentNode.insertBefore(row, placeholder);
+                    placeholder.remove();
+                }
+                dragState = null;
+            };
+
+            const onPointerMove = (e) => {
+                if (!dragState) return;
+                const dy = e.clientY - dragState.startY;
+                if (!dragState.started) {
+                    if (Math.abs(dy) < 5) return;
+                    dragState.started = true;
+                    const rect = dragState.row.getBoundingClientRect();
+                    dragState.placeholder.style.height = `${rect.height}px`;
+                    dragState.row.parentNode.insertBefore(dragState.placeholder, dragState.row);
+                    dragState.row.style.position = "fixed";
+                    dragState.row.style.top = `${rect.top}px`;
+                    dragState.row.style.left = `${rect.left}px`;
+                    dragState.row.style.width = `${rect.width}px`;
+                    dragState.row.style.zIndex = "60";
+                    dragState.row.style.pointerEvents = "none";
+                    dragState.row.style.transition = "none";
+                    dragState.row.style.boxShadow = "0 10px 25px -5px rgba(9, 9, 11, 0.16)";
+                    dragState.row.classList.add("ring-2", "ring-zinc-950/20", "bg-white");
+                }
+
+                dragState.row.style.transform = `translate3d(0, ${dy}px, 0) scale(1.01)`;
+
+                const siblings = Array.from(listEl.querySelectorAll("[data-selected-event-id]")).filter(
+                    (el) => el !== dragState.row
+                );
+
+                for (const sib of siblings) {
+                    const sRect = sib.getBoundingClientRect();
+                    const sMid = sRect.top + sRect.height / 2;
+                    if (e.clientY < sMid) {
+                        if (dragState.placeholder.nextSibling !== sib) {
+                            listEl.insertBefore(dragState.placeholder, sib);
+                        }
+                        return;
+                    }
+                }
+                if (siblings.length > 0 && listEl.lastElementChild !== dragState.placeholder) {
+                    listEl.appendChild(dragState.placeholder);
+                }
+            };
+
+            const onPointerUp = () => {
+                window.removeEventListener("pointermove", onPointerMove);
+                window.removeEventListener("pointerup", onPointerUp);
+                window.removeEventListener("pointercancel", onPointerUp);
+
+                if (!dragState) return;
+                const wasDragged = dragState.started;
+                cleanup();
+
+                if (wasDragged) {
+                    listEl.dataset.justDragged = "1";
+                    setTimeout(() => {
+                        delete listEl.dataset.justDragged;
+                    }, 120);
+
+                    const newOrderedIds = Array.from(listEl.querySelectorAll("[data-selected-event-id]")).map((el) =>
+                        el.getAttribute("data-selected-event-id")
+                    );
+                    if (newOrderedIds.length > 1) {
+                        dailyOrders[dateKey] = newOrderedIds;
+                        commitAllData();
+                    }
+                }
+            };
+
+            listEl.querySelectorAll("[data-selected-event-id]").forEach((row) => {
+                row.style.touchAction = "none";
+                row.addEventListener("pointerdown", (e) => {
+                    if (e.button !== undefined && e.button !== 0) return;
+                    const placeholder = document.createElement("div");
+                    placeholder.className = "rounded-2xl border border-dashed border-zinc-300 bg-zinc-100/60 transition-all";
+                    dragState = {
+                        row,
+                        placeholder,
+                        startY: e.clientY,
+                        started: false,
+                        prevTransition: row.style.transition
+                    };
+                    window.addEventListener("pointermove", onPointerMove);
+                    window.addEventListener("pointerup", onPointerUp);
+                    window.addEventListener("pointercancel", onPointerUp);
+                });
+            });
         }
 
         function renderSelectedDayInspector() {
@@ -3454,29 +3558,26 @@
 
             const canReorder = dayEvents.length > 1;
 
-            dayEvents.forEach((ev, idx) => {
+            dayEvents.forEach((ev) => {
                 const cMeta = COLOR_PALETTE[normalizeColorKey(ev.color)] || COLOR_PALETTE.blue;
                 const row = document.createElement("div");
-                row.className = "flex items-center justify-between gap-2 px-3 py-2.5 rounded-2xl bg-zinc-50/90 hover:bg-zinc-100/80 border border-zinc-200/70 transition cursor-pointer";
-                row.addEventListener("click", () => openEditEventModal(ev.id));
+                row.setAttribute("data-selected-event-id", ev.id);
+                row.className = `flex items-center justify-between gap-2 px-3 py-2.5 rounded-2xl bg-zinc-50/90 hover:bg-zinc-100/80 border border-zinc-200/70 transition select-none ${
+                    canReorder ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"
+                }`;
+                row.addEventListener("click", () => {
+                    if (listEl.dataset.justDragged === "1") return;
+                    openEditEventModal(ev.id);
+                });
 
                 const rangeText = ev.startDate !== (ev.endDate || ev.startDate)
                     ? `${formatShortDayDate(ev.startDate)} – ${formatShortDayDate(ev.endDate)}`
                     : "All day";
 
-                const arrowsHtml = canReorder
-                    ? `<div class="flex items-center gap-0.5 flex-shrink-0" data-reorder-controls>
-                            <button type="button" data-move-dir="-1" ${idx === 0 ? "disabled" : ""}
-                                class="w-6 h-6 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-950 hover:bg-zinc-200/70 disabled:opacity-30 disabled:pointer-events-none transition"
-                                title="Move up">
-                                <i class="fa-solid fa-chevron-up text-[10px]"></i>
-                            </button>
-                            <button type="button" data-move-dir="1" ${idx === dayEvents.length - 1 ? "disabled" : ""}
-                                class="w-6 h-6 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-950 hover:bg-zinc-200/70 disabled:opacity-30 disabled:pointer-events-none transition"
-                                title="Move down">
-                                <i class="fa-solid fa-chevron-down text-[10px]"></i>
-                            </button>
-                       </div>`
+                const rightIconHtml = canReorder
+                    ? `<span class="text-zinc-400 px-1 flex-shrink-0" title="Drag to reorder">
+                            <i class="fa-solid fa-grip-vertical text-[11px]"></i>
+                       </span>`
                     : `<i class="fa-solid fa-pen text-[10px] text-zinc-300 flex-shrink-0"></i>`;
 
                 row.innerHTML = `
@@ -3487,58 +3588,14 @@
                             <p class="text-[10.5px] text-zinc-500 truncate">${escapeHtml(rangeText)}</p>
                         </div>
                     </div>
-                    ${arrowsHtml}
+                    ${rightIconHtml}
                 `;
-
-                row.querySelectorAll("[data-move-dir]").forEach((btn) => {
-                    btn.addEventListener("click", (e) => {
-                        e.stopPropagation();
-                        const delta = Number(btn.getAttribute("data-move-dir"));
-                        moveSelectedDayEvent(targetKey, ev.id, delta);
-                    });
-                });
 
                 listEl.appendChild(row);
             });
-        }
 
-        function renderMonthYearPopover() {
-            const monthsGrid = $("picker-months-grid");
-            const yearsScroll = $("picker-years-scroll");
-            if (!monthsGrid || !yearsScroll) return;
-
-            monthsGrid.innerHTML = "";
-            MONTHS_SHORT.forEach((mName, idx) => {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                const isActive = idx === activeMonthIndex;
-                btn.className = isActive
-                    ? "py-2 rounded-xl text-xs font-semibold bg-zinc-950 text-white shadow-2xs"
-                    : "py-2 rounded-xl text-xs font-medium text-zinc-700 hover:bg-zinc-100 transition";
-                btn.textContent = mName;
-                btn.addEventListener("click", () => {
-                    activeMonthIndex = idx;
-                    renderCalendar();
-                    renderMonthYearPopover();
-                });
-                monthsGrid.appendChild(btn);
-            });
-
-            yearsScroll.innerHTML = "";
-            for (let y = activeYear - 6; y <= activeYear + 8; y++) {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                const isActive = y === activeYear;
-                btn.className = isActive
-                    ? "w-full py-1.5 px-2.5 rounded-xl text-xs font-semibold bg-zinc-950 text-white text-center"
-                    : "w-full py-1.5 px-2.5 rounded-xl text-xs font-medium text-zinc-600 hover:bg-zinc-100 text-center transition";
-                btn.textContent = String(y);
-                btn.addEventListener("click", () => {
-                    activeYear = y;
-                    renderCalendar();
-                    renderMonthYearPopover();
-                });
-                yearsScroll.appendChild(btn);
+            if (canReorder) {
+                attachSelectedDayDragReorder(listEl, targetKey);
             }
         }
 
